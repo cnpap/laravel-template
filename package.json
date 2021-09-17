@@ -1,0 +1,26 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "serve": "vite preview"
+    },
+    "devDependencies": {
+        "@tailwindcss/postcss7-compat": "^2.2.14",
+        "@types/autoprefixer": "^10.2.0",
+        "@types/tailwindcss": "^2.2.1",
+        "@vitejs/plugin-vue": "^1.6.0",
+        "@vue/compiler-sfc": "^3.2.6",
+        "autoprefixer": "^10.3.4",
+        "axios": "^0.21",
+        "laravel-vite": "^0.0.16",
+        "lodash": "^4.17.19",
+        "postcss": "7",
+        "tailwindcss": "^2.2.15",
+        "vite": "^2.5.1"
+    },
+    "dependencies": {
+        "vue": "^3.2.6",
+        "vue-router": "4"
+    }
+}
