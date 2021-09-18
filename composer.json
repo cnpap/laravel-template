@@ -10,11 +10,13 @@
     "require": {
         "php": "^7.3|^8.0",
         "fruitcake/laravel-cors": "^2.0",
+        "godruoyi/php-snowflake": "^1.1",
         "guzzlehttp/guzzle": "^7.0.1",
         "innocenzi/laravel-vite": "^0.1.10",
         "laravel/framework": "^8.54",
         "laravel/sanctum": "^2.11",
-        "laravel/tinker": "^2.5"
+        "laravel/tinker": "^2.5",
+        "tucker-eric/eloquentfilter": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",
@@ -31,7 +33,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "bootstrap/helper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -39,6 +44,13 @@
         }
     },
     "scripts": {
+        "server": [
+            "@php artisan serve --port=80 --host=0.0.0.0"
+        ],
+        "migrate": [
+            "@php artisan migrate:fresh --path=database/migrations/tenant",
+            "@php artisan db:seed"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -66,7 +78,8 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "process-timeout": 0
     },
     "minimum-stability": "dev",
     "prefer-stable": true
