@@ -3,7 +3,10 @@
 namespace App\Models\Admin;
 
 use App\Models\Model;
+use App\Models\ModelTrait;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -18,9 +21,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string email
  * @property string password
  */
-class AdminUser extends Model
+class AdminUser extends User
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, ModelTrait;
 
     protected $table = 'admin_user';
 
