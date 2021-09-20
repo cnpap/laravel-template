@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdminUserIndexRequest extends FormRequest
+class AdminPositionEditRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,11 @@ class AdminUserIndexRequest extends FormRequest
     public function rules()
     {
         return [
-            'username' => 'string',
-            'phone'    => 'string',
-            'email'    => 'string;email'
+            'name'                   => 'required',
+            'admin_department_id'    => 'required',
+            'status'                 => 'integer',
+            'admin_permission_ids'   => 'required|array',
+            'admin_permission_ids.*' => 'integer'
         ];
     }
 }

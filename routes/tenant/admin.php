@@ -4,25 +4,47 @@ use Illuminate\Support\Facades\Route;
 
 // Auth
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\DebugMiddleware;
 
-// AdminUser
-use App\Http\Controllers\AdminUserController;
+// Admin
+use App\Http\Controllers\AdminControllers\AdminUserController;
+use App\Http\Controllers\AdminControllers\AdminDepartmentController;
+use App\Http\Controllers\AdminControllers\AdminPositionController;
 
 // 为了测试方便, 不认证路由权限
 $middlewares = [];
-if (!config('app.debug')) {
+if (config('app.debug')) {
+    $middlewares[] = DebugMiddleware::class;
+} else {
     $middlewares[] = 'auth:sanctum';
 }
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware($middlewares)->prefix('/admin')->group(function () {
-    Route::prefix('/user')->group(function () {
-        Route::post('/find/{id}', [AdminUserController::class, 'find']);
-        Route::post('/list', [AdminUserController::class, 'list']);
-        Route::post('/', [AdminUserController::class, 'create']);
-        Route::put('/{id}', [AdminUserController::class, 'update']);
-        Route::delete('/{id}', [AdminUserController::class, 'delete']);
+Route::middleware($middlewares)->group(function () {
+    Route::post('/userinfo', [AuthController::class, 'userinfo']);
+    Route::prefix('/admin')->group(function () {
+        Route::prefix('/user')->group(function () {
+            Route::post('/find/{id}', [AdminUserController::class, 'find']);
+            Route::post('/list', [AdminUserController::class, 'list']);
+            Route::post('/', [AdminUserController::class, 'create']);
+            Route::put('/{id}', [AdminUserController::class, 'update']);
+            Route::delete('/{id}', [AdminUserController::class, 'delete']);
+        });
+        Route::prefix('/department')->group(function () {
+            Route::post('/find/{id}', [AdminDepartmentController::class, 'find']);
+            Route::post('/list', [AdminDepartmentController::class, 'list']);
+            Route::post('/', [AdminDepartmentController::class, 'create']);
+            Route::put('/{id}', [AdminDepartmentController::class, 'update']);
+            Route::delete('/{id}', [AdminDepartmentController::class, 'delete']);
+        });
+        Route::prefix('/position')->group(function () {
+            Route::post('/find/{id}', [AdminPositionController::class, 'find']);
+            Route::post('/list', [AdminPositionController::class, 'list']);
+            Route::post('/', [AdminPositionController::class, 'create']);
+            Route::put('/{id}', [AdminPositionController::class, 'update']);
+            Route::delete('/{id}', [AdminPositionController::class, 'delete']);
+        });
     });
 });
 

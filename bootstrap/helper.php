@@ -2,44 +2,48 @@
 
 use Godruoyi\Snowflake\Snowflake;
 
-const YES = 1;
-const NO  = 2;
-
+// OK 也代表数据是新增数据
 const OK  = 1;
 const ERR = 2;
+
+// USED 有过关联的数据, 一般是不可以被删除的
+const USED = 99;
+
+class Uni
+{
+    static $lastTime;
+    static $sequence;
+}
 
 function uni()
 {
     $snowflake = new Snowflake();
     return $snowflake->setSequenceResolver(function ($currentTime) {
-        static $lastTime;
-        static $sequence;
-
-        if ($lastTime == $currentTime) {
-            ++$sequence;
+        if (Uni::$lastTime == $currentTime) {
+            ++Uni::$sequence;
         } else {
-            $sequence = 0;
+            Uni::$sequence = 0;
         }
 
-        $lastTime = $currentTime;
+        Uni::$lastTime = $currentTime;
 
-        return $sequence;
+        return Uni::$sequence;
     })->id();
 }
 
 // status success
 function ss($data = [])
 {
-    $data['status'] = 200;
+    $data['code'] = 200;
     return response($data);
 }
 
 // status error
 function se($data = [])
 {
-    $data['status']  = $data['status'] ?? 500;
+    $data['code']    = $data['code'] ?? 500;
     $data['message'] = '请求失败请重试';
-    return response($data, $data['status']);
+    return response($data, $data['code']);
 }
 
 // transaction

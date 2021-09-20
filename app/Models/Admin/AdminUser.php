@@ -2,10 +2,9 @@
 
 namespace App\Models\Admin;
 
-use App\Models\Model;
 use App\Models\ModelTrait;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -13,13 +12,17 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * @property int id
  * @property int status
- * @property int sex
- * @property string nick_name
- * @property string real_name
+ * @property int gender
+ * @property int admin_position_id
+ * @property string username
  * @property string avatar
  * @property string phone
  * @property string email
  * @property string password
+ *
+ * relation
+ *
+ * @property AdminPosition adminPosition
  */
 class AdminUser extends User
 {
@@ -30,6 +33,8 @@ class AdminUser extends User
     const MAN   = 1;
     const WOMAN = 2;
 
+    protected $guarded = [];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -38,6 +43,7 @@ class AdminUser extends User
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verified_at'
     ];
 
     /**
@@ -52,5 +58,40 @@ class AdminUser extends User
     function modelFilter()
     {
         return $this->provideFilter(AdminUserFilter::class);
+    }
+
+    function adminPosition()
+    {
+        return $this->hasOne(AdminPosition::class, 'id', 'admin_position_id')->select('id', 'name', 'admin_department_id');
+    }
+
+    function adminDepartment()
+    {
+        return $this->hasOne(AdminPosition::class, 'id', 'admin_position_id')->with(['adminDepartment'])->select('id', 'name', 'admin_department_id');
+    }
+
+    function getAdminPermissions()
+    {
+        return AdminPermission::query()
+            ->select(['id', 'label', 'name as value'])
+            ->whereIn(
+                'id',
+                function (Builder $query) {
+                    $query
+                        ->from(AdminPositionPermission::table())
+                        ->select('admin_permission_id')
+                        ->where('admin_position_id', $this->admin_position_id);
+                }
+            )
+            ->get();
+    }
+
+    function info()
+    {
+        $info                = collect($this->toArray())->only(['id', 'username', 'phone', 'email', 'gender', 'avatar']);
+        $info['department']  = $this->adminPosition->adminDepartment;
+        $info['position']    = $this->adminPosition;
+        $info['permissions'] = $this->getAdminPermissions();
+        return $info;
     }
 }

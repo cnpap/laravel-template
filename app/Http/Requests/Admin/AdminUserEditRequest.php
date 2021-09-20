@@ -25,12 +25,12 @@ class AdminUserEditRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'nick_name' => 'required|string',
-            'real_name' => 'required|string',
-            'password'  => 'required|string',
-            'phone'     => 'required',
-            'email'     => 'string;email',
-            'sex'       => 'required',
+            'username'          => 'required|string',
+            'password'          => 'required|string',
+            'admin_position_id' => 'required',
+            'phone'             => 'required',
+            'email'             => 'string;email',
+            'gender'            => 'required',
         ];
         /** @var Request $request */
         $request = app('request');

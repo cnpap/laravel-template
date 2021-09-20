@@ -7,22 +7,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AdminUserFilter extends ModelFilter
 {
-    function nickName($val)
+    function username($val)
     {
         return $this->when(
             $val,
             function (Builder $builder, $val) {
-                $this->where('nick_name', 'like', "%$val%");
-            }
-        );
-    }
-
-    function realName($val)
-    {
-        return $this->when(
-            $val,
-            function (Builder $builder, $val) {
-                $this->where('real_name', 'like', "%$val%");
+                $this->where('username', 'like', "%$val%");
             }
         );
     }

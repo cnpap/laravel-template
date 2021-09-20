@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Testing\TestResponse;
 use RuntimeException;
-use function App\Http\Controllers\ss;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -18,9 +17,11 @@ abstract class TestCase extends BaseTestCase
             return;
         }
         if (is_string($data)) {
-            $data = json_decode($data, true);
-            if (!$data) {
+            $tmp = json_decode($data, true);
+            if (!$tmp) {
                 throw new RuntimeException('debug 数据不是 json 数据');
+            } else {
+                $data = $tmp;
             }
         }
         Log::channel('dev')->debug($method, $data);
@@ -31,6 +32,6 @@ abstract class TestCase extends BaseTestCase
         if ($data instanceof TestResponse) {
             $data = $data->getContent();
         }
-        $this->assertEquals('{"status":200}', $data);
+        $this->assertEquals('{"code":200}', $data);
     }
 }
