@@ -16,7 +16,7 @@ class AdminUserSeeder extends Seeder
     {
         $super            = new AdminUser();
         $super->id        = 1;
-        $super->sex       = 1;
+        $super->gender    = 1;
         $super->status    = 1;
         $super->nick_name = '超级管理员';
         $super->real_name = '真实名称';
@@ -24,6 +24,6 @@ class AdminUserSeeder extends Seeder
         $super->email     = 'sia-fl@outlook.com';
         $super->password  = bcrypt('123456');
         $super->save();
-        AdminUser::factory()->count(100)->create();
+        AdminUser::factory()->count(30)->create();
     }
 }

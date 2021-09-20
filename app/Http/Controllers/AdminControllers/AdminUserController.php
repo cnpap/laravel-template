@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\AdminUserEditRequest;
 use App\Http\Requests\Admin\AdminUserIndexRequest;
-use App\Http\Requests\BulkRequest;
 use App\Models\Admin\AdminUser;
 
 class AdminUserController extends Controller
