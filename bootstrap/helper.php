@@ -9,6 +9,33 @@ const ERR = 2;
 // USED 有过关联的数据, 一般是不可以被删除的
 const USED = 99;
 
+use Overtrue\LaravelPinyin\Facades\Pinyin;
+
+/**
+ * @method static array convert(string $data)
+ */
+class PYin extends Pinyin
+{
+    static function simple(string $character)
+    {
+        $runeItem = self::convert($character);
+        $value    = '';
+        foreach ($runeItem as $runes) {
+            $value .= $runes[0];
+        }
+        return $value;
+    }
+
+    static function array(array $arr)
+    {
+        $item = [];
+        foreach ($arr as $character) {
+            $item[] = self::simple($character);
+        }
+        return implode(', ', $item);
+    }
+}
+
 class Uni
 {
     static $lastTime;

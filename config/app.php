@@ -166,6 +166,7 @@ return [
          * Package Service Providers...
          */
         EloquentFilter\ServiceProvider::class,
+        Overtrue\LaravelPinyin\ServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -190,7 +191,7 @@ return [
     */
 
     'aliases' => [
-
+        'Pinyin' => Overtrue\LaravelPinyin\Facades\Pinyin::class,
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
