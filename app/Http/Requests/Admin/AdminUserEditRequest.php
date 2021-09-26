@@ -29,7 +29,7 @@ class AdminUserEditRequest extends FormRequest
             'password'          => 'required|string',
             'admin_position_id' => 'required',
             'phone'             => 'required',
-            'email'             => 'string;email',
+            'email'             => 'string|email',
             'gender'            => 'required',
         ];
         /** @var Request $request */

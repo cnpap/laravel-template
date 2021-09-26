@@ -25,8 +25,8 @@ class AdminUserIndexRequest extends FormRequest
     {
         return [
             'username' => 'string',
-            'phone'    => 'string',
-            'email'    => 'string;email'
+            'phone'    => 'max:12',
+            'email'    => 'string'
         ];
     }
 }
