@@ -6,10 +6,7 @@ use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * @property int id
- * @property int status
- * @property string name
- * @property string description
+ * @mixin IdeHelperAdminDepartment
  */
 class AdminDepartment extends Model
 {
@@ -22,5 +19,10 @@ class AdminDepartment extends Model
     function modelFilter()
     {
         return $this->provideFilter(AdminDepartmentFilter::class);
+    }
+
+    function positions()
+    {
+        return $this->hasMany(AdminPosition::class, 'admin_department_id', 'id');
     }
 }

@@ -10,16 +10,39 @@ use App\Models\Admin\AdminPosition;
 
 class AdminPositionController extends Controller
 {
+    function departments()
+    {
+        $departments = AdminDepartment::query()->select(['id', 'name'])->get();
+        return result($departments);
+    }
+
     function find($id)
     {
-        $position = AdminPosition::query()->findOrFail($id);
-        return ss($position);
+        $position = AdminPosition::query()
+            ->select([
+                'id',
+                'status',
+                'name',
+                'description',
+                'admin_department_id',
+            ])
+            ->findOrFail($id);
+        return result($position);
     }
 
     function list(AdminPositionIndexRequest $request)
     {
-        $result = AdminPosition::page($request);
-        return ss($result);
+        $paginator = AdminPosition::filter($request->validated())
+            ->select([
+                'id',
+                'status',
+                'name',
+                'description',
+                'admin_department_id'
+            ])
+            ->with('department:id,name')
+            ->paginate(...usePage());
+        return page($paginator);
     }
 
     function create(AdminPositionEditRequest $request)
@@ -44,7 +67,7 @@ class AdminPositionController extends Controller
             AdminDepartment::used($departmentId);
 
             // 变更自身
-            $position->adminPermissions()->sync($permissionIds);
+            $position->permissions()->sync($permissionIds);
             $position->save();
             return true;
         });
@@ -77,7 +100,7 @@ class AdminPositionController extends Controller
 
             // 变更自身
             AdminPosition::query()->where('id', $id)->update($post);
-            $position->adminPermissions()->sync($permissionIds);
+            $position->permissions()->sync($permissionIds);
             return true;
         });
         if ($ok === true) {

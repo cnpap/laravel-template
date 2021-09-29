@@ -1,6 +1,10 @@
 <?php
 
+use App\Exceptions\PageParamsInvalidException;
 use Godruoyi\Snowflake\Snowflake;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Overtrue\LaravelPinyin\Facades\Pinyin;
 
 // OK 也代表数据是新增数据
 const OK  = 1;
@@ -8,8 +12,6 @@ const ERR = 2;
 
 // USED 有过关联的数据, 一般是不可以被删除的
 const USED = 99;
-
-use Overtrue\LaravelPinyin\Facades\Pinyin;
 
 /**
  * @method static array convert(string $data)
@@ -86,4 +88,26 @@ function tx($ok, $onOk = null, $onFail = null)
         $onFail();
     }
     return se();
+}
+
+function result($data)
+{
+    return ss(['result' => $data]);
+}
+
+function usePage()
+{
+    /** @var \Illuminate\Http\Request $request */
+    $request  = app('request');
+    $page     = $request->input('page', 0);
+    $pageSize = $request->input('pageSize', 0);
+    $columns  = ['*'];
+    return [$pageSize, $columns, 'page', $page];
+}
+
+function page(LengthAwarePaginator $paginator, $result = [])
+{
+    $result['pageCount'] = $paginator->lastPage();
+    $result['list']      = $paginator->items();
+    return result($result);
 }

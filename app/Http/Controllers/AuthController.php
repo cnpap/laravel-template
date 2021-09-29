@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\LoginRequest;
+use App\Http\Resources\UserinfoResource;
 use App\Models\Admin\AdminUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,10 +14,7 @@ class AuthController extends Controller
     {
         /** @var AdminUser $user */
         $user = Auth::user();
-        $info = $user->info();
-        return ss([
-            'data' => $info
-        ]);
+        return result(new UserinfoResource($user));
     }
 
     function login(LoginRequest $request)
@@ -33,10 +31,9 @@ class AuthController extends Controller
         $user = AdminUser::filter($request->validated())->first();
         $user->tokens()->delete();
         $token         = $user->createToken('admin');
-        $info          = $user->info();
-        $info['token'] = $token->plainTextToken;
-        return ss([
-            'data'    => $info,
+        return result([
+            'token'   => $token->plainTextToken,
+            'data'    => new UserinfoResource($user),
             'message' => '登录成功'
         ]);
     }

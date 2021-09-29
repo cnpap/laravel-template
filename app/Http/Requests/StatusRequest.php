@@ -4,14 +4,13 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BulkRequest extends FormRequest
+class StatusRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'ids'    => 'required|array|min:1|max:30',
-            'ids.*'  => 'integer',
-            'status' => 'required|integer|between:1,3'
+            'ids'   => 'required|array|min:1|max:30',
+            'ids.*' => 'integer'
         ];
     }
 

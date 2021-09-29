@@ -24,7 +24,7 @@ class AdminDepartmentFactory extends Factory
         return [
             'id'     => $this->faker->unique()->numberBetween(100000, 999999),
             'status' => USED,
-            'name'   => '测试部门' . $this->faker->unique()->numberBetween(1, 500),
+            'name'   => '部门' . $this->faker->unique()->numberBetween(1, 500),
         ];
     }
 }

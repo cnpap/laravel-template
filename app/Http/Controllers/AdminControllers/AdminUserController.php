@@ -5,27 +5,56 @@ namespace App\Http\Controllers\AdminControllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminUserEditRequest;
 use App\Http\Requests\Admin\AdminUserIndexRequest;
+use App\Models\Admin\AdminDepartment;
 use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminUser;
-use Illuminate\Database\Eloquent\Builder;
 
 class AdminUserController extends Controller
 {
+    function status()
+    {
+        AdminUser::status();
+        return ss();
+    }
+
+    function positions()
+    {
+        $positions = AdminDepartment::query()
+            ->select([
+                'id',
+                'name'
+            ])
+            ->with(
+                'positions:id,name,admin_department_id',
+            )
+            ->get();
+        return result($positions);
+    }
+
     function find($id)
     {
-        $user = AdminUser::query()->findOrFail($id);
-        return ss($user);
+        $user = AdminUser::query()
+            ->select([
+                'id',
+                'status',
+                'phone',
+                'email',
+                'gender',
+                'username',
+                'admin_position_id'
+            ])
+            ->findOrFail($id);
+        return result($user);
     }
 
     function list(AdminUserIndexRequest $request)
     {
-        $result = AdminUser::page(
-            $request,
-            function (Builder $query) {
-                $query->with(['adminDepartment']);
-            }
-        );
-        return ss($result);
+        $paginator = AdminUser::filter($request->validated())
+            ->with('position.department:id,name')
+            ->with('position:id,name,admin_department_id')
+            ->paginate(...usePage());
+
+        return page($paginator);
     }
 
     function create(AdminUserEditRequest $request)
@@ -73,7 +102,9 @@ class AdminUserController extends Controller
             AdminPosition::used($positionId);
 
             // 自身
-            $post['password'] = bcrypt($post['password']);
+            if (isset($post['password'])) {
+                $post['password'] = bcrypt($post['password']);
+            }
             AdminUser::query()->where('id', $id)->update($post);
             return true;
         });
@@ -83,9 +114,9 @@ class AdminUserController extends Controller
         return se();
     }
 
-    function delete($id)
+    function delete()
     {
-        AdminUser::clear($id);
+        AdminUser::clear();
         return ss();
     }
 }

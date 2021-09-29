@@ -38,14 +38,26 @@ trait ModelTrait
         return $query;
     }
 
-    static function clear($key)
+    static function clear()
     {
-        return (self::staticQuery($key))->where('status', '!=', USED)->delete();
+        /** @var Request $request */
+        $request = app('request');
+        $ids     = $request->input('ids');
+        return (self::staticQuery($ids))->where('status', '!=', USED)->delete();
     }
 
-    static function used($key)
+    static function status()
     {
-        return (self::staticQuery($key))->where('status', OK)->update(['status' => USED]);
+        /** @var Request $request */
+        $request = app('request');
+        $ids     = $request->input('ids');
+        $status  = $request->route('status');
+        return (self::staticQuery($ids)->update(['status' => $status]));
+    }
+
+    static function used($id)
+    {
+        return (self::staticQuery($id))->where('status', OK)->update(['status' => USED]);
     }
 
     static function page(Request $request = null, $whenClosure = null, $columns = ['*'])

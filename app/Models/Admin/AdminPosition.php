@@ -6,15 +6,7 @@ use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * @property int id
- * @property int status
- * @property int admin_department_id
- * @property string name
- * @property string description
- *
- * relation
- *
- * @property AdminDepartment adminDepartment
+ * @mixin IdeHelperAdminPosition
  */
 class AdminPosition extends Model
 {
@@ -27,12 +19,12 @@ class AdminPosition extends Model
         return $this->provideFilter(AdminPositionFilter::class);
     }
 
-    function adminDepartment()
+    function department()
     {
-        return $this->hasOne(AdminDepartment::class, 'id', 'admin_department_id')->select(['id', 'name']);
+        return $this->hasOne(AdminDepartment::class, 'id', 'admin_department_id');
     }
 
-    function adminPermissions()
+    function permissions()
     {
         return $this->belongsToMany(AdminPermission::class, AdminPositionPermission::class, 'admin_permission_id', 'admin_position_id');
     }

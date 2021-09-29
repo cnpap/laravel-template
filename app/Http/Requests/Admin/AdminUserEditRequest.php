@@ -26,7 +26,7 @@ class AdminUserEditRequest extends FormRequest
     {
         $rules = [
             'username'          => 'required|string',
-            'password'          => 'required|string',
+            'password'          => 'string',
             'admin_position_id' => 'required',
             'phone'             => 'required',
             'email'             => 'string|email',

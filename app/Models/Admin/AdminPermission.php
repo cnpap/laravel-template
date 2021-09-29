@@ -5,11 +5,7 @@ namespace App\Models\Admin;
 use App\Models\Model;
 
 /**
- * @property int id
- * @property int pid
- * @property int status
- * @property string name
- * @property string description
+ * @mixin IdeHelperAdminPermission
  */
 class AdminPermission extends Model
 {

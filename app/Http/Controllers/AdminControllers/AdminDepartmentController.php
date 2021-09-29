@@ -9,6 +9,14 @@ use App\Models\Admin\AdminDepartment;
 
 class AdminDepartmentController extends Controller
 {
+    function positions()
+    {
+        $departments = AdminDepartment::query()
+            ->with('position:id,name')
+            ->get();
+        return ss($departments);
+    }
+
     function find($id)
     {
         $Department = AdminDepartment::query()->findOrFail($id);

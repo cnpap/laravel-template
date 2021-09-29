@@ -29,7 +29,9 @@ Route::middleware($middlewares)->group(function () {
             Route::post('/list', [AdminUserController::class, 'list']);
             Route::post('/', [AdminUserController::class, 'create']);
             Route::put('/{id}', [AdminUserController::class, 'update']);
-            Route::delete('/{id}', [AdminUserController::class, 'delete']);
+            Route::delete('/', [AdminUserController::class, 'delete']);
+            Route::post('/positions', [AdminUserController::class, 'positions']);
+            Route::post('/status/{status}', [AdminUserController::class, 'status']);
         });
         Route::prefix('/department')->group(function () {
             Route::post('/find/{id}', [AdminDepartmentController::class, 'find']);

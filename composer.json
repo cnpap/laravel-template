@@ -55,6 +55,10 @@
             "@php artisan migrate",
             "@php artisan db:seed"
         ],
+        "ide": [
+            "@php artisan ide-helper:meta",
+            "@php artisan -M ide-helper:models"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -62,7 +66,7 @@
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi",
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "@php artisan ide-helper:generate",
+            "@/*php artisan ide-helper:generate*/",
             "@php artisan ide-helper:meta"
         ],
         "post-root-package-install": [

@@ -5,8 +5,7 @@ namespace App\Models\Admin;
 use App\Models\Model;
 
 /**
- * @property int admin_position_id
- * @property int admin_permission_id
+ * @mixin IdeHelperAdminPositionPermission
  */
 class AdminPositionPermission extends Model
 {
