@@ -3,37 +3,32 @@
 namespace App\Models\Admin;
 
 use EloquentFilter\ModelFilter;
-use Illuminate\Database\Eloquent\Builder;
 
+/** @mixin AdminUser */
 class AdminUserFilter extends ModelFilter
 {
     function username($val)
     {
-        return $this->when(
-            $val,
-            function (Builder $builder, $val) {
-                $this->where('username', 'like', "%$val%");
-            }
-        );
+        return $this->where('username', 'like', "%$val%");
     }
 
     function phone($val)
     {
-        return $this->when(
-            $val,
-            function (Builder $builder, $val) {
-                $this->where('phone', 'like', "%$val%");
-            }
-        );
+        return $this->where('phone', 'like', "%$val%");
     }
 
     function email($val)
     {
-        return $this->when(
-            $val,
-            function (Builder $builder, $val) {
-                $this->where('email', 'like', "%$val%");
-            }
+        return $this->where('email', 'like', "%$val%");
+    }
+
+    function department($val)
+    {
+        return $this->whereIn(
+            'admin_position_id',
+            AdminPosition::query()
+                ->select('id')
+                ->where('admin_department_id', $val)
         );
     }
 }

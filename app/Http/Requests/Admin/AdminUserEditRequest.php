@@ -24,19 +24,14 @@ class AdminUserEditRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = [
+        return [
             'username'          => 'required|string',
             'password'          => 'string',
             'admin_position_id' => 'required',
             'phone'             => 'required',
             'email'             => 'string|email',
             'gender'            => 'required',
+            'status'            => 'integer|min:1|in:1,2,3,99'
         ];
-        /** @var Request $request */
-        $request = app('request');
-        if ($request->method === 'PUT') {
-            $rules['status'] = 'required';
-        }
-        return $rules;
     }
 }

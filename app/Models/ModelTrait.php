@@ -3,13 +3,8 @@
 namespace App\Models;
 
 use App\Exceptions\PageParamsInvalidException;
-use Carbon\Carbon;
-use Closure;
 use DateTimeInterface;
 use EloquentFilter\Filterable;
-use Exception;
-use http\Exception\InvalidArgumentException;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -20,6 +15,30 @@ use Illuminate\Http\Request;
 trait ModelTrait
 {
     use Filterable;
+
+    static function indexFilter(array $filter)
+    {
+        /** @var Request $request */
+        $request     = app('request');
+        $status      = $request->input('status', false);
+        $orderBy     = $request->input('sortBy', false);
+        $orderByDesc = $request->input('sortDirection', 'desc');
+        $builder     = static::filter($filter);
+        if ($status) {
+            $builder->whereIn('status', $status);
+        } else {
+            $builder->where('status', '!=', 2);
+        }
+        if ($orderByDesc === 'descend') {
+            $orderByDesc = 'desc';
+        } else if ($orderByDesc === 'ascend') {
+            $orderByDesc = 'asc';
+        }
+        if ($orderBy) {
+            $builder->orderBy($orderBy, $orderByDesc);
+        }
+        return $builder;
+    }
 
     static function table()
     {

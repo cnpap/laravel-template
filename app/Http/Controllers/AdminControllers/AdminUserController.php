@@ -49,7 +49,7 @@ class AdminUserController extends Controller
 
     function list(AdminUserIndexRequest $request)
     {
-        $paginator = AdminUser::filter($request->validated())
+        $paginator = AdminUser::indexFilter($request->validated())
             ->with('position.department:id,name')
             ->with('position:id,name,admin_department_id')
             ->paginate(...usePage());
