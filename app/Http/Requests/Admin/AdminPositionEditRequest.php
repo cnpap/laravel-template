@@ -26,7 +26,7 @@ class AdminPositionEditRequest extends FormRequest
         return [
             'name'                   => 'required',
             'admin_department_id'    => 'required',
-            'status'                 => 'integer',
+            'status'                 => 'string|in:' . STATUS_JOIN,
             'admin_permission_ids'   => 'required|array',
             'admin_permission_ids.*' => 'integer'
         ];

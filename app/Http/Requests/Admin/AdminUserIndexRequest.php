@@ -24,12 +24,12 @@ class AdminUserIndexRequest extends FormRequest
     public function rules()
     {
         return [
-            'username'      => 'string',
-            'phone'         => 'max:12',
+            'username'      => 'string|max:40',
+            'phone'         => 'string|max:12',
             'email'         => 'string',
             'department_id' => 'integer',
             'status'        => 'array|max:4',
-            'status.*'      => 'integer|max:100'
+            'status.*'      => 'string|in:' . STATUS_JOIN
         ];
     }
 }

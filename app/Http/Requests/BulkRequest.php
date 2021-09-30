@@ -11,7 +11,7 @@ class BulkRequest extends FormRequest
         return [
             'ids'    => 'required|array|min:1|max:30',
             'ids.*'  => 'integer',
-            'status' => 'required|integer|between:1,3'
+            'status' => 'required|string|in:' . STATUS_JOIN
         ];
     }
 

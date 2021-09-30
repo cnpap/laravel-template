@@ -25,7 +25,7 @@ class AdminDepartmentEditRequest extends FormRequest
     {
         return [
             'name'   => 'required',
-            'status' => 'integer'
+            'status' => 'string|in:' . STATUS_JOIN,
         ];
     }
 }

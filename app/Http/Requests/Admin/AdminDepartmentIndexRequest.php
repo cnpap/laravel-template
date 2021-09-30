@@ -24,7 +24,9 @@ class AdminDepartmentIndexRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string'
+            'name'     => 'string',
+            'status'   => 'array|max:4',
+            'status.*' => 'string|in:' . STATUS_JOIN
         ];
     }
 }

@@ -18,8 +18,8 @@ class CreateAdminUserTable extends Migration
             $table->timestamps();
 
             $table->bigInteger('admin_position_id');
-            $table->smallInteger('status')->default(OK);
-            $table->smallInteger('gender');
+            $table->string('status', 3)->default('新数据');
+            $table->string('gender', 1);
             $table->string('avatar', 100)->default('/default.jpg');
             $table->string('username', 40);
             $table->string('phone', 11)->unique();

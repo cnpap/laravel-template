@@ -9,6 +9,12 @@ use App\Models\Admin\AdminDepartment;
 
 class AdminDepartmentController extends Controller
 {
+    function status()
+    {
+        AdminDepartment::status();
+        return ss();
+    }
+
     function positions()
     {
         $departments = AdminDepartment::query()
@@ -43,9 +49,9 @@ class AdminDepartmentController extends Controller
         return ss();
     }
 
-    function delete($id)
+    function delete()
     {
-        AdminDepartment::clear($id);
+        AdminDepartment::clear();
         return ss();
     }
 }

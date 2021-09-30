@@ -30,8 +30,8 @@ class AdminUserEditRequest extends FormRequest
             'admin_position_id' => 'required',
             'phone'             => 'required',
             'email'             => 'string|email',
-            'gender'            => 'required',
-            'status'            => 'integer|min:1|in:1,2,3,99'
+            'gender'            => 'string|in:' . GENDER_JOIN,
+            'status'            => 'string|in:' . STATUS_JOIN,
         ];
     }
 }
