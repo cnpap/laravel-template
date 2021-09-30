@@ -62,7 +62,7 @@ trait ModelTrait
         /** @var Request $request */
         $request = app('request');
         $ids     = $request->input('ids');
-        return (self::staticQuery($ids))->where('status', '!=', USED)->delete();
+        return (self::staticQuery($ids))->where('status', '!=', _USED)->delete();
     }
 
     static function status()
@@ -76,7 +76,7 @@ trait ModelTrait
 
     static function used($id)
     {
-        return (self::staticQuery($id))->where('status', OK)->update(['status' => USED]);
+        return (self::staticQuery($id))->where('status', _NEW)->update(['status' => _USED]);
     }
 
     static function page(Request $request = null, $whenClosure = null, $columns = ['*'])

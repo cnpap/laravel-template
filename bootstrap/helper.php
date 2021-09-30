@@ -7,18 +7,19 @@ use Illuminate\Database\Eloquent\Builder;
 use Overtrue\LaravelPinyin\Facades\Pinyin;
 
 // OK 也代表数据是新增数据
-const OK  = '新数据';
-const ERR = '异常中';
+const _NEW = '新数据';
+const _ERR = '异常中';
+const _OFF = '已停用';
 
 // USED 有过关联的数据, 一般是不可以被删除的
-const USED = '已使用';
+const _USED = '已使用';
 
-define("STATUS_JOIN", implode(',', [OK, USED, ERR]));
+define("STATUS_JOIN", implode(',', [_NEW, _OFF, _USED, _ERR]));
 
-const MAN   = '男';
-const WOMAN = '女';
+const _MAN   = '男';
+const _WOMAN = '女';
 
-define("GENDER_JOIN", implode(',', [MAN, WOMAN]));
+define("GENDER_JOIN", implode(',', [_MAN, _WOMAN]));
 
 /**
  * @method static array convert(string $data)

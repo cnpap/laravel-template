@@ -29,8 +29,8 @@ class AdminUserFactory extends Factory
         return [
             'id'                => $this->faker->unique()->numberBetween(100000, 999999),
             'admin_position_id' => $position->id,
-            'status'            => USED,
-            'gender'            => [MAN, WOMAN][rand(0, 1)],
+            'status'            => _NEW,
+            'gender'            => [_MAN, _WOMAN][rand(0, 1)],
             'username'          => self::RAND_username[rand(0, 2)] . $this->faker->unique()->numberBetween(1, 100),
             'phone'             => $this->faker->unique()->numberBetween(13311112222, 19911112222),
             'email'             => $this->faker->unique()->safeEmail(),

@@ -17,9 +17,6 @@ class AdminUser extends User
 
     protected $table = 'admin_user';
 
-    const MAN   = 1;
-    const WOMAN = 2;
-
     protected $guarded = [];
 
     /**

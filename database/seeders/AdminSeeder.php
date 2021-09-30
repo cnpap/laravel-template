@@ -23,8 +23,8 @@ class AdminSeeder extends Seeder
         $super                    = new AdminUser();
         $super->admin_position_id = $position->id;
         $super->id                = 1;
-        $super->gender            = MAN;
-        $super->status            = USED;
+        $super->gender            = _MAN;
+        $super->status            = _USED;
         $super->username          = '真实名称';
         $super->phone             = '19977775555';
         $super->email             = 'sia-fl@outlook.com';

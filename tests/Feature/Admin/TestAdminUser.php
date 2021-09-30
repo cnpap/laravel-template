@@ -10,8 +10,8 @@ class TestAdminUser extends TestCase
     const data = [
         'username'          => '真实',
         'admin_position_id' => 999,
-        'gender'            => AdminUser::MAN,
-        'status'            => OK,
+        'gender'            => _MAN,
+        'status'            => _NEW,
         'phone'             => 13355557777,
         'password'          => '123456',
     ];

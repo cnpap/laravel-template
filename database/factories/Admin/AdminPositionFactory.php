@@ -26,7 +26,7 @@ class AdminPositionFactory extends Factory
         return [
             'id'                  => $this->faker->unique()->numberBetween(100000, 999999),
             'admin_department_id' => $department,
-            'status'              => USED,
+            'status'              => _USED,
             'name'                => '岗位' . $this->faker->unique()->numberBetween(1, 500),
         ];
     }
