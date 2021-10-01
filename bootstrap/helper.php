@@ -65,7 +65,7 @@ function uni()
         Uni::$lastTime = $currentTime;
 
         return Uni::$sequence;
-    })->id();
+    })->id() / 100;
 }
 
 // status success

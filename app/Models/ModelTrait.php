@@ -27,7 +27,7 @@ trait ModelTrait
         if ($status) {
             $builder->whereIn('status', $status);
         } else {
-            $builder->where('status', '!=', 2);
+            $builder->where('status', '!=', _OFF);
         }
         if ($orderByDesc === 'descend') {
             $orderByDesc = 'desc';

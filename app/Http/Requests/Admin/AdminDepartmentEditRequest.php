@@ -24,8 +24,9 @@ class AdminDepartmentEditRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'   => 'required',
-            'status' => 'string|in:' . STATUS_JOIN,
+            'name'        => 'required',
+            'status'      => 'string|in:' . STATUS_JOIN,
+            'description' => 'string|max:100'
         ];
     }
 }

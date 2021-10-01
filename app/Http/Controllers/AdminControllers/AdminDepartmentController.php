@@ -26,13 +26,14 @@ class AdminDepartmentController extends Controller
     function find($id)
     {
         $Department = AdminDepartment::query()->findOrFail($id);
-        return ss($Department);
+        return result($Department);
     }
 
     function list(AdminDepartmentIndexRequest $request)
     {
-        $result = AdminDepartment::page($request);
-        return ss($result);
+        $result = AdminDepartment::indexFilter($request->all())
+            ->paginate(...usePage());
+        return page($result);
     }
 
     function create(AdminDepartmentEditRequest $request)
