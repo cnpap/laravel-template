@@ -54,18 +54,7 @@ class Uni
 
 function uni()
 {
-    $snowflake = new Snowflake();
-    return $snowflake->setSequenceResolver(function ($currentTime) {
-        if (Uni::$lastTime == $currentTime) {
-            ++Uni::$sequence;
-        } else {
-            Uni::$sequence = 0;
-        }
-
-        Uni::$lastTime = $currentTime;
-
-        return Uni::$sequence;
-    })->id() / 100;
+    return uniqid();
 }
 
 // status success

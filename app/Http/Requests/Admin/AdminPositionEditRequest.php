@@ -28,7 +28,7 @@ class AdminPositionEditRequest extends FormRequest
             'admin_department_id'    => 'required',
             'status'                 => 'string|in:' . STATUS_JOIN,
             'admin_permission_ids'   => 'required|array',
-            'admin_permission_ids.*' => 'integer'
+            'admin_permission_ids.*' => 'string'
         ];
     }
 }

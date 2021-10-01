@@ -12,4 +12,8 @@ class Model extends Base
     use ModelTrait;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'id' => 'string'
+    ];
 }

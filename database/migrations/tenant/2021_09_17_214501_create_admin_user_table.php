@@ -14,10 +14,10 @@ class CreateAdminUserTable extends Migration
     public function up()
     {
         Schema::create('admin_user', function (Blueprint $table) {
-            $table->bigInteger('id')->unique();
+            $table->string('id')->unique();
             $table->timestamps();
 
-            $table->bigInteger('admin_position_id');
+            $table->string('admin_position_id');
             $table->string('status', 3)->default('新数据');
             $table->string('gender', 1);
             $table->string('avatar', 100)->default('/default.jpg');

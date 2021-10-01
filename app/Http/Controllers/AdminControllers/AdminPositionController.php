@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminPositionEditRequest;
 use App\Http\Requests\Admin\AdminPositionIndexRequest;
 use App\Models\Admin\AdminDepartment;
+use App\Models\Admin\AdminPermission;
 use App\Models\Admin\AdminPosition;
 
 class AdminPositionController extends Controller
@@ -16,9 +17,16 @@ class AdminPositionController extends Controller
         return result($departments);
     }
 
+    function permissions()
+    {
+        $permissions = AdminPermission::query()->get();
+        return result($permissions);
+    }
+
     function find($id)
     {
-        $position = AdminPosition::query()
+        /** @var AdminPosition $position */
+        $position                         = AdminPosition::query()
             ->select([
                 'id',
                 'status',
@@ -27,19 +35,13 @@ class AdminPositionController extends Controller
                 'admin_department_id',
             ])
             ->findOrFail($id);
+        $position['admin_permission_ids'] = $position->permissions()->get()->modelKeys();
         return result($position);
     }
 
     function list(AdminPositionIndexRequest $request)
     {
-        $paginator = AdminPosition::filter($request->validated())
-            ->select([
-                'id',
-                'status',
-                'name',
-                'description',
-                'admin_department_id'
-            ])
+        $paginator = AdminPosition::indexFilter($request->validated())
             ->with('department:id,name')
             ->paginate(...usePage());
         return page($paginator);

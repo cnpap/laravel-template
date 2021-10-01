@@ -14,10 +14,10 @@ class CreateAdminPositionTable extends Migration
     public function up()
     {
         Schema::create('admin_position', function (Blueprint $table) {
-            $table->bigInteger('id')->unique();
+            $table->string('id')->unique();
             $table->timestamps();
 
-            $table->bigInteger('admin_department_id');
+            $table->string('admin_department_id');
             $table->string('status', 3)->default('新数据');
             $table->string('name', 40);
             $table->string('description', 200)->nullable();

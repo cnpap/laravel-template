@@ -46,6 +46,8 @@ Route::middleware($middlewares)->group(function () {
             Route::post('/', [AdminPositionController::class, 'create']);
             Route::put('/{id}', [AdminPositionController::class, 'update']);
             Route::delete('/{id}', [AdminPositionController::class, 'delete']);
+            Route::post('/departments', [AdminPositionController::class, 'departments']);
+            Route::post('/permissions', [AdminPositionController::class, 'permissions']);
         });
     });
 });

@@ -7,6 +7,27 @@ use App\Models\Admin\AdminPermission;
 
 class CreateAdminPermissionTable extends Migration
 {
+    protected $permissions = [];
+
+    function loopPermissions($party, $id = null)
+    {
+        $name                = $party['name'];
+        $label               = $party['label'];
+        $children            = $party['children'] ?? null;
+        $permission          = [
+            'id'    => uni(),
+            'pid'   => $id,
+            'name'  => $name,
+            'label' => $label
+        ];
+        $this->permissions[] = $permission;
+        if ($children) {
+            foreach ($children as $child) {
+                $this->loopPermissions($child, $permission['id']);
+            }
+        }
+    }
+
     /**
      * Run the migrations.
      *
@@ -15,8 +36,8 @@ class CreateAdminPermissionTable extends Migration
     public function up()
     {
         Schema::create('admin_permission', function (Blueprint $table) {
-            $table->bigInteger('id')->unique();
-            $table->bigInteger('pid')->default(0);
+            $table->string('id')->unique();
+            $table->string('pid')->nullable();
             $table->string('status', 3)->default('已使用');
             $table->string('label', 40);
             $table->string('name', 40);
@@ -24,28 +45,40 @@ class CreateAdminPermissionTable extends Migration
         });
 
         Schema::create('admin_position_permission', function (Blueprint $table) {
-            $table->bigInteger('admin_position_id');
-            $table->bigInteger('admin_permission_id');
+            $table->string('admin_position_id');
+            $table->string('admin_permission_id');
 
             $table->unique(['admin_position_id', 'admin_permission_id'], 'admin_position_permission_unique_index');
         });
 
-        $materials   = [
-            AdminPermission::P_DASHBOARD        => '仪表盘',
-            AdminPermission::P_SYSTEM           => '系统管理',
-            AdminPermission::P_ADMIN_USER       => '用户管理',
-            AdminPermission::P_ADMIN_DEPARTMENT => '部门管理',
-            AdminPermission::P_ADMIN_POSITION   => '岗位管理',
+        $materials = [
+            [
+                'label' => '仪表盘',
+                'name'  => AdminPermission::P_DASHBOARD,
+            ],
+            [
+                'label'    => '系统管理',
+                'name'     => AdminPermission::P_SYSTEM,
+                'children' => [
+                    [
+                        'label' => '部门管理',
+                        'name'  => AdminPermission::P_ADMIN_DEPARTMENT
+                    ],
+                    [
+                        'label' => '岗位管理',
+                        'name'  => AdminPermission::P_ADMIN_POSITION
+                    ],
+                    [
+                        'label' => '用户管理',
+                        'name'  => AdminPermission::P_ADMIN_USER
+                    ],
+                ]
+            ]
         ];
-        $permissions = [];
-        foreach ($materials as $name => $label) {
-            $permissions[] = [
-                'id'    => uni(),
-                'name'  => $name,
-                'label' => $label
-            ];
+        foreach ($materials as $material) {
+            $this->loopPermissions($material);
         }
-        AdminPermission::query()->insert($permissions);
+        AdminPermission::query()->insert($this->permissions);
     }
 
     /**

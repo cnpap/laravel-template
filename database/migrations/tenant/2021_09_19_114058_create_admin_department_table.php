@@ -14,7 +14,7 @@ class CreateAdminDepartmentTable extends Migration
     public function up()
     {
         Schema::create('admin_department', function (Blueprint $table) {
-            $table->bigInteger('id')->unique();
+            $table->string('id')->unique();
             $table->timestamps();
 
             $table->string('status', 3)->default('新数据');
