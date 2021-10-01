@@ -38,7 +38,7 @@ class CreateAdminPermissionTable extends Migration
         Schema::create('admin_permission', function (Blueprint $table) {
             $table->string('id')->unique();
             $table->string('pid')->nullable();
-            $table->string('status', 3)->default('已使用');
+            $table->string('status', 3)->default(_USED);
             $table->string('label', 40);
             $table->string('name', 40);
             $table->string('description', 200)->nullable();

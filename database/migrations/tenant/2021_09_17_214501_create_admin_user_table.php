@@ -18,7 +18,7 @@ class CreateAdminUserTable extends Migration
             $table->timestamps();
 
             $table->string('admin_position_id');
-            $table->string('status', 3)->default('新数据');
+            $table->string('status', 3)->default(_NEW);
             $table->string('gender', 1);
             $table->string('avatar', 100)->default('/default.jpg');
             $table->string('username', 40);

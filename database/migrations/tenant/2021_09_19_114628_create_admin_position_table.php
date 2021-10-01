@@ -18,7 +18,7 @@ class CreateAdminPositionTable extends Migration
             $table->timestamps();
 
             $table->string('admin_department_id');
-            $table->string('status', 3)->default('新数据');
+            $table->string('status', 3)->default(_NEW);
             $table->string('name', 40);
             $table->string('description', 200)->nullable();
         });

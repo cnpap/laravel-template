@@ -17,7 +17,7 @@ class CreateAdminDepartmentTable extends Migration
             $table->string('id')->unique();
             $table->timestamps();
 
-            $table->string('status', 3)->default('新数据');
+            $table->string('status', 3)->default(_NEW);
             $table->string('name', 40);
             $table->string('description', 200)->nullable();
         });
