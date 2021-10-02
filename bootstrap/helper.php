@@ -1,9 +1,7 @@
 <?php
 
-use App\Exceptions\PageParamsInvalidException;
-use Godruoyi\Snowflake\Snowflake;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Overtrue\LaravelPinyin\Facades\Pinyin;
 
 // OK 也代表数据是新增数据
@@ -107,4 +105,53 @@ function page(LengthAwarePaginator $paginator, $result = [])
     $result['pageCount'] = $paginator->lastPage();
     $result['list']      = $paginator->items();
     return result($result);
+}
+
+function tree($item)
+{
+    if ($item instanceof Collection) {
+        $item = $item->toArray();
+    }
+    $result = [];
+    for ($i = 0; $i < count($item); $i++) {
+        if (!$item[$i]['pid']) {
+            $current  = array_splice($item, $i--, 1)[0];
+            $children = treeTn($item, $current['id']);
+            $model    = [
+                'label'  => $current['name'],
+                'value'  => $current['id'],
+                'key'    => $current['id'],
+                'isLeaf' => true
+            ];
+            if (count($children)) {
+                $model['children'] = $children;
+                $model['isLeaf']   = false;
+            }
+            $result[] = array_merge($current, $model);
+        }
+    }
+    return $result;
+}
+
+function treeTn($item, $id = '')
+{
+    $tn = [];
+    for ($i = 0; $i < count($item); $i++) {
+        if ($item[$i]['pid'] == $id) {
+            $current  = array_splice($item, $i--, 1)[0];
+            $children = treeTn($item, $current['id']);
+            $model    = [
+                'label'  => $current['name'],
+                'value'  => $current['id'],
+                'key'    => $current['id'],
+                'isLeaf' => true
+            ];
+            if (count($children)) {
+                $model['children'] = $children;
+                $model['isLeaf']   = false;
+            }
+            $tn[] = array_merge($model, $current);
+        }
+    }
+    return $tn;
 }
