@@ -62,7 +62,7 @@ trait ModelTrait
         /** @var Request $request */
         $request = app('request');
         $ids     = $request->input('ids');
-        return (self::staticQuery($ids))->where('status', '!=', _USED)->delete();
+        return (self::staticQuery($ids))->where('status', _NEW)->delete();
     }
 
     static function status()

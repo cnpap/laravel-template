@@ -30,9 +30,9 @@ class AuthController extends Controller
         /** @var AdminUser $user */
         $user = AdminUser::filter($request->validated())->first();
         $user->tokens()->delete();
-        $token         = $user->createToken('admin');
+        $token = $user->createToken('admin');
         return result([
-            'token'   => $token->plainTextToken,
+            'token'   => substr($token->plainTextToken, 2),
             'data'    => new UserinfoResource($user),
             'message' => '登录成功'
         ]);
