@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RegionController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -11,6 +12,9 @@ use App\Http\Controllers\AdminControllers\AdminUserController;
 use App\Http\Controllers\AdminControllers\AdminDepartmentController;
 use App\Http\Controllers\AdminControllers\AdminPositionController;
 
+// Enterprise
+use App\Http\Controllers\EnterpriseControllers\AuthController as EnterpriseAuthController;
+
 // 为了测试方便, 不认证路由权限
 $middlewares = [];
 if (config('app.debug')) {
@@ -20,9 +24,17 @@ if (config('app.debug')) {
 }
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/region', [RegionController::class, 'region']);
+Route::post('/child_regions', [RegionController::class, 'childRegions']);
 
 Route::middleware($middlewares)->group(function () {
     Route::post('/userinfo', [AuthController::class, 'userinfo']);
+    Route::prefix('/enterprise')->group(function () {
+        Route::post('/upload/zj', [EnterpriseAuthController::class, 'uploadZj']);
+        Route::post('/upload/id', [EnterpriseAuthController::class, 'uploadId']);
+        Route::post('/upload/mm', [EnterpriseAuthController::class, 'uploadMm']);
+        Route::post('/upload/hj', [EnterpriseAuthController::class, 'uploadHj']);
+    });
     Route::prefix('/admin')->group(function () {
         Route::prefix('/user')->group(function () {
             Route::post('/find/{id}', [AdminUserController::class, 'find']);

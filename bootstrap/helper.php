@@ -3,6 +3,8 @@
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Overtrue\LaravelPinyin\Facades\Pinyin;
+use Illuminate\Http\Request;
+use http\Exception\RuntimeException;
 
 // OK 也代表数据是新增数据
 const _NEW = '新数据';
@@ -18,6 +20,15 @@ const _MAN   = '男';
 const _WOMAN = '女';
 
 define("GENDER_JOIN", implode(',', [_MAN, _WOMAN]));
+
+function sess($name)
+{
+    $eid = Session::get($name);
+    if (!$eid) {
+        throw new RuntimeException();
+    }
+    return $eid;
+}
 
 /**
  * @method static array convert(string $data)
@@ -90,9 +101,50 @@ function result($data)
     return ss(['result' => $data]);
 }
 
+function upload($options)
+{
+    /** @var Request $request */
+    $request = app('request');
+    $file    = $request->file('file');
+    $ext     = $file->extension();
+    $extType = $options['extType'];
+    switch ($extType) {
+        case 'image':
+            if (!in_array($ext, ['jpg', 'jpeg', 'png'])) {
+                throw new RuntimeException();
+            }
+            break;
+        case 'video':
+            if (!in_array($ext, ['mp4', ''])) {
+                throw new RuntimeException();
+            }
+            break;
+        case 'excel':
+            if (!in_array($ext, ['csv', 'xlsx'])) {
+                throw new RuntimeException();
+            }
+            break;
+        default:
+            throw new RuntimeException();
+    }
+    $eid      = sess('eid');
+    $path     = $options['path'];
+    $fileId   = uniqid();
+    $filename = $file->getClientOriginalName();
+    $filename = "$eid-$fileId-$filename";
+    $filePath = "$path/$filename";
+    $file->move(public_path($path), $filename);
+    return $filePath;
+}
+
+function resultImg($imgUrl)
+{
+    return result(['img_url' => $imgUrl]);
+}
+
 function usePage()
 {
-    /** @var \Illuminate\Http\Request $request */
+    /** @var Request $request */
     $request  = app('request');
     $page     = $request->input('page', 0);
     $pageSize = $request->input('pageSize', 0);
