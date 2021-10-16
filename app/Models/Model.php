@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Base;
 
 /**
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Model as Base;
  */
 class Model extends Base
 {
-    use ModelTrait;
+    use ModelTrait, HasFactory;
 
     protected $guarded = [];
 

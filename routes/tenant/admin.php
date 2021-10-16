@@ -39,25 +39,25 @@ Route::middleware($middlewares)->group(function () {
         Route::prefix('/user')->group(function () {
             Route::post('/find/{id}', [AdminUserController::class, 'find']);
             Route::post('/list', [AdminUserController::class, 'list']);
-            Route::post('/', [AdminUserController::class, 'create']);
+            Route::post('/create', [AdminUserController::class, 'create']);
             Route::put('/{id}', [AdminUserController::class, 'update']);
-            Route::delete('/', [AdminUserController::class, 'delete']);
+            Route::delete('/delete', [AdminUserController::class, 'delete']);
             Route::post('/positions', [AdminUserController::class, 'positions']);
             Route::post('/status/{status}', [AdminUserController::class, 'status']);
         });
         Route::prefix('/department')->group(function () {
             Route::post('/find/{id}', [AdminDepartmentController::class, 'find']);
             Route::post('/list', [AdminDepartmentController::class, 'list']);
-            Route::post('/', [AdminDepartmentController::class, 'create']);
+            Route::post('/create', [AdminDepartmentController::class, 'create']);
             Route::put('/{id}', [AdminDepartmentController::class, 'update']);
-            Route::delete('/{id}', [AdminDepartmentController::class, 'delete']);
+            Route::delete('/delete', [AdminDepartmentController::class, 'delete']);
         });
         Route::prefix('/position')->group(function () {
             Route::post('/find/{id}', [AdminPositionController::class, 'find']);
             Route::post('/list', [AdminPositionController::class, 'list']);
-            Route::post('/', [AdminPositionController::class, 'create']);
+            Route::post('/create', [AdminPositionController::class, 'create']);
             Route::put('/{id}', [AdminPositionController::class, 'update']);
-            Route::delete('/{id}', [AdminPositionController::class, 'delete']);
+            Route::delete('/delete', [AdminPositionController::class, 'delete']);
             Route::post('/departments', [AdminPositionController::class, 'departments']);
             Route::post('/permissions', [AdminPositionController::class, 'permissions']);
         });

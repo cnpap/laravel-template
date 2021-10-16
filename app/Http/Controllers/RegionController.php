@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Region;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class RegionController extends Controller
@@ -27,6 +28,9 @@ class RegionController extends Controller
             case 3:
                 $patten = '000000';
                 break;
+            case 4:
+                $patten = '000';
+                break;
         }
         return $patten;
     }
@@ -35,17 +39,22 @@ class RegionController extends Controller
     {
         /** @var Region $parentRegion */
         $parentRegion = Region::query()->where('id', $childId)->firstOrFail();
-        $brother      = Region::query()
+        $brother = Region::query()
             ->whereIn(
                 'parent_id',
                 Region::query()
                     ->where('id', $parentRegion->parent_id)
                     ->select('parent_id')
             )
-            ->where('code', 'like', '%' . $patten)
+            ->when(
+                $patten,
+                function (Builder $builder, $val) {
+                    $builder->where('code', 'like', '%' . $val);
+                }
+            )
             ->get();
-        $options      = [];
-        $isLeaf       = !count($children);
+        $options = [];
+        $isLeaf  = !count($children);
         /** @var Region $region */
         foreach ($brother as $region) {
             $option           = [
@@ -63,9 +72,7 @@ class RegionController extends Controller
         if ($sample->parent_id === $this->topParentId) {
             return $options;
         }
-        /** @var Region $nextRegion */
-        $nextRegion = $sample->parent;
-        return $this->parentRegions($nextRegion->parent_id, $patten, $options);
+        return $this->parentRegions($sample->parent_id, $patten, $options);
     }
 
     public function region(Request $request)
@@ -73,12 +80,12 @@ class RegionController extends Controller
         $this->validate(
             $request,
             [
-                'code'  => 'integer',
+                'code'  => 'string',
                 'level' => 'integer'
             ]
         );
         $code  = $request->input('code', false);
-        $level = $request->input('level', 3);
+        $level = $request->input('level', 8);
         if (!$code) {
             $regions = Region::query()
                 ->where('parent_id', $this->topParentId)
