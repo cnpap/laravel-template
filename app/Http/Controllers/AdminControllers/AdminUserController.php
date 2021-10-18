@@ -43,7 +43,8 @@ class AdminUserController extends Controller
                 'username',
                 'admin_position_id'
             ])
-            ->findOrFail($id);
+            ->where('id', $id)
+            ->firstOrFail();
         return result($user);
     }
 

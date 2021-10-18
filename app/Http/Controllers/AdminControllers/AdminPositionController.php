@@ -25,8 +25,8 @@ class AdminPositionController extends Controller
 
     function find($id)
     {
-        /** @var AdminPosition $position */
-        $position                         = AdminPosition::query()
+        /** @var AdminPosition $one */
+        $one                         = AdminPosition::query()
             ->select([
                 'id',
                 'status',
@@ -34,9 +34,10 @@ class AdminPositionController extends Controller
                 'description',
                 'admin_department_id',
             ])
-            ->findOrFail($id);
-        $position['admin_permission_ids'] = $position->permissions()->get()->modelKeys();
-        return result($position);
+            ->where('id', $id)
+            ->firstOr();
+        $one['admin_permission_ids'] = $one->permissions()->get()->modelKeys();
+        return result($one);
     }
 
     function list(AdminPositionIndexRequest $request)
@@ -56,10 +57,10 @@ class AdminPositionController extends Controller
         unset($post['admin_permission_ids']);
 
         // 事务开始
-        $position     = new AdminPosition($post);
-        $position->id = uni();
-        $ok           = $position->getConnection()->transaction(function () use (
-            $position, $post,
+        $one     = new AdminPosition($post);
+        $one->id = uni();
+        $ok      = $one->getConnection()->transaction(function () use (
+            $one, $post,
             // 关联字段
             $permissionIds,
             $departmentId
@@ -69,8 +70,8 @@ class AdminPositionController extends Controller
             AdminDepartment::used($departmentId);
 
             // 变更自身
-            $position->permissions()->sync($permissionIds);
-            $position->save();
+            $one->permissions()->sync($permissionIds);
+            $one->save();
             return true;
         });
         if ($ok === true) {
@@ -88,10 +89,10 @@ class AdminPositionController extends Controller
         unset($post['admin_permission_ids']);
 
         // 事务开始
-        $position     = new AdminPosition();
-        $position->id = $id;
-        $ok           = $position->getConnection()->transaction(function () use (
-            $position, $post, $id,
+        $one     = new AdminPosition();
+        $one->id = $id;
+        $ok      = $one->getConnection()->transaction(function () use (
+            $one, $post, $id,
             // 关联字段
             $permissionIds,
             $departmentId
@@ -102,7 +103,7 @@ class AdminPositionController extends Controller
 
             // 变更自身
             AdminPosition::query()->where('id', $id)->update($post);
-            $position->permissions()->sync($permissionIds);
+            $one->permissions()->sync($permissionIds);
             return true;
         });
         if ($ok === true) {

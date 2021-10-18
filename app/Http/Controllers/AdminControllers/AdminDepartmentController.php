@@ -17,16 +17,16 @@ class AdminDepartmentController extends Controller
 
     function positions()
     {
-        $departments = AdminDepartment::query()
-            ->with('position:id,name')
+        $ones = AdminDepartment::query()
+            ->with('positions:id,name')
             ->get();
-        return ss($departments);
+        return ss($ones);
     }
 
     function find($id)
     {
-        $Department = AdminDepartment::query()->findOrFail($id);
-        return result($Department);
+        $one = AdminDepartment::query()->where('id', $id)->firstOrFail();
+        return result($one);
     }
 
     function list(AdminDepartmentIndexRequest $request)
@@ -38,9 +38,9 @@ class AdminDepartmentController extends Controller
 
     function create(AdminDepartmentEditRequest $request)
     {
-        $Department     = new AdminDepartment($request->validated());
-        $Department->id = uni();
-        $Department->save();
+        $one     = new AdminDepartment($request->validated());
+        $one->id = uni();
+        $one->save();
         return ss();
     }
 
