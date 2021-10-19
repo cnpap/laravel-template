@@ -57,6 +57,17 @@ class AdminUserController extends Controller
         return page($paginator);
     }
 
+    function enabledList(AdminUserIndexRequest $request)
+    {
+        $paginator = AdminUser::indexFilter($request->validated())
+            ->with('position.department:id,name')
+            ->with('position:id,name,admin_department_id')
+            ->whereIn('status', ['新数据', '已使用'])
+            ->paginate(...usePage());
+
+        return page($paginator);
+    }
+
     function create(AdminUserEditRequest $request)
     {
         // 分离参数

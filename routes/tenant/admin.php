@@ -44,6 +44,7 @@ Route::middleware($middlewares)->group(function () {
             Route::delete('/delete', [AdminUserController::class, 'delete']);
             Route::post('/positions', [AdminUserController::class, 'positions']);
             Route::post('/status/{status}', [AdminUserController::class, 'status']);
+            Route::post('/enabled_list', [AdminUserController::class, 'enabledList']);
         });
         Route::prefix('/department')->group(function () {
             Route::post('/find/{id}', [AdminDepartmentController::class, 'find']);
