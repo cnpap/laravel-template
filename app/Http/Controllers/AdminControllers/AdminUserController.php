@@ -5,12 +5,26 @@ namespace App\Http\Controllers\AdminControllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminUserEditRequest;
 use App\Http\Requests\Admin\AdminUserIndexRequest;
+use App\Http\Requests\PasswordRequest;
 use App\Models\Admin\AdminDepartment;
 use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminUser;
+use Illuminate\Support\Facades\Hash;
 
 class AdminUserController extends Controller
 {
+    function forgotPassword(PasswordRequest $request, $id)
+    {
+        $password = $request->input('password');
+        $password = Hash::make($password);
+        AdminUser::query()
+            ->where('id', $id)
+            ->update([
+                'password' => $password
+            ]);
+        return ss();
+    }
+
     function status()
     {
         AdminUser::status();
@@ -53,6 +67,17 @@ class AdminUserController extends Controller
         $paginator = AdminUser::indexFilter($request->validated())
             ->with('position.department:id,name')
             ->with('position:id,name,admin_department_id')
+            ->paginate(...usePage());
+
+        return page($paginator);
+    }
+
+    function enabledList(AdminUserIndexRequest $request)
+    {
+        $paginator = AdminUser::indexFilter($request->validated())
+            ->with('position.department:id,name')
+            ->with('position:id,name,admin_department_id')
+            ->whereIn('status', ['新数据', '已使用'])
             ->paginate(...usePage());
 
         return page($paginator);
