@@ -112,9 +112,9 @@ class AdminPositionController extends Controller
         return se();
     }
 
-    function delete($id)
+    function delete()
     {
-        AdminPosition::clear($id);
+        AdminPosition::clear();
         return ss();
     }
 }

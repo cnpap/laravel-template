@@ -50,9 +50,9 @@ trait ModelTrait
         /** @var Builder $query */
         $query = static::query();
         if (is_numeric($key)) {
-            $query->where('id', $key);
+            $query = $query->where('id', $key);
         } else {
-            $query->whereIn('id', $key);
+            $query = $query->whereIn('id', $key);
         }
         return $query;
     }

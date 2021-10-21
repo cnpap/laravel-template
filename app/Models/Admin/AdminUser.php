@@ -36,6 +36,7 @@ class AdminUser extends User
      * @var array
      */
     protected $casts = [
+        'id'                => 'string',
         'email_verified_at' => 'datetime',
     ];
 

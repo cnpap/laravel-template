@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin;
+namespace Tests\Unit\Admin;
 
 use App\Models\Admin\AdminDepartment;
 use Tests\TestCase;
@@ -32,20 +32,28 @@ class TestAdminDepartment extends TestCase
      */
     function testCreate()
     {
-        $data     = self::data;
-        $response = $this->post('/admin/department', $data);
+        $data     = [
+            'name' => '部门' . rand(1000, 9999)
+        ];
+        $response = $this->post('/admin/department/create', $data);
         $this->assertSS($response);
     }
 
     function testDelete()
     {
-        $response = $this->delete('/admin/department/' . AdminDepartment::query()->max('id'));
+        $data     = [
+            'ids' => [AdminDepartment::query()->max('id')]
+        ];
+        $response = $this->delete('/admin/department/delete', $data);
         $this->assertSS($response);
     }
 
     function testUpdate()
     {
-        $response = $this->put('/admin/department/' . AdminDepartment::query()->max('id'), self::data);
+        $data     = [
+            'name' => '部门' . rand(1000, 9999)
+        ];
+        $response = $this->put('/admin/department/' . AdminDepartment::query()->max('id'), $data);
         $this->assertSS($response);
     }
 }

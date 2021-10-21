@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin;
+namespace Tests\Unit\Admin;
 
 use App\Models\Admin\AdminUser;
 use Tests\TestCase;
@@ -37,14 +37,15 @@ class TestAdminUser extends TestCase
      */
     function testCreate()
     {
-        $data     = self::data;
-        $response = $this->post('/admin/user', $data);
+        $data          = self::data;
+        $data['phone'] = '1' . rand(1000000000, 9999999999);
+        $response      = $this->post('/admin/user/create', $data);
         $this->assertSS($response);
     }
 
     function testDelete()
     {
-        $response = $this->delete('/admin/user/' . AdminUser::query()->max('id'));
+        $response = $this->delete('/admin/user/delete', ['ids' => [AdminUser::all()->random()->id]]);
         $this->assertSS($response);
     }
 

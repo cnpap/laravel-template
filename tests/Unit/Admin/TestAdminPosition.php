@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Admin;
+namespace Tests\Unit\Admin;
 
 use App\Models\Admin\AdminPosition;
 use Tests\TestCase;
@@ -9,8 +9,8 @@ class TestAdminPosition extends TestCase
 {
     const data = [
         'name'                 => '岗位',
-        'admin_department_id'  => 999,
-        'admin_permission_ids' => [1, 2, 3]
+        'admin_department_id'  => '999',
+        'admin_permission_ids' => ['1', '2', '3']
     ];
 
     function testFind()
@@ -34,20 +34,23 @@ class TestAdminPosition extends TestCase
      */
     function testCreate()
     {
-        $data     = self::data;
-        $response = $this->post('/admin/position', $data);
+        $data         = self::data;
+        $data['name'] .= rand(1000, 9999);
+        $response     = $this->post('/admin/position/create', $data);
         $this->assertSS($response);
     }
 
     function testDelete()
     {
-        $response = $this->delete('/admin/position/' . AdminPosition::query()->max('id'));
+        $response = $this->delete('/admin/position/delete', ['ids' => AdminPosition::query()->max('id')]);
         $this->assertSS($response);
     }
 
     function testUpdate()
     {
-        $response = $this->put('/admin/position/' . AdminPosition::query()->max('id'), self::data);
+        $data         = self::data;
+        $data['name'] .= rand(1000, 9999);
+        $response     = $this->put('/admin/position/' . AdminPosition::query()->max('id'), $data);
         $this->assertSS($response);
     }
 }
