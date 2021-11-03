@@ -159,7 +159,23 @@ function page(LengthAwarePaginator $paginator, $result = [])
     return result($result);
 }
 
-function tree($item)
+function options($item, $key = 'name')
+{
+    if ($item instanceof Collection) {
+        $item = $item->toArray();
+    }
+    $result = [];
+    foreach ($item as $row) {
+        $result[] = [
+            'label' => $row[$key],
+            'key'   => $row['id'],
+            'value' => $row['id'],
+        ];
+    }
+    return $result;
+}
+
+function treeOptions($item)
 {
     if ($item instanceof Collection) {
         $item = $item->toArray();

@@ -15,7 +15,7 @@ abstract class CategoryController extends Controller
     public function tree()
     {
         $item = $this->categoryName::query()->with('parent')->get();
-        return result(tree($item));
+        return result(treeOptions($item));
     }
 
     public function list(CategoryIndexRequest $request)
