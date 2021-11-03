@@ -105,10 +105,7 @@ class AdminUserController extends Controller
             $user->save();
             return true;
         });
-        if ($ok === true) {
-            return ss();
-        }
-        return se();
+        return tx($ok);
     }
 
     function update(AdminUserEditRequest $request, $id)
@@ -134,10 +131,7 @@ class AdminUserController extends Controller
             AdminUser::query()->where('id', $id)->update($post);
             return true;
         });
-        if ($ok === true) {
-            return ss();
-        }
-        return se();
+        return tx($ok);
     }
 
     function delete()
