@@ -49,7 +49,7 @@ trait ModelTrait
     {
         /** @var Builder $query */
         $query = static::query();
-        if (is_numeric($key)) {
+        if (!is_array($key)) {
             $query = $query->where('id', $key);
         } else {
             $query = $query->whereIn('id', $key);
