@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommonControllers\LogController;
 use App\Http\Controllers\RegionController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,7 @@ if (config('app.debug')) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/region', [RegionController::class, 'region']);
 Route::post('/child_regions', [RegionController::class, 'childRegions']);
+Route::post('/stop_log/{id}',[LogController::class, 'stopLog']);
 
 Route::middleware($middlewares)->group(function () {
     Route::post('/userinfo', [AuthController::class, 'userinfo']);
