@@ -94,7 +94,12 @@ return [
             'level'  => env('LOG_LEVEL', 'debug'),
         ],
 
-        'errorlog' => [
+        'base exception' => [
+            'driver' => 'errorlog',
+            'level'  => env('LOG_LEVEL', 'debug'),
+        ],
+
+        'burst exception' => [
             'driver' => 'errorlog',
             'level'  => env('LOG_LEVEL', 'debug'),
         ],
