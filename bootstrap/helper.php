@@ -14,6 +14,8 @@ const _OFF = '已停用';
 // USED 有过关联的数据, 一般是不可以被删除的
 const _USED = '已使用';
 
+const _STOP = '已下架';
+
 define("STATUS_JOIN", implode(',', [_NEW, _OFF, _USED, _ERR]));
 
 const _MAN   = '男';
@@ -77,8 +79,8 @@ function ss($data = [])
 function se($data = [])
 {
     $data['code']    = $data['code'] ?? 500;
-    $data['message'] = '请求失败请重试';
-    return response($data, $data['code']);
+    $data['message'] = $data['message'] ?? '请求失败请重试';
+    return response()->json($data, $data['code']);
 }
 
 // transaction
