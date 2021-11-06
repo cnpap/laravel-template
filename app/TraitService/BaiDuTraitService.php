@@ -4,11 +4,13 @@ namespace App\TraitService;
 
 use App\Exceptions\BaiDuServiceException;
 use App\Exceptions\ImageSizeInvalidException;
+use App\Models\Admin\AdminUser;
 use App\Models\Enterprise\EnterpriseAuth;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use http\Exception\RuntimeException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Log;
 
@@ -30,9 +32,9 @@ trait BaiDuTraitService
         }
     }
 
-    function token()
+    function token($option)
     {
-        $token = Cache::get('baidu token');
+        $token = Cache::get('baidu token ' . md5(json_encode($option)));
         if ($token) {
             return $token;
         }
@@ -42,20 +44,20 @@ trait BaiDuTraitService
             [
                 'query' => [
                     'grant_type'    => 'client_credentials',
-                    'client_id'     => config('ocr.app_access'),
-                    'client_secret' => config('ocr.app_secret')
+                    'client_id'     => $option['appAccess'],
+                    'client_secret' => $option['appSecret']
                 ]
             ]
         );
         $statusCode = $response->getStatusCode();
         $result     = json_decode($response->getBody()->getContents(), true);
         if ($statusCode !== 200) {
-            Log::channel('errorlog')->error('baidu token', $result);
-            throw new BaiDuServiceException('调取服务出错' . BaiDuServiceException::TOKEN);
+            Log::channel('burst exception')->error('baidu token', $result);
+            throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::TOKEN);
         }
-        $ok = Cache::put('baidu token', $result['access_token'], 3600 * 5);
+        $ok = Cache::put('baidu token ' . md5(json_encode($option)), $result['access_token'], 3600 * 5);
         if (!$ok) {
-            Log::channel('errorlog')->error('redis set fail');
+            Log::channel('burst exception')->error('redis set fail');
             throw new RuntimeException('服务器产生严重错误');
         }
         return $result['access_token'];
@@ -77,38 +79,108 @@ trait BaiDuTraitService
         $size     = [$sizeInfo[0], $sizeInfo[1]];
         foreach ($size as $num) {
             if ($num <= 15) {
-                throw new ImageSizeInvalidException('请控制图片 宽/高 不小于 15px');
+                throw new ImageSizeInvalidException('请控制图片 宽/高 不小于 15px', 0, 500, 'warning');
             }
             if ($num >= 4096) {
-                throw new ImageSizeInvalidException('请控制图片 宽/高 不大于 4096px');
+                throw new ImageSizeInvalidException('请控制图片 宽/高 不大于 4096px', 0, 500, 'warning');
             }
         }
         return compact('imgBs64');
     }
 
+    function auditText($data)
+    {
+        $client   = $this->client();
+        $text     = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $response = $client->post(
+            '/rest/2.0/solution/v1/text_censor/v2/user_defined',
+            [
+                'query'       => ['access_token' => $this->token([
+                    'appAccess' => config('cloud.audit_app_access'),
+                    'appSecret' => config('cloud.audit_app_secret')
+                ])],
+                'form_params' => ['text' => $text]
+            ]
+        );
+        $result   = json_decode($response->getBody()->getContents(), true);
+        if ($result['conclusion'] === '不合规') {
+            /** @var AdminUser $user */
+            $user = Auth::user();
+            Log::channel('stack')->warning('danger message', [
+                'uid'      => $user->id,
+                'username' => $user->username,
+                'data'     => $data
+            ]);
+            throw new \RuntimeException('检测到图片具有违规信息');
+        }
+    }
+
+    function auditImage($options)
+    {
+        $imgInfo    = $this->checkImg();
+        $imgBs64    = $imgInfo['imgBs64'];
+        $imgType    = $options['type'] ?? 0;
+        $extType    = 'image';
+        $path       = $options['path'] ?? '/audit_image';
+        $path       = upload(compact('path', 'extType'));
+        $client     = $this->client();
+        $response   = $client->post(
+            '/rest/2.0/solution/v1/img_censor/v2/user_defined',
+            [
+                'query'       => ['access_token' => $this->token([
+                    'appAccess' => config('cloud.audit_app_access'),
+                    'appSecret' => config('cloud.audit_app_secret')
+                ])],
+                'form_params' => ['image' => $imgBs64, 'imgType' => $imgType]
+            ]
+        );
+        $result     = json_decode($response->getBody()->getContents(), true);
+        $statusCode = $response->getStatusCode();
+        if ($result['conclusion'] === '不合规') {
+            /** @var AdminUser $user */
+            $user = Auth::user();
+            Log::channel('stack')->warning('danger message', [
+                'uid'      => $user->id,
+                'username' => $user->username,
+                'path'     => $path
+            ]);
+            throw new \RuntimeException('检测到图片具有违规信息');
+        }
+        if ($statusCode !== 200) {
+            Log::channel('burst exception')->error('baidu id ocr', $result);
+            throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::OCR);
+        }
+        return [
+            'path' => $path,
+        ];
+    }
+
     function idOcr()
     {
         /** @var Request $request */
-        $request  = app('request');
-        $side     = $request->input('side');
-        $imgInfo  = $this->checkImg();
-        $imgBs64  = $imgInfo['imgBs64'];
-        $extType  = 'image';
-        $path     = '/enterprise/id_img';
-        $path     = upload(compact('path', 'extType'));
-        $client   = $this->client();
-        $response = $client->post(
+        $request    = app('request');
+        $side       = $request->input('side');
+        $imgInfo    = $this->checkImg();
+        $imgBs64    = $imgInfo['imgBs64'];
+        $extType    = 'image';
+        $path       = '/enterprise/id_img';
+        $path       = upload(compact('path', 'extType'));
+        $client     = $this->client();
+        $response   = $client->post(
             '/rest/2.0/ocr/v1/idcard',
             [
-                'query'       => ['access_token' => $this->token()],
+                'query'       => ['access_token' => $this->token([
+                    'appAccess' => config('cloud.audit_app_access'),
+                    'appSecret' => config('cloud.audit_app_secret')
+                ])],
                 'form_params' => ['image' => $imgBs64, 'id_card_side' => $side]
             ]
         );
         $result     = json_decode($response->getBody()->getContents(), true);
         $statusCode = $response->getStatusCode();
         if ($statusCode !== 200) {
-            Log::channel('errorlog')->error('baidu id ocr', $result);
-            throw new BaiDuServiceException('调取服务出错' . BaiDuServiceException::OCR);
+            Log::channel('burst exception')->error('baidu id ocr', $result);
+            throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::OCR);
         }
         $result = $result['words_result'];
         $qyAuth = new EnterpriseAuth();
@@ -146,15 +218,18 @@ trait BaiDuTraitService
         $response   = $client->post(
             '/rest/2.0/ocr/v1/business_license',
             [
-                'query'       => ['access_token' => $this->token()],
+                'query'       => ['access_token' => $this->token([
+                    'appAccess' => config('cloud.ocr_app_access'),
+                    'appSecret' => config('cloud.ocr_app_secret')
+                ])],
                 'form_params' => ['image' => $imgBs64]
             ]
         );
         $result     = json_decode($response->getBody()->getContents(), true);
         $statusCode = $response->getStatusCode();
-        if ($statusCode !== 200) {
-            Log::channel('errorlog')->error('baidu zj ocr', $result);
-            throw new BaiDuServiceException('调取服务出错' . BaiDuServiceException::OCR);
+        if ($statusCode !== 200 || !isset($result['words_result'])) {
+            Log::channel('burst exception')->error('baidu zj ocr', $result);
+            throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::OCR);
         }
         $result = $result['words_result'];
         $clSj   = $result['成立日期']['words'];
