@@ -20,7 +20,7 @@ class CreateAdminUserTable extends Migration
             $table->string('admin_position_id');
             $table->string('status', 3)->default(_NEW);
             $table->string('gender', 1);
-            $table->string('avatar', 100)->default('/avatar/admin-id-default.jpg');
+            $table->string('avatar', 100)->default('/avatar/admin-id-default.png');
             $table->string('username', 40);
             $table->string('phone', 11)->unique();
             $table->string('email', 40)->nullable()->unique();
