@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
@@ -33,5 +34,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+
+        Validator::extend('phone', function ($attribute, $value) {
+            return preg_match('@^1[3-9]\d{9}$@', $value);
+        });
+        Validator::extend('id', function ($attribute, $value) {
+            return preg_match('@^[\da-z]{6,16}$@', $value);
+        });
     }
 }

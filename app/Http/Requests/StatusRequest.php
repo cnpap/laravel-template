@@ -9,8 +9,8 @@ class StatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ids'   => 'required|array|min:1|max:30',
-            'ids.*' => 'integer'
+            'ids'   => 'required|array|between:1,30',
+            'ids.*' => 'string|id'
         ];
     }
 

@@ -16,7 +16,7 @@ class AdminRoleFactory extends Factory
         $id          = uni();
         $num         = rand(1000, 9999);
         $name        = '角色' . $num;
-        $code        = 'js' . $num;
+        $code        = fnPinYin($name);
         $description = '描述/备注信息' . $num;
         return [
             'id'          => $id,

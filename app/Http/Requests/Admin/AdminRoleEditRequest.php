@@ -10,11 +10,11 @@ class AdminRoleEditRequest extends FormRequest
     {
         return [
             'status'                 => 'string|in:' . STATUS_JOIN,
-            'name'                   => 'string|between:1,40',
+            'name'                   => 'required|string|between:1,40',
             'code'                   => 'string|between:1,40',
             'description'            => 'string|between:1,200',
             'admin_permission_ids'   => 'array',
-            'admin_permission_ids.*' => 'string'
+            'admin_permission_ids.*' => 'string|id'
         ];
     }
 

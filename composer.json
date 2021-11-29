@@ -20,7 +20,8 @@
         "overtrue/laravel-pinyin": "~4.0",
         "tucker-eric/eloquentfilter": "^3.0",
         "ext-json": "*",
-        "ext-http": "*"
+        "ext-http": "*",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",

@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use App\Models\Admin\AdminPermission;
 use App\Models\Admin\AdminPositionPermission;
+use App\Models\Admin\AdminPositionRole;
+use App\Models\Admin\AdminRolePermission;
 use App\Models\Admin\AdminUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -42,9 +44,14 @@ class UserinfoResource extends JsonResource
                 ->select(['id', 'label', 'name as value'])
                 ->whereIn(
                     'id',
-                    AdminPositionPermission::query()
+                    AdminRolePermission::query()
                         ->select('admin_permission_id')
-                        ->where('admin_position_id', $this->admin_position_id)
+                        ->whereIn(
+                            'admin_role_id',
+                            AdminPositionRole::query()
+                                ->select('admin_role_id')
+                                ->where('admin_position_id', $this->admin_position_id)
+                        )
                 )
                 ->get()
             //            'email_verified_at'   => $this->email_verified_at,

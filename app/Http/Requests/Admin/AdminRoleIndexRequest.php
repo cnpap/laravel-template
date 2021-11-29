@@ -12,7 +12,7 @@ class AdminRoleIndexRequest extends FormRequest
             'status'   => 'array|max:4',
             'status.*' => 'string|in:' . STATUS_JOIN,
             'name'     => 'string|between:1,40',
-            'coed'     => 'string|between:1,40'
+            'code'     => 'string|between:1,40'
         ];
     }
 

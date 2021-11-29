@@ -37,7 +37,7 @@ class AdminRoleController extends Controller
                 $permissionIds       = $post['admin_permission_ids'];
                 unset($post['admin_permission_ids']);
 
-                mergeCode($post, 'name');
+                mergeCode($post);
 
                 AdminRole::query()->where('id', $id)->update($post);
                 $role     = new AdminRole($post);
@@ -57,6 +57,8 @@ class AdminRoleController extends Controller
                 $post          = $request->validated();
                 $permissionIds = $post['admin_permission_ids'];
                 unset($post['admin_permission_ids']);
+
+                mergeCode($post);
 
                 $role     = new AdminRole($post);
                 $role->id = uni();

@@ -24,11 +24,12 @@ class AdminPositionEditRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'                   => 'required',
-            'admin_department_id'    => 'required',
-            'status'                 => 'string|in:' . STATUS_JOIN,
-            'admin_permission_ids'   => 'required|array',
-            'admin_permission_ids.*' => 'string'
+            'name'                => 'required|string|between:1,40',
+            'code'                => 'string|between:1,40',
+            'admin_department_id' => 'required|string|id',
+            'status'              => 'string|in:' . STATUS_JOIN,
+            'admin_role_ids'      => 'required|array',
+            'admin_role_ids.*'    => 'string|id'
         ];
     }
 }

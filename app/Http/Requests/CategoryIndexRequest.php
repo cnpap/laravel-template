@@ -9,7 +9,8 @@ class CategoryIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => 'string',
+            'name'     => 'string|between:1,40',
+            'code'     => 'string|between:1,40',
             'status'   => 'array|max:4',
             'status.*' => 'string|in:' . STATUS_JOIN
         ];

@@ -18,6 +18,7 @@ class CreateAdminPermissionTable extends Migration
             'id'    => uni(),
             'pid'   => $id,
             'name'  => $name,
+            'code'  => fnPinYin($name),
             'label' => $label
         ];
         $this->permissions[] = $permission;
@@ -36,20 +37,23 @@ class CreateAdminPermissionTable extends Migration
     public function up()
     {
         Schema::create('admin_permission', function (Blueprint $table) {
-            $table->string('id')->unique();
-            $table->string('pid')->nullable();
-            $table->string('status', 3)->default(_USED);
-            $table->string('label', 40);
-            $table->string('name', 40);
-            $table->string('description', 200)->nullable();
+            $table->string('id')->unique()->comment('管理员权限ID');
+            $table->string('pid')->nullable()->comment('管理员权限上级ID');
+            $table->string('status', 3)->default(_NEW)->comment('管理员权限数据状态: 新数据, 已占用, 已停用, 异常中');
+            $table->string('label', 40)->comment('权限标签');
+            $table->string('name', 40)->comment('权限名称');
+            $table->string('code', 40)->comment('权限编号');
+            $table->string('description', 200)->nullable()->comment('权限描述/备注');
         });
+        DB::statement("alter table `admin_permission` comment '管理员权限表'");
 
-        Schema::create('admin_position_permission', function (Blueprint $table) {
-            $table->string('admin_position_id');
-            $table->string('admin_permission_id');
+        Schema::create('admin_role_permission', function (Blueprint $table) {
+            $table->string('admin_role_id')->comment('关联管理员角色ID');
+            $table->string('admin_permission_id')->comment('关联管理员权限ID');
 
-            $table->unique(['admin_position_id', 'admin_permission_id'], 'admin_position_permission_unique_index');
+            $table->unique(['admin_role_id', 'admin_permission_id'], 'admin_role_permission_unique_index');
         });
+        DB::statement("alter table `admin_role_permission` comment '管理员角色权限表'");
 
         $materials = [
             [
@@ -88,7 +92,7 @@ class CreateAdminPermissionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('admin_position_permission');
+        Schema::dropIfExists('admin_role_permission');
         Schema::dropIfExists('admin_permission');
     }
 }

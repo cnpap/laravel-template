@@ -9,9 +9,10 @@ class CategoryEditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'pid'         => 'string|nullable',
+            'pid'         => 'string|nullable|id',
             'status'      => 'string|in:' . STATUS_JOIN,
-            'name'        => 'required',
+            'name'        => 'required|string|between:1,40',
+            'code'        => 'string|between:1,40',
             'description' => 'string|nullable'
         ];
     }

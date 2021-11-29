@@ -70,7 +70,7 @@ trait ModelTrait
         /** @var Request $request */
         $request = app('request');
         $ids     = $request->input('ids');
-        $status  = $request->route('status');
+        $status  = $request->input('status');
         return (self::staticQuery($ids)->update(['status' => $status]));
     }
 

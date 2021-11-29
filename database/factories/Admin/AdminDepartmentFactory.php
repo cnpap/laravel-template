@@ -21,10 +21,16 @@ class AdminDepartmentFactory extends Factory
      */
     public function definition()
     {
+        $num         = rand(1000, 9999);
+        $name        = '部门' . $num;
+        $code        = fnPinYin($name);
+        $description = '部门描述/备注' . $num;
         return [
-            'id'     => $this->faker->unique()->numberBetween(100000, 999999),
-            'status' => _USED,
-            'name'   => '部门' . $this->faker->unique()->numberBetween(1, 500),
+            'id'          => $this->faker->unique()->numberBetween(100000, 999999),
+            'status'      => _USED,
+            'name'        => $name,
+            'code'        => $code,
+            'description' => $description
         ];
     }
 }

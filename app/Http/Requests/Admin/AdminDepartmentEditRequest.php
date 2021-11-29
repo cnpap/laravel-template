@@ -24,7 +24,8 @@ class AdminDepartmentEditRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'        => 'required',
+            'name'        => 'required|string|between:1,40',
+            'code'        => 'string|between:1,40',
             'status'      => 'string|in:' . STATUS_JOIN,
             'description' => 'string|max:100'
         ];

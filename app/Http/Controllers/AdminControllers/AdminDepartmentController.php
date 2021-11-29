@@ -38,7 +38,9 @@ class AdminDepartmentController extends Controller
 
     function create(AdminDepartmentEditRequest $request)
     {
-        $one     = new AdminDepartment($request->validated());
+        $post = $request->validated();
+        mergeCode($post);
+        $one     = new AdminDepartment($post);
         $one->id = uni();
         $one->save();
         return ss();
@@ -46,7 +48,9 @@ class AdminDepartmentController extends Controller
 
     function update(AdminDepartmentEditRequest $request, $id)
     {
-        AdminDepartment::query()->where('id', $id)->update($request->validated());
+        $post = $request->validated();
+        mergeCode($post);
+        AdminDepartment::query()->where('id', $id)->update($post);
         return ss();
     }
 

@@ -24,8 +24,8 @@ class AdminPosition extends Model
         return $this->hasOne(AdminDepartment::class, 'id', 'admin_department_id');
     }
 
-    function permissions()
+    function roles()
     {
-        return $this->belongsToMany(AdminPermission::class, AdminPositionPermission::class, 'admin_permission_id', 'admin_position_id');
+        return $this->belongsToMany(AdminRole::class, AdminPositionRole::class, 'admin_position_id', 'admin_role_id');
     }
 }

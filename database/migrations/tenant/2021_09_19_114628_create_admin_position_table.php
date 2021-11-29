@@ -14,14 +14,16 @@ class CreateAdminPositionTable extends Migration
     public function up()
     {
         Schema::create('admin_position', function (Blueprint $table) {
-            $table->string('id')->unique();
+            $table->string('id')->unique()->comment('管理员岗位ID');
             $table->timestamps();
 
-            $table->string('admin_department_id');
-            $table->string('status', 3)->default(_NEW);
-            $table->string('name', 40);
-            $table->string('description', 200)->nullable();
+            $table->string('admin_department_id')->comment('关联管理员部门ID');
+            $table->string('status', 3)->default(_NEW)->comment('管理员岗位数据状态: 新数据, 已占用, 已停用, 异常中');
+            $table->string('name', 40)->comment('岗位名称');
+            $table->string('code', 40)->comment('岗位编号');
+            $table->string('description', 200)->nullable()->comment('岗位描述/备注');
         });
+        DB::statement("alter table `admin_position` comment '管理员岗位表'");
     }
 
     /**

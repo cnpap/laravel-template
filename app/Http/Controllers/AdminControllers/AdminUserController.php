@@ -89,8 +89,10 @@ class AdminUserController extends Controller
         $post       = $request->validated();
         $positionId = $post['admin_position_id'];
 
+        mergeCode($post, 'username');
+
         // 开始事务
-        $user           = new AdminUser($request->validated());
+        $user           = new AdminUser($post);
         $user->id       = uni();
         $user->password = bcrypt($user->password);
         $ok             = $user->getConnection()->transaction(function () use (
@@ -113,6 +115,8 @@ class AdminUserController extends Controller
         // 分离参数
         $post       = $request->validated();
         $positionId = $post['admin_position_id'];
+
+        mergeCode($post, 'username');
 
         // 开始事务
         $user = new AdminUser();

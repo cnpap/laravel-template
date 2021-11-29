@@ -25,12 +25,13 @@ class AdminUserEditRequest extends FormRequest
     public function rules()
     {
         return [
-            'username'          => 'required|string',
-            'password'          => 'string',
-            'admin_position_id' => 'required',
-            'phone'             => 'required',
+            'username'          => 'required|string|between:1,40',
+            'code'              => 'string|between:1,40',
+            'password'          => 'string|between:250,450',
+            'admin_position_id' => 'required|string|id',
+            'phone'             => 'required|string|phone',
             'email'             => 'string|email',
-            'gender'            => 'string|in:' . GENDER_JOIN,
+            'gender'            => 'required|string|in:' . GENDER_JOIN,
             'status'            => 'string|in:' . STATUS_JOIN,
         ];
     }

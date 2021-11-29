@@ -24,6 +24,10 @@ class AdminUserFactory extends Factory
      */
     public function definition()
     {
+        $num         = rand(1000, 9999);
+        $name        = '管理员' . $num;
+        $code        = fnPinYin($name);
+        $description = '管理员备注/描述' . $num;
         /** @var AdminPosition $position */
         $position = AdminPosition::all()->random();
         return [
@@ -31,12 +35,14 @@ class AdminUserFactory extends Factory
             'admin_position_id' => $position->id,
             'status'            => _NEW,
             'gender'            => [_MAN, _WOMAN][rand(0, 1)],
-            'username'          => self::RAND_username[rand(0, 2)] . $this->faker->unique()->numberBetween(1, 100),
+            'username'          => $name,
+            'code'              => $code,
             'phone'             => $this->faker->unique()->numberBetween(13311112222, 19911112222),
             'email'             => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password'          => bcrypt('123456'),
             'remember_token'    => Str::random(10),
+            'description'       => $description
         ];
     }
 

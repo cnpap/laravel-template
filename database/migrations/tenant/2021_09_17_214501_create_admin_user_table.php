@@ -14,20 +14,24 @@ class CreateAdminUserTable extends Migration
     public function up()
     {
         Schema::create('admin_user', function (Blueprint $table) {
-            $table->string('id')->unique();
+            $table->string('id')->unique()->comment('管理员用户ID');
             $table->timestamps();
 
-            $table->string('admin_position_id');
-            $table->string('status', 3)->default(_NEW);
-            $table->string('gender', 1);
-            $table->string('avatar', 100)->default('/avatar/admin-id-default.png');
-            $table->string('username', 40);
-            $table->string('phone', 11)->unique();
-            $table->string('email', 40)->nullable()->unique();
+            $table->string('admin_position_id')->comment('关联管理员岗位ID');
+            $table->string('status', 3)->default(_NEW)->comment('管理员用户数据状态: 新数据, 已占用, 已停用, 异常中');
+            $table->string('gender', 1)->comment('性别');
+            $table->string('avatar', 100)->default('/avatar/admin-id-default.png')->comment('头像');
+            $table->string('username', 40)->comment('用户名');
+            $table->string('code', 40)->comment('用户编号');
+            $table->string('phone', 11)->unique()->comment('手机号(登陆账号)');
+            $table->string('email', 40)->nullable()->unique('email 邮箱地址');
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->nullable();
+            $table->string('password')->nullable()->comment('登陆密码');
             $table->rememberToken();
+            $table->string('description', 200)->nullable()->comment('用户描述/备注');
         });
+
+        DB::statement("alter table `admin_user` comment '管理员用户表'");
     }
 
     /**

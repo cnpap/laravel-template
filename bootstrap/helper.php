@@ -23,6 +23,27 @@ const _WOMAN = '女';
 
 define("GENDER_JOIN", implode(',', [_MAN, _WOMAN]));
 
+function mergeCode(&$post, $field = 'name', $codeField = 'code')
+{
+    $code = $post[$codeField] ?? null;
+    if (!$code) {
+        $post[$codeField] = $post[$field];
+    }
+}
+
+function rsaDecrypt($data)
+{
+    $prvKey = file_get_contents(storage_path('app/prv'));
+    $data   = base64_decode($data);
+    openssl_private_decrypt($data, $text, $prvKey);
+    return $text;
+}
+
+function fnPinYin($data)
+{
+    return Pinyin::abbr($data, PINYIN_KEEP_NUMBER | PINYIN_KEEP_ENGLISH | PINYIN_KEEP_PUNCTUATION);
+}
+
 function sess($name)
 {
     $eid = Session::get($name);

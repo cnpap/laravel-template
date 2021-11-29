@@ -20,7 +20,14 @@ class AuthController extends Controller
     function login(LoginRequest $request)
     {
         $remember = $request->input('remember');
-        $ok       = Auth::attempt($request->validated(), (bool)$remember);
+        $phone    = $request->input('phone');
+        $password = $request->input('password');
+        $password = rsaDecrypt($password);
+        $post     = [
+            'phone'    => $request->input(),
+            'password' => $password,
+        ];
+        $ok       = Auth::attempt($post, (bool)$remember);
         if (!$ok) {
             return se([
                 'code'    => 403,

@@ -26,7 +26,7 @@ class AdminPositionController extends Controller
     function find($id)
     {
         /** @var AdminPosition $one */
-        $one                         = AdminPosition::query()
+        $one                   = AdminPosition::query()
             ->select([
                 'id',
                 'status',
@@ -36,7 +36,7 @@ class AdminPositionController extends Controller
             ])
             ->where('id', $id)
             ->firstOr();
-        $one['admin_permission_ids'] = $one->permissions()->get()->modelKeys();
+        $one['admin_role_ids'] = $one->roles()->get()->modelKeys();
         return result($one);
     }
 
@@ -52,9 +52,11 @@ class AdminPositionController extends Controller
     {
         // 分离参数
         $post          = $request->validated();
-        $permissionIds = $post['admin_permission_ids'];
+        $permissionIds = $post['admin_role_ids'];
         $departmentId  = $post['admin_department_id'];
-        unset($post['admin_permission_ids']);
+        unset($post['admin_role_ids']);
+
+        mergeCode($post);
 
         // 事务开始
         $one     = new AdminPosition($post);
@@ -70,7 +72,7 @@ class AdminPositionController extends Controller
             AdminDepartment::used($departmentId);
 
             // 变更自身
-            $one->permissions()->sync($permissionIds);
+            $one->roles()->sync($permissionIds);
             $one->save();
             return true;
         });
@@ -84,9 +86,11 @@ class AdminPositionController extends Controller
     {
         // 分离参数
         $post          = $request->validated();
-        $permissionIds = $post['admin_permission_ids'];
+        $permissionIds = $post['admin_role_ids'];
         $departmentId  = $post['admin_department_id'];
-        unset($post['admin_permission_ids']);
+        unset($post['admin_role_ids']);
+
+        mergeCode($post);
 
         // 事务开始
         $one     = new AdminPosition();
@@ -103,13 +107,19 @@ class AdminPositionController extends Controller
 
             // 变更自身
             AdminPosition::query()->where('id', $id)->update($post);
-            $one->permissions()->sync($permissionIds);
+            $one->roles()->sync($permissionIds);
             return true;
         });
         if ($ok === true) {
             return ss();
         }
         return se();
+    }
+
+    function status()
+    {
+        AdminPosition::status();
+        return ss();
     }
 
     function delete()

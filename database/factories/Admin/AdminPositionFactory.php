@@ -22,12 +22,18 @@ class AdminPositionFactory extends Factory
      */
     public function definition()
     {
-        $department = AdminDepartment::all()->random();
+        $num         = rand(1000, 9999);
+        $name        = '岗位' . $num;
+        $code        = fnPinYin($name);
+        $description = '岗位描述/备注' . $num;
+        $department  = AdminDepartment::all()->random();
         return [
             'id'                  => $this->faker->unique()->numberBetween(100000, 999999),
             'admin_department_id' => $department,
             'status'              => _USED,
-            'name'                => '岗位' . $this->faker->unique()->numberBetween(1, 500),
+            'name'                => $name,
+            'code'                => $code,
+            'description'         => $description
         ];
     }
 }
