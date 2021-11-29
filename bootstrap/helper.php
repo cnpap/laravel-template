@@ -23,6 +23,14 @@ const _WOMAN = '女';
 
 define("GENDER_JOIN", implode(',', [_MAN, _WOMAN]));
 
+function lockMiddleware($name)
+{
+    return function (Request $request, $next) use ($name) {
+        sess($name);
+        return $next($request);
+    };
+}
+
 function mergeCode(&$post, $field = 'name', $codeField = 'code')
 {
     $code = $post[$codeField] ?? null;
