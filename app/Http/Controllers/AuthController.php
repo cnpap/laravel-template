@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Admin\LoginRequest;
 use App\Http\Resources\UserinfoResource;
 use App\Models\Admin\AdminUser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -24,7 +23,7 @@ class AuthController extends Controller
         $password = $request->input('password');
         $password = rsaDecrypt($password);
         $post     = [
-            'phone'    => $request->input(),
+            'phone'    => $phone,
             'password' => $password,
         ];
         $ok       = Auth::attempt($post, (bool)$remember);

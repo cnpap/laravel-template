@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\ModelFilters\Admin\AdminPositionFilter;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -22,10 +23,5 @@ class AdminPosition extends Model
     function department()
     {
         return $this->hasOne(AdminDepartment::class, 'id', 'admin_department_id');
-    }
-
-    function roles()
-    {
-        return $this->belongsToMany(AdminRole::class, AdminPositionRole::class, 'admin_position_id', 'admin_role_id');
     }
 }

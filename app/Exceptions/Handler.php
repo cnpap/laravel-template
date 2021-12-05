@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -49,6 +50,17 @@ class Handler extends ExceptionHandler
             $result['code']        = $e->getCode() ?? 500;
             if (config('app.debug')) {
                 $result['trace'] = $e->getTrace();
+            }
+            return se($result);
+        }
+        if ($e instanceof ValidationException) {
+            $result                = [];
+            $result['message']     = '表单验证有误, 请检查表单';
+            $result['messageType'] = 'error';
+            $result['code']        = 500;
+            if (config('app.debug')) {
+                $result['errors'] = $e->errors();
+                $result['trace']  = $e->getTrace();
             }
             return se($result);
         }

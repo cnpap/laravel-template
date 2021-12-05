@@ -86,12 +86,6 @@ class PYin extends Pinyin
     }
 }
 
-class Uni
-{
-    static $lastTime;
-    static $sequence;
-}
-
 function uni()
 {
     return uniqid();

@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\ModelFilters\Admin\AdminDepartmentFilter;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

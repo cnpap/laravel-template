@@ -28,8 +28,6 @@ class AdminPositionEditRequest extends FormRequest
             'code'                => 'string|between:1,40',
             'admin_department_id' => 'required|string|id',
             'status'              => 'string|in:' . STATUS_JOIN,
-            'admin_role_ids'      => 'required|array',
-            'admin_role_ids.*'    => 'string|id'
         ];
     }
 }

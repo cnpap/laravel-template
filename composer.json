@@ -9,6 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "ext-json": "*",
+        "ext-openssl": "*",
         "fruitcake/laravel-cors": "^2.0",
         "godruoyi/php-snowflake": "^1.1",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -18,10 +20,8 @@
         "laravel/scout": "^9.2",
         "laravel/tinker": "^2.5",
         "overtrue/laravel-pinyin": "~4.0",
-        "tucker-eric/eloquentfilter": "^3.0",
-        "ext-json": "*",
-        "ext-http": "*",
-        "ext-openssl": "*"
+        "predis/predis": "^2",
+        "tucker-eric/eloquentfilter": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",
@@ -53,9 +53,9 @@
             "@php artisan serve --port=80 --host=0.0.0.0"
         ],
         "migrate": [
-            "@php artisan migrate:fresh --path=database/migrations/tenant",
+            "@php artisan migrate:fresh --path=database/migrations/admin",
             "@php artisan migrate",
-            "@php artisan db:seed"
+            "@php artisan db:seed --class=AdminSeeder"
         ],
         "ide": [
             "@php artisan ide-helper:meta",

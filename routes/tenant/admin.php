@@ -77,6 +77,8 @@ Route::middleware($middlewares)->group(function () {
             Route::put('/{id}', [AdminRoleController::class, 'update']);
             Route::delete('/delete', [AdminRoleController::class, 'delete']);
             Route::post('/status', [AdminRoleController::class, 'status']);
+            Route::post('/permission_table', [AdminRoleController::class, 'permissionTable']);
+            Route::post('/sync_permission_names', [AdminRoleController::class, 'syncPermissionNames']);
         });
     });
 });

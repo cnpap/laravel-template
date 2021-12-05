@@ -17,8 +17,8 @@ class AdminRole extends Model
         return $this->provideFilter(AdminRoleFilter::class);
     }
 
-    function permissions()
+    function permission_name()
     {
-        return $this->belongsToMany(AdminPermission::class, AdminRolePermission::class, 'admin_role_id', 'admin_permission_id');
+        return $this->hasMany(AdminRolePermissionName::class, 'admin_role_id', 'id');
     }
 }

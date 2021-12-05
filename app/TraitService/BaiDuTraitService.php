@@ -166,13 +166,14 @@ trait BaiDuTraitService
         $path       = '/enterprise/id_img';
         $path       = upload(compact('path', 'extType'));
         $client     = $this->client();
+        $token      = $this->token([
+            'appAccess' => config('cloud.ocr_app_access'),
+            'appSecret' => config('cloud.ocr_app_secret')
+        ]);
         $response   = $client->post(
             '/rest/2.0/ocr/v1/idcard',
             [
-                'query'       => ['access_token' => $this->token([
-                    'appAccess' => config('cloud.audit_app_access'),
-                    'appSecret' => config('cloud.audit_app_secret')
-                ])],
+                'query'       => ['access_token' => $token],
                 'form_params' => ['image' => $imgBs64, 'id_card_side' => $side]
             ]
         );

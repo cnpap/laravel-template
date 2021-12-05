@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Cache\PermissionCache;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
         });
         Validator::extend('id', function ($attribute, $value) {
             return preg_match('@^[\da-z]{6,16}$@', $value);
+        });
+        Validator::extend('redis_key', function ($attribute, $value) {
+            return PermissionCache::safeKeys($value);
         });
     }
 }

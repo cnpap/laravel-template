@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\ModelFilters\Admin\AdminUserFilter;
 use App\Models\ModelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User;

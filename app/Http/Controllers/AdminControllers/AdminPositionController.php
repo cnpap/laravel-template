@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminPositionEditRequest;
 use App\Http\Requests\Admin\AdminPositionIndexRequest;
 use App\Models\Admin\AdminDepartment;
-use App\Models\Admin\AdminPermission;
 use App\Models\Admin\AdminPosition;
 
 class AdminPositionController extends Controller
@@ -15,12 +14,6 @@ class AdminPositionController extends Controller
     {
         $departments = AdminDepartment::query()->select(['id', 'name'])->get();
         return result($departments);
-    }
-
-    function permissions()
-    {
-        $permissions = AdminPermission::query()->get();
-        return result($permissions);
     }
 
     function find($id)
@@ -36,7 +29,6 @@ class AdminPositionController extends Controller
             ])
             ->where('id', $id)
             ->firstOr();
-        $one['admin_role_ids'] = $one->roles()->get()->modelKeys();
         return result($one);
     }
 
@@ -52,9 +44,7 @@ class AdminPositionController extends Controller
     {
         // 分离参数
         $post          = $request->validated();
-        $permissionIds = $post['admin_role_ids'];
         $departmentId  = $post['admin_department_id'];
-        unset($post['admin_role_ids']);
 
         mergeCode($post);
 
@@ -64,7 +54,6 @@ class AdminPositionController extends Controller
         $ok      = $one->getConnection()->transaction(function () use (
             $one, $post,
             // 关联字段
-            $permissionIds,
             $departmentId
         ) {
             // 联级数据状态变更到已使用
@@ -72,7 +61,6 @@ class AdminPositionController extends Controller
             AdminDepartment::used($departmentId);
 
             // 变更自身
-            $one->roles()->sync($permissionIds);
             $one->save();
             return true;
         });
@@ -86,9 +74,7 @@ class AdminPositionController extends Controller
     {
         // 分离参数
         $post          = $request->validated();
-        $permissionIds = $post['admin_role_ids'];
         $departmentId  = $post['admin_department_id'];
-        unset($post['admin_role_ids']);
 
         mergeCode($post);
 
@@ -98,7 +84,6 @@ class AdminPositionController extends Controller
         $ok      = $one->getConnection()->transaction(function () use (
             $one, $post, $id,
             // 关联字段
-            $permissionIds,
             $departmentId
         ) {
             // 联级状态
@@ -107,7 +92,6 @@ class AdminPositionController extends Controller
 
             // 变更自身
             AdminPosition::query()->where('id', $id)->update($post);
-            $one->roles()->sync($permissionIds);
             return true;
         });
         if ($ok === true) {

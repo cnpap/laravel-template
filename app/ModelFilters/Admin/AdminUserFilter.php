@@ -33,4 +33,14 @@ class AdminUserFilter extends ModelFilter
                 ->where('admin_department_id', $val)
         );
     }
+
+    function detect($val)
+    {
+        return $this
+            ->where('id', $val)
+            ->orWhere('username', 'like', "%$val%")
+            ->orWhere('phone', 'like', "%$val%")
+            ->orWhere('email', 'like', "%$val%")
+            ->orWhere('code', 'like', "%$val%");
+    }
 }

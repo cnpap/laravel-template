@@ -2,19 +2,50 @@
 
 namespace App\Http\Controllers\AdminControllers;
 
+use App\Cache\PermissionCache;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminRoleEditRequest;
 use App\Http\Requests\Admin\AdminRoleIndexRequest;
-use App\Models\Admin\AdminPermission;
+use App\Http\Requests\Admin\AdminRolePermissionRequest;
 use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminRole;
+use App\Models\Admin\AdminRolePermissionName;
 
 class AdminRoleController extends Controller
 {
+    function permissionTable()
+    {
+        $manager   = new PermissionCache();
+        $tableData = $manager->permissionTable();
+        return result($tableData);
+    }
+
+    function syncPermissionNames(AdminRolePermissionRequest $request, $id)
+    {
+        $ok = (new AdminRole())->getConnection()->transaction(
+            function () use ($request, $id) {
+                AdminRolePermissionName::query()->where('admin_role_id', $id)->delete();
+
+                $names               = $request->input('names');
+                $rolePermissionNames = [];
+                foreach ($names as $name) {
+                    $rolePermissionNames[] = [
+                        'admin_role_id'   => $id,
+                        'permission_name' => $name
+                    ];
+                }
+                AdminRolePermissionName::query()->insert($rolePermissionNames);
+
+                return true;
+            }
+        );
+        return tx($ok);
+    }
+
     function find($id)
     {
         $one = AdminRole::query()
-            ->with('permissions:id,pid,name,code')
+            ->with('permission_name:permission_name')
             ->where('id', $id)
             ->first();
         return result($one);
@@ -34,15 +65,12 @@ class AdminRoleController extends Controller
             function () use ($request, $id) {
                 $post                = $request->validated();
                 $post['description'] = $post['description'] ?? null;
-                $permissionIds       = $post['admin_permission_ids'];
-                unset($post['admin_permission_ids']);
 
                 mergeCode($post);
 
                 AdminRole::query()->where('id', $id)->update($post);
                 $role     = new AdminRole($post);
                 $role->id = $id;
-                $role->permissions()->sync($permissionIds);
 
                 return true;
             }
@@ -54,15 +82,12 @@ class AdminRoleController extends Controller
     {
         $ok = (new AdminRole())->getConnection()->transaction(
             function () use ($request) {
-                $post          = $request->validated();
-                $permissionIds = $post['admin_permission_ids'];
-                unset($post['admin_permission_ids']);
+                $post            = $request->validated();
 
                 mergeCode($post);
 
                 $role     = new AdminRole($post);
                 $role->id = uni();
-                $role->permissions()->sync($permissionIds);
 
                 $role->save();
 
@@ -76,12 +101,6 @@ class AdminRoleController extends Controller
     {
         $positions = AdminPosition::query()->get();
         return result($positions);
-    }
-
-    function permissions()
-    {
-        $permissions = AdminPermission::query()->get();
-        return result($permissions);
     }
 
     function status()

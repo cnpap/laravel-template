@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Requests\Commodity;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PrvCommodityDosageIndexRequest extends FormRequest
+class AdminRolePermissionRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'status'   => 'array|max:4',
-            'status.*' => 'string|in:' . STATUS_JOIN
+            'names'   => 'array|max:300',
+            'names.*' => 'redis_key'
         ];
     }
 
