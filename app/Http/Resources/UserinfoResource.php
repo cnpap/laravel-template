@@ -19,29 +19,23 @@ class UserinfoResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            //            'created_at'          => $this->created_at,
-            //            'updated_at'          => $this->updated_at,
             'admin_position_id' => $this->admin_position_id,
-            'status'            => $this->status,
+            'username'          => $this->username,
             'gender'            => $this->gender,
             'avatar'            => $this->avatar,
-            'username'          => $this->username,
+            'status'            => $this->status,
             'phone'             => $this->phone,
             'email'             => $this->email,
-            'position'          => [
-                'id'          => $this->position->id,
-                'name'        => $this->position->name,
-                'description' => $this->position->description,
+            'code'              => $this->code,
+            'admin_position'    => [
+                'id'          => $this->admin_position->id,
+                'name'        => $this->admin_position->name,
+                'description' => $this->admin_position->description,
             ],
-            'department'        => [
-                'id'   => $this->position->department->id,
-                'name' => $this->position->department->name,
+            'admin_department'  => [
+                'id'   => $this->admin_position->admin_department->id,
+                'name' => $this->admin_position->admin_department->name,
             ],
-            //            'email_verified_at'   => $this->email_verified_at,
-            //            'password'            => $this->password,
-            //            'remember_token'      => $this->remember_token,
-            //            'notifications_count' => $this->notifications_count,
-            //            'tokens_count'        => $this->tokens_count,
         ];
     }
 }

@@ -46,7 +46,7 @@ class AdminUser extends User
         return $this->provideFilter(AdminUserFilter::class);
     }
 
-    function position()
+    function admin_position()
     {
         return $this->hasOne(AdminPosition::class, 'id', 'admin_position_id');
     }

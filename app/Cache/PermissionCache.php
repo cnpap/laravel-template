@@ -142,7 +142,7 @@ class PermissionCache
         $code   = "permission table $code";
 
         $tableData = $client->get($code) ?? [];
-        if ($tableData && count($tableData)) {
+        if (!config('app.debug') && $tableData && count($tableData)) {
             return $tableData;
         }
         $keys        = $this->getGroupKeys($code);
@@ -174,7 +174,7 @@ class PermissionCache
                 continue;
             }
             foreach ($permissionBrand['depends'] as $depend) {
-                $depends[] = $permissionBrand['name'] . ' ' . $depend;
+                $depends[] = $permissionBrand['concatName'] . ' ' . $depend;
             }
             $tableData[$permissionBrand['concatName']]['permissionBrands'][$permissionBrand['name']] = [
                 'name'    => $permissionBrand['name'],

@@ -20,7 +20,7 @@ class AdminPosition extends Model
         return $this->provideFilter(AdminPositionFilter::class);
     }
 
-    function department()
+    function admin_department()
     {
         return $this->hasOne(AdminDepartment::class, 'id', 'admin_department_id');
     }

@@ -44,7 +44,7 @@ abstract class CategoryController extends Controller
                         break;
                     }
                 }
-                $this->categoryName::whereIn('id', $keys)->where('status', _NEW)->update(['status' => _USED]);
+                $this->categoryName::query()->whereIn('id', $keys)->where('status', _NEW)->update(['status' => _USED]);
             }
         });
         return ss();
@@ -52,7 +52,7 @@ abstract class CategoryController extends Controller
 
     public function find($id)
     {
-        $one = $this->categoryName::where('id', $id)->firstOrFail();
+        $one = $this->categoryName::query()->where('id', $id)->firstOrFail();
         return result($one);
     }
 
