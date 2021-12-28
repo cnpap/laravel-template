@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Admin\AdminRole;
-use App\Models\Admin\AdminRolePermissionName;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -34,6 +33,8 @@ class CreateAdminRoleTable extends Migration
             $table->unique(['admin_role_id', 'permission_name'], 'admin_role_permission_name_unique_index');
         });
         DB::statement("alter table `admin_role_permission_name` comment '管理员角色权限关联表'");
+
+        AdminRole::clearCacheOptions();
     }
 
     public function down()

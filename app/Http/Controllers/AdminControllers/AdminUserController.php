@@ -8,11 +8,18 @@ use App\Http\Requests\Admin\AdminUserIndexRequest;
 use App\Http\Requests\PasswordRequest;
 use App\Models\Admin\AdminDepartment;
 use App\Models\Admin\AdminPosition;
+use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminUser;
+use App\Models\Admin\AdminUserRole;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * @mixin AdminUser
+ */
 class AdminUserController extends Controller
 {
+    protected $model = AdminUser::class;
+
     function forgotPassword(PasswordRequest $request, $id)
     {
         $password = $request->input('password');
@@ -25,48 +32,60 @@ class AdminUserController extends Controller
         return ss();
     }
 
-    function status()
+    function roleOptions()
     {
-        AdminUser::status();
-        return ss();
+        $options = options(AdminRole::cacheOptions());
+        return result($options);
     }
 
-    function positions()
+    function departmentOptions()
     {
-        $positions = AdminDepartment::query()
+        $options = options(AdminDepartment::cacheOptions());
+        return result($options);
+    }
+
+    function positionOptions()
+    {
+        $positions     = AdminDepartment::query()
             ->select([
                 'id',
                 'name'
             ])
+            ->whereHas('admin_position')
             ->with(
-                'positions:id,name,admin_department_id',
+                'admin_position:id,name,admin_department_id',
             )
             ->get();
-        return result($positions);
+        $treeN2Options = treeN2Options($positions, 'admin_position');
+        return result($treeN2Options);
     }
 
     function find($id)
     {
-        $user = AdminUser::query()
+        /** @var AdminUser $user */
+        $user                   = AdminUser::query()
             ->select([
                 'id',
+                'code',
                 'status',
                 'phone',
                 'email',
                 'gender',
                 'username',
-                'admin_position_id'
+                'admin_position_id',
+                'description'
             ])
             ->where('id', $id)
             ->firstOrFail();
+        $user['admin_role_ids'] = $user->admin_role_ids();
         return result($user);
     }
 
     function list(AdminUserIndexRequest $request)
     {
         $paginator = AdminUser::indexFilter($request->validated())
-            ->with('position.department:id,name')
-            ->with('position:id,name,admin_department_id')
+            ->with('admin_position.admin_department:id,name')
+            ->with('admin_position:id,name,admin_department_id')
             ->paginate(...usePage());
 
         return page($paginator);
@@ -75,9 +94,9 @@ class AdminUserController extends Controller
     function enabledList(AdminUserIndexRequest $request)
     {
         $paginator = AdminUser::indexFilter($request->validated())
-            ->with('position.department:id,name')
-            ->with('position:id,name,admin_department_id')
-            ->whereIn('status', ['新数据', '已使用'])
+            ->with('admin_position.admin_department:id,name')
+            ->with('admin_position:id,name,admin_department_id')
+            ->whereIn('status', ['新数据', '已占用'])
             ->paginate(...usePage());
 
         return page($paginator);
@@ -88,7 +107,9 @@ class AdminUserController extends Controller
         // 分离参数
         $post       = $request->validated();
         $positionId = $post['admin_position_id'];
+        $roleIds    = $post['admin_role_ids'];
 
+        unset($post['admin_role_ids']);
         mergeCode($post, 'username');
 
         // 开始事务
@@ -98,13 +119,21 @@ class AdminUserController extends Controller
         $ok             = $user->getConnection()->transaction(function () use (
             $user,
             // 关联字段
-            $positionId
+            $positionId,
+            $roleIds
         ) {
             // 联级状态
             AdminPosition::used($positionId);
+            AdminRole::used($roleIds);
 
             // 自身
             $user->save();
+            $id = $user->id;
+
+            $userRoles = padKeys($id, 'admin_user_id', $roleIds, 'admin_role_id');
+            AdminUserRole::query()->where('admin_user_id', $id)->delete();
+            AdminUserRole::query()->insert($userRoles);
+
             return true;
         });
         return tx($ok);
@@ -115,7 +144,9 @@ class AdminUserController extends Controller
         // 分离参数
         $post       = $request->validated();
         $positionId = $post['admin_position_id'];
+        $roleIds    = $post['admin_role_ids'];
 
+        unset($post['admin_role_ids']);
         mergeCode($post, 'username');
 
         // 开始事务
@@ -123,10 +154,16 @@ class AdminUserController extends Controller
         $ok   = $user->getConnection()->transaction(function () use (
             $id, $post,
             // 关联字段
-            $positionId
+            $positionId,
+            $roleIds
         ) {
             // 联级状态
             AdminPosition::used($positionId);
+            AdminRole::used($roleIds);
+
+            $userRoles = padKeys($id, 'admin_user_id', $roleIds, 'admin_role_id');
+            AdminUserRole::query()->where('admin_user_id', $id)->delete();
+            AdminUserRole::query()->insert($userRoles);
 
             // 自身
             if (isset($post['password'])) {
@@ -136,11 +173,5 @@ class AdminUserController extends Controller
             return true;
         });
         return tx($ok);
-    }
-
-    function delete()
-    {
-        AdminUser::clear();
-        return ss();
     }
 }

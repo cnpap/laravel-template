@@ -2,9 +2,8 @@
 
 namespace App\ModelFilters\Admin;
 
-use App\Models\Admin\AdminDepartment;
+use App\ModelFilters\ModelFilter;
 use App\Models\Admin\AdminPosition;
-use EloquentFilter\ModelFilter;
 
 /** @mixin AdminPosition */
 class AdminPositionFilter extends ModelFilter
@@ -17,5 +16,10 @@ class AdminPositionFilter extends ModelFilter
     function code($val)
     {
         return $this->where('code', 'like', "%$val%");
+    }
+
+    function adminDepartment($val)
+    {
+        return $this->where('admin_department_id', $val);
     }
 }

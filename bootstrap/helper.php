@@ -12,8 +12,7 @@ const _ERR = '异常中';
 const _OFF = '已停用';
 
 // USED 有过关联的数据, 一般是不可以被删除的
-const _USED = '已使用';
-
+const _USED = '已占用';
 const _STOP = '已下架';
 
 define("STATUS_JOIN", implode(',', [_NEW, _OFF, _USED, _ERR]));
@@ -29,6 +28,18 @@ function lockMiddleware($name)
         sess($name);
         return $next($request);
     };
+}
+
+function padKeys($leftKey, $leftName, $rightKeys, $rightName)
+{
+    $data = [];
+    foreach ($rightKeys as $rightKey) {
+        $curr             = [];
+        $curr[$leftName]  = $leftKey;
+        $curr[$rightName] = $rightKey;
+        $data[]           = $curr;
+    }
+    return $data;
 }
 
 function mergeCode(&$post, $field = 'name', $codeField = 'code')
@@ -180,11 +191,14 @@ function usePage()
 function page(LengthAwarePaginator $paginator, $result = [])
 {
     $result['pageCount'] = $paginator->lastPage();
+    $result['page']      = $paginator->currentPage();
+    $result['pageSize']  = $paginator->perPage();
     $result['list']      = $paginator->items();
+    $result['total']     = $paginator->total();
     return result($result);
 }
 
-function options($item, $key = 'name')
+function treeN2Options($item, $foreignKey, $localField = 'name', $foreignField = 'name')
 {
     if ($item instanceof Collection) {
         $item = $item->toArray();
@@ -192,8 +206,25 @@ function options($item, $key = 'name')
     $result = [];
     foreach ($item as $row) {
         $result[] = [
-            'label' => $row[$key],
-            'key'   => $row['id'],
+            'title'      => $row[$localField],
+            'value'      => $row['id'],
+            'selectable' => false,
+            'children'   => options($row[$foreignKey], $foreignField)
+        ];
+    }
+    return $result;
+}
+
+function options($item, $field = 'name')
+{
+    if ($item instanceof Collection) {
+        $item = $item->toArray();
+    }
+    $result = [];
+    foreach ($item as $row) {
+        $result[] = [
+            'title' => $row[$field],
+            'label' => $row[$field],
             'value' => $row['id'],
         ];
     }

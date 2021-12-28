@@ -15,7 +15,7 @@ class DebugMiddleware
         if (config('app.debug') === true) {
             header("Access-Control-Allow-Origin: *");
             /** @var AdminUser $user */
-            $user = AdminUser::query()->find(1);
+            $user = AdminUser::query()->find('_super_manager');
             Auth::login($user);
 
             $eid = Session::get('eid');

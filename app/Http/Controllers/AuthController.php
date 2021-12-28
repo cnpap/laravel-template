@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Cache\PermissionCache;
 use App\Http\Requests\Admin\LoginRequest;
 use App\Http\Resources\UserinfoResource;
 use App\Models\Admin\AdminUser;
@@ -36,11 +37,17 @@ class AuthController extends Controller
         /** @var AdminUser $user */
         $user = AdminUser::filter($request->validated())->first();
         $user->tokens()->delete();
-        $token = $user->createToken('admin');
+        $token           = $user->createToken('admin');
+        $permissionKeys  = [];
+        $permissionCache = new PermissionCache();
+        if ($user->id === '_super_manager') {
+            $permissionKeys = $permissionCache->getItemNames();
+        }
         return result([
-            'token'   => substr($token->plainTextToken, 2),
-            'data'    => new UserinfoResource($user),
-            'message' => '登录成功'
+            'token'          => substr($token->plainTextToken, 3),
+            'data'           => new UserinfoResource($user),
+            'message'        => '登录成功',
+            'permissionKeys' => $permissionKeys
         ]);
     }
 

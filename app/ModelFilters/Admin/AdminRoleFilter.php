@@ -15,6 +15,6 @@ class AdminRoleFilter extends ModelFilter
 
     function code($val)
     {
-        return $this->where('code', 'like', "$val");
+        return $this->where('code', 'like', "%$val%");
     }
 }

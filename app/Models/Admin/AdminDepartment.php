@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\Cache\Cache;
 use App\ModelFilters\Admin\AdminDepartmentFilter;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,12 +18,14 @@ class AdminDepartment extends Model
 
     protected $hidden = [];
 
+
+
     function modelFilter()
     {
         return $this->provideFilter(AdminDepartmentFilter::class);
     }
 
-    function positions()
+    function admin_position()
     {
         return $this->hasMany(AdminPosition::class, 'admin_department_id', 'id');
     }

@@ -9,11 +9,7 @@ use App\Models\Admin\AdminDepartment;
 
 class AdminDepartmentController extends Controller
 {
-    function status()
-    {
-        AdminDepartment::status();
-        return ss();
-    }
+    protected $model = AdminDepartment::class;
 
     function positions()
     {
@@ -21,12 +17,6 @@ class AdminDepartmentController extends Controller
             ->with('positions:id,name')
             ->get();
         return ss($ones);
-    }
-
-    function find($id)
-    {
-        $one = AdminDepartment::query()->where('id', $id)->firstOrFail();
-        return result($one);
     }
 
     function list(AdminDepartmentIndexRequest $request)
@@ -43,6 +33,7 @@ class AdminDepartmentController extends Controller
         $one     = new AdminDepartment($post);
         $one->id = uni();
         $one->save();
+        AdminDepartment::clearCacheOptions();
         return ss();
     }
 
@@ -51,12 +42,7 @@ class AdminDepartmentController extends Controller
         $post = $request->validated();
         mergeCode($post);
         AdminDepartment::query()->where('id', $id)->update($post);
-        return ss();
-    }
-
-    function delete()
-    {
-        AdminDepartment::clear();
+        AdminDepartment::clearCacheOptions();
         return ss();
     }
 }

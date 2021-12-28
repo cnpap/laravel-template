@@ -16,7 +16,7 @@ class AdminRoleController extends Controller
     function permissionTable()
     {
         $manager   = new PermissionCache();
-        $tableData = $manager->permissionTable();
+        $tableData = $manager->itemTable();
         return result($tableData);
     }
 
@@ -101,17 +101,5 @@ class AdminRoleController extends Controller
     {
         $positions = AdminPosition::query()->get();
         return result($positions);
-    }
-
-    function status()
-    {
-        AdminRole::status();
-        return ss();
-    }
-
-    function delete()
-    {
-        AdminRole::clear();
-        return ss();
     }
 }

@@ -31,6 +31,11 @@ class AdminUser extends User
         'email_verified_at'
     ];
 
+
+    protected $columns = [
+        ''
+    ];
+
     /**
      * The attributes that should be cast.
      *
@@ -49,5 +54,17 @@ class AdminUser extends User
     function admin_position()
     {
         return $this->hasOne(AdminPosition::class, 'id', 'admin_position_id');
+    }
+
+    function admin_role_ids()
+    {
+        return $this->hasMany(AdminUserRole::class, 'admin_user_id', 'id')->select('admin_role_id')->pluck('admin_role_id');
+    }
+
+    function multiColumns()
+    {
+        $this->username = [
+            ''
+        ];
     }
 }

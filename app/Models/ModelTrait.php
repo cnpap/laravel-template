@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Cache\Cache;
 use App\Exceptions\PageParamsInvalidException;
 use DateTimeInterface;
 use EloquentFilter\Filterable;
@@ -10,11 +11,30 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
 /**
+ * @mixin Model
  * @method static Builder filter(array $filter)
  */
 trait ModelTrait
 {
     use Filterable;
+
+    static function cacheOptions()
+    {
+        $client = Cache::dataCache();
+        $name   = static::class . 'Options';
+        $data   = $client->get($name);
+        if (!$data) {
+            $data = static::query()->select(['id', 'name', 'code'])->get();
+            $client->set($name, $data);
+        }
+        return $data;
+    }
+
+    static function clearCacheOptions()
+    {
+        $client = Cache::dataCache();
+        $client->del(static::class . 'Options');
+    }
 
     static function indexFilter(array $filter)
     {
@@ -47,7 +67,6 @@ trait ModelTrait
 
     static function staticQuery($key)
     {
-        /** @var Builder $query */
         $query = static::query();
         if (!is_array($key)) {
             $query = $query->where('id', $key);
@@ -57,7 +76,7 @@ trait ModelTrait
         return $query;
     }
 
-    static function clear()
+    static function del()
     {
         /** @var Request $request */
         $request = app('request');
@@ -105,6 +124,7 @@ trait ModelTrait
                 'page'      => $page,
                 'pageSize'  => $pageSize,
                 'pageCount' => $result->lastPage(),
+                'total'     => $result->total(),
                 'list'      => $result->items()
             ]
         ];

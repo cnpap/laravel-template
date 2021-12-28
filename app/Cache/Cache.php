@@ -32,4 +32,9 @@ class Cache
     {
         return self::select(3);
     }
+
+    static function dataCache()
+    {
+        return self::select(4);
+    }
 }

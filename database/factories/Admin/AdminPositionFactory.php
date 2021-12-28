@@ -28,7 +28,7 @@ class AdminPositionFactory extends Factory
         $description = '岗位描述/备注' . $num;
         $department  = AdminDepartment::all()->random();
         return [
-            'id'                  => $this->faker->unique()->numberBetween(100000, 999999),
+            'id'                  => uni(),
             'admin_department_id' => $department,
             'status'              => _USED,
             'name'                => $name,

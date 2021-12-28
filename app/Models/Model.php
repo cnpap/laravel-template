@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as Base;
 
 /**
+ * @property string id
+ * @property string created_at
+ * @property string updated_at
  * @mixin IdeHelperModel
  */
 class Model extends Base

@@ -19,11 +19,12 @@ class AdminPositionController extends Controller
     function find($id)
     {
         /** @var AdminPosition $one */
-        $one                   = AdminPosition::query()
+        $one = AdminPosition::query()
             ->select([
                 'id',
                 'status',
                 'name',
+                'code',
                 'description',
                 'admin_department_id',
             ])
@@ -35,7 +36,7 @@ class AdminPositionController extends Controller
     function list(AdminPositionIndexRequest $request)
     {
         $paginator = AdminPosition::indexFilter($request->validated())
-            ->with('department:id,name')
+            ->with('admin_department:id,name')
             ->paginate(...usePage());
         return page($paginator);
     }
@@ -43,8 +44,8 @@ class AdminPositionController extends Controller
     function create(AdminPositionEditRequest $request)
     {
         // 分离参数
-        $post          = $request->validated();
-        $departmentId  = $post['admin_department_id'];
+        $post         = $request->validated();
+        $departmentId = $post['admin_department_id'];
 
         mergeCode($post);
 
@@ -56,7 +57,7 @@ class AdminPositionController extends Controller
             // 关联字段
             $departmentId
         ) {
-            // 联级数据状态变更到已使用
+            // 联级数据状态变更到已占用
             // 权限默认是 USED
             AdminDepartment::used($departmentId);
 
@@ -73,8 +74,8 @@ class AdminPositionController extends Controller
     function update(AdminPositionEditRequest $request, $id)
     {
         // 分离参数
-        $post          = $request->validated();
-        $departmentId  = $post['admin_department_id'];
+        $post         = $request->validated();
+        $departmentId = $post['admin_department_id'];
 
         mergeCode($post);
 

@@ -23,10 +23,14 @@ class CreateAdminUserTable extends Migration
             $table->string('avatar', 100)->default('/avatar/admin-id-default.png')->comment('头像');
             $table->string('username', 40)->comment('用户名');
             $table->string('code', 40)->comment('用户编号');
+            $table->string('id_code', 100)->nullable()->comment('身份证号');
+            $table->date('birth_at')->nullable()->comment('出生日期');
+            $table->string('address', 200)->nullable()->comment('居住地址');
             $table->string('phone', 11)->unique()->comment('手机号(登陆账号)');
             $table->string('email', 40)->nullable()->unique('email 邮箱地址');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable()->comment('登陆密码');
+            $table->string('type', 2)->comment('用户类型')->default('内部');
             $table->rememberToken();
             $table->string('description', 200)->nullable()->comment('用户描述/备注');
         });

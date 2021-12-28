@@ -38,19 +38,19 @@ class CachePermissionCommand extends Command
             }
             if ($action === '查看权限组列表') {
                 $likeGroupName     = $this->ask('请输入搜索 权限 name [例: admin], [默认搜索全部]');
-                $getGroupBrandList = $cache->getGroupBrandList($likeGroupName);
+                $getGroupList = $cache->getGroupList($likeGroupName);
                 $this->table(
                     ['权限组 name', '上级组', '必要依赖权限'],
-                    $getGroupBrandList
+                    $getGroupList
                 );
                 $this->handle();
             }
             if ($action === '查看权限列表') {
                 $likeName         = $this->ask('请输入搜索 权限 name [例: admin], [默认搜索全部]');
-                $getPermissionBrandList = $cache->getPermissionBrandList($likeName);
+                $getItemList = $cache->getItemList($likeName);
                 $this->table(
                     ['权限 name', '所在权限组', '权限名称', '依赖权限'],
-                    $getPermissionBrandList
+                    $getItemList
                 );
                 $this->handle();
             }

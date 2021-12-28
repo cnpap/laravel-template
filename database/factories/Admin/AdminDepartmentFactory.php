@@ -26,7 +26,7 @@ class AdminDepartmentFactory extends Factory
         $code        = fnPinYin($name);
         $description = '部门描述/备注' . $num;
         return [
-            'id'          => $this->faker->unique()->numberBetween(100000, 999999),
+            'id'          => uni(),
             'status'      => _USED,
             'name'        => $name,
             'code'        => $code,

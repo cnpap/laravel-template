@@ -46,7 +46,9 @@ Route::middleware($middlewares)->group(function () {
             Route::post('/create', [AdminUserController::class, 'create']);
             Route::put('/{id}', [AdminUserController::class, 'update']);
             Route::delete('/delete', [AdminUserController::class, 'delete']);
-            Route::post('/positions', [AdminUserController::class, 'positions']);
+            Route::post('/department_options', [AdminUserController::class, 'departmentOptions']);
+            Route::post('/position_options', [AdminUserController::class, 'positionOptions']);
+            Route::post('/role_options', [AdminUserController::class, 'roleOptions']);
             Route::post('/status', [AdminUserController::class, 'status']);
             Route::post('/enabled_list', [AdminUserController::class, 'enabledList']);
             Route::post('/forgot_password/{id}', [AdminUserController::class, 'forgotPassword']);

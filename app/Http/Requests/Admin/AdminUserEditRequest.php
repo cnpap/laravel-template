@@ -29,10 +29,13 @@ class AdminUserEditRequest extends FormRequest
             'code'              => 'string|between:1,40',
             'password'          => 'string|between:250,450',
             'admin_position_id' => 'required|string|id',
+            'admin_role_ids'    => 'required|array|min:1',
+            'admin_role_ids.*'  => 'required|string|id',
             'phone'             => 'required|string|phone',
             'email'             => 'string|email',
             'gender'            => 'required|string|in:' . GENDER_JOIN,
             'status'            => 'string|in:' . STATUS_JOIN,
+            'description'       => 'string|max:200',
         ];
     }
 }

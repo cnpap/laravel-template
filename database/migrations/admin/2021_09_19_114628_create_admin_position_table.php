@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Admin\AdminPosition;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +24,15 @@ class CreateAdminPositionTable extends Migration
             $table->string('code', 40)->comment('岗位编号');
             $table->string('description', 200)->nullable()->comment('岗位描述/备注');
         });
+
+        AdminPosition::query()
+            ->create([
+                'id'          => 'external',
+                'status'      => _USED,
+                'name'        => '外部岗位',
+                'code'        => 'external',
+                'description' => '外部'
+            ]);
         DB::statement("alter table `admin_position` comment '管理员岗位表'");
     }
 

@@ -50,7 +50,7 @@
     },
     "scripts": {
         "server": [
-            "@php artisan serve --port=80 --host=0.0.0.0"
+            "@php artisan serve --port=8888 --host=0.0.0.0"
         ],
         "migrate": [
             "@php artisan migrate:fresh --path=database/migrations/admin",

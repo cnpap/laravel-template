@@ -24,10 +24,11 @@ class AdminPositionIndexRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'     => 'string|between:1,40',
-            'code'     => 'string|between:1,40',
-            'status'   => 'array|max:4',
-            'status.*' => 'string|in:' . STATUS_JOIN
+            'name'                => 'string|between:1,40',
+            'code'                => 'string|between:1,40',
+            'admin_department_id' => 'string|id',
+            'status'              => 'array|max:4',
+            'status.*'            => 'string|in:' . STATUS_JOIN
         ];
     }
 }

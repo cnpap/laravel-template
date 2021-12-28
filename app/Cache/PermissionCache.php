@@ -37,9 +37,9 @@ class PermissionCache
      *     ]
      * ]
      *
-     * @var array $permissionBrands
+     * @var array $items
      */
-    protected $permissionBrands = [];
+    protected $items = [];
 
     /**
      * 保存页面名称、必选权限
@@ -49,7 +49,7 @@ class PermissionCache
      * [
      *     'admin position' => [
      *         'concatName' => 'admin_position',
-     *         'groupLabel' => ['系统管理', '岗位管理'],
+     *         'labels'     => ['系统管理', '岗位管理'],
      *         'must'       => [
      *             'list'                     => '查看岗位列表',
      *             'admin_department_options' => null
@@ -61,9 +61,9 @@ class PermissionCache
      *
      * admin_department_options 为 null 是因为, 作为过滤条件, 主观的认为用户没必要知道
      *
-     * @var array $groupBrands
+     * @var array $group
      */
-    protected $groupBrands = [];
+    protected $group = [];
 
     public function __construct()
     {
@@ -75,21 +75,35 @@ class PermissionCache
         $client = $this->client;
         $keys   = $client->keys('shard group *');
         if ($code) {
-            $specialKeys = $client->keys("special $code group");
-            $keys        = array_merge($keys, $specialKeys);
+            $privateKeys = $client->keys("private $code group");
+            $keys        = array_merge($keys, $privateKeys);
         }
         return $keys;
     }
 
-    function getPermissionKeys($code = null)
+    function getItemKeys($code = null)
     {
         $client = $this->client;
-        $keys   = $client->keys('shard permission *');
+        $keys   = $client->keys('shard item *');
         if ($code) {
-            $specialKeys = $client->keys("special $code permission");
-            $keys        = array_merge($keys, $specialKeys);
+            $privateKeys = $client->keys("private $code item *");
+            $keys        = array_merge($keys, $privateKeys);
         }
         return $keys;
+    }
+
+    function getItemNames($code = null)
+    {
+        $keys  = $this->getItemKeys($code);
+        $names = [];
+        foreach ($keys as $key) {
+            preg_match('@(shard|private [a-z_]+) item ([a-z_]+) ([a-z_]+)@', $key, $matched);
+            if (!isset($names[$matched[2]])) {
+                $names[$matched[2]] = [];
+            }
+            $names[$matched[2]][] = $matched[3];
+        }
+        return $names;
     }
 
     static function safeKeys($keys, $code = null)
@@ -97,10 +111,10 @@ class PermissionCache
         foreach ($keys as $key) {
             if (
                 (
-                    strpos($key, 'shard permission ') !== 0 &&
-                    strpos($key, "special permission $code") !== 0 &&
+                    strpos($key, 'shard item ') !== 0 &&
+                    strpos($key, "private item $code") !== 0 &&
                     strpos($key, 'shard group ') !== 0 &&
-                    strpos($key, "special group $code") !== 0
+                    strpos($key, "private group $code") !== 0
                 ) ||
                 preg_match('@[^a-z0-9 ]@', $key)
             ) {
@@ -117,15 +131,15 @@ class PermissionCache
      *         [
      *             'code'       => null
      *             'concatName' => 'admin_position',
-     *             'permissionBrands' => [
+     *             'snapshot'   => [
      *                 ['admin_position create', '创建岗位', ['admin_position find']],
      *                 ['admin_position update', '修改岗位', ['admin_position find']],
      *                 ['admin_position find',   '岗位详情'],
      *                 ['admin_position delete', '删除岗位'],
      *             ],
-     *             'groupLabel' => ['系统管理', '岗位管理'],
+     *             'labels'     => ['系统管理', '岗位管理'],
      *             'must'       => [
-     *                 [
+     *                 "admin_position list" => [
      *                     'admin_position list',
      *                     '查看岗位列表'
      *                 ]
@@ -136,27 +150,28 @@ class PermissionCache
      *
      * @return array|false|mixed|string|void
      */
-    function permissionTable($code = null)
+    function itemTable($code = null)
     {
         $client = $this->client;
-        $code   = "permission table $code";
+        $code   = "item table $code";
 
         $tableData = $client->get($code) ?? [];
         if (!config('app.debug') && $tableData && count($tableData)) {
             return $tableData;
         }
-        $keys        = $this->getGroupKeys($code);
-        $groupBrands = $client->mget($keys);
-        foreach ($groupBrands as $groupBrand) {
-            $row               = ['permissionBrands' => []];
-            $row['concatName'] = $groupBrand['concatName'];
-            $row['groupLabel'] = $groupBrand['groupLabel'];
-            $row['code']       = $groupBrand['code'];
+        $keys  = $this->getGroupKeys($code);
+        $group = $client->mget($keys);
+        foreach ($group as $item) {
+            $row               = ['snapshot' => []];
+            $row['concatName'] = $item['concatName'];
+            $row['labels']     = $item['labels'];
+            $row['code']       = $item['code'];
             $must              = [];
-            foreach ($groupBrand['must'] as $mustName => $mustLabel) {
+            foreach ($item['must'] as $mustName => $mustLabel) {
                 if ($mustLabel) {
-                    $must[$row['concatName'] . ' ' . $mustName] = [
-                        $row['concatName'] . ' ' . $mustName,
+                    $name        = $row['concatName'] . ' ' . $mustName;
+                    $must[$name] = [
+                        $name,
                         $mustLabel
                     ];
                 }
@@ -164,21 +179,21 @@ class PermissionCache
             $row['must']                   = $must;
             $tableData[$row['concatName']] = $row;
         }
-        $keys             = $this->getPermissionKeys($code);
-        $permissionBrands = $client->mget($keys);
-        foreach ($permissionBrands as $permissionBrand) {
+        $keys  = $this->getItemKeys($code);
+        $items = $client->mget($keys);
+        foreach ($items as $item) {
             $depends = [];
-            $row     = $tableData[$permissionBrand['concatName']];
+            $row     = $tableData[$item['concatName']];
             $must    = $row['must'];
-            if (!$permissionBrand['label'] || isset($must[$permissionBrand['name']])) {
+            if (!$item['label'] || isset($must[$item['name']])) {
                 continue;
             }
-            foreach ($permissionBrand['depends'] as $depend) {
-                $depends[] = $permissionBrand['concatName'] . ' ' . $depend;
+            foreach ($item['depends'] as $depend) {
+                $depends[] = $item['concatName'] . ' ' . $depend;
             }
-            $tableData[$permissionBrand['concatName']]['permissionBrands'][$permissionBrand['name']] = [
-                'name'    => $permissionBrand['name'],
-                'label'   => $permissionBrand['label'],
+            $tableData[$item['concatName']]['snapshot'][$item['name']] = [
+                'name'    => $item['name'],
+                'label'   => $item['label'],
                 'depends' => $depends
             ];
         }
@@ -186,7 +201,7 @@ class PermissionCache
         return $tableData;
     }
 
-    function getGroupBrandList($guessName, $code = null)
+    function getGroupList($guessName, $code = null)
     {
         $client = $this->client;
         if ($guessName) {
@@ -197,11 +212,11 @@ class PermissionCache
         $keys = $shardKeys;
         if ($code !== null) {
             if ($guessName) {
-                $specialKeys = $client->keys("special $code group *$guessName*");
+                $privateKeys = $client->keys("private $code group *$guessName*");
             } else {
-                $specialKeys = $client->keys("special $code group *");
+                $privateKeys = $client->keys("private $code group *");
             }
-            $keys = array_merge($shardKeys, $specialKeys);
+            $keys = array_merge($shardKeys, $privateKeys);
         }
         $data = $client->mget($keys);
         if (count($data) !== count($keys)) {
@@ -211,29 +226,29 @@ class PermissionCache
         for ($i = 0; $i < count($data); $i++) {
             $result[] = [
                 $data[$i]['concatName'],
-                json_encode($data[$i]['groupLabel'], JSON_UNESCAPED_UNICODE),
+                json_encode($data[$i]['labels'], JSON_UNESCAPED_UNICODE),
                 json_encode($data[$i]['must'], JSON_UNESCAPED_UNICODE)
             ];
         }
         return $result;
     }
 
-    function getPermissionBrandList($guessName, $code = null)
+    function getItemList($guessName, $code = null)
     {
         $client = $this->client;
         if ($guessName) {
-            $shardKeys = $client->keys("shard permission *$guessName*");
+            $shardKeys = $client->keys("shard item *$guessName*");
         } else {
-            $shardKeys = $client->keys('shard permission *');
+            $shardKeys = $client->keys('shard item *');
         }
         $keys = $shardKeys;
         if ($code !== null) {
             if ($guessName) {
-                $specialKeys = $client->keys("special $code permission *$guessName*");
+                $privateKeys = $client->keys("private $code item *$guessName*");
             } else {
-                $specialKeys = $client->keys("special $code permission *");
+                $privateKeys = $client->keys("private $code item *");
             }
-            $keys = array_merge($shardKeys, $specialKeys);
+            $keys = array_merge($shardKeys, $privateKeys);
         }
         $data = $client->mget($keys);
         if (is_bool($data) || count($data) !== count($keys)) {
@@ -265,41 +280,41 @@ class PermissionCache
         $client = $this->client;
         foreach ($filenames as $filename) {
             $pathname = $resourcePath . '/' . $filename;
-            $this->loopPermissionGroups(require $pathname);
+            $this->loopGroup(require $pathname);
             $shard = strpos($filename, '_') === 0;
             $code  = null;
             if (!$shard) {
-                $special = preg_match('@^[a-zA-Z0-9-]@', $filename, $matched);
-                if ($special) {
+                $private = preg_match('@^[a-zA-Z0-9-]@', $filename, $matched);
+                if ($private) {
                     $code = $matched[0];
-                    $client->setOption(2, 'special ' . $code . ' ');
+                    $client->setOption(2, 'private ' . $code . ' ');
                 } else {
                     throw new BurstException('不是约定的文件命名');
                 }
             } else {
                 $prefix = $client->setOption(2, 'shard ');
             }
-            foreach ($this->permissionBrands as $ownName => $brand) {
-                $brand['code'] = $code;
-                $client->set('permission ' . $ownName, $brand);
+            foreach ($this->items as $ownName => $item) {
+                $item['code'] = $code;
+                $client->set('item ' . $ownName, $item);
             }
-            foreach ($this->groupBrands as $groupName => $brand) {
-                $brand['code'] = $code;
-                $client->set('group ' . $groupName, $brand);
+            foreach ($this->group as $groupName => $item) {
+                $item['code'] = $code;
+                $client->set('group ' . $groupName, $item);
             }
         }
     }
 
-    private function loopPermissionGroups($permissionGroups, $options = [])
+    private function loopGroup($permissionGroups, $options = [])
     {
         foreach ($permissionGroups as $permissionGroup) {
-            $name       = $permissionGroup['name'] ?? '';
-            $label      = $permissionGroup['label'] ?? null;
-            $actions    = $permissionGroup['actions'] ?? [];
-            $children   = $permissionGroup['children'] ?? [];
-            $groupLabel = $options['groupLabel'] ?? [];
+            $name     = $permissionGroup['name'] ?? '';
+            $label    = $permissionGroup['label'] ?? null;
+            $actions  = $permissionGroup['actions'] ?? [];
+            $children = $permissionGroup['children'] ?? [];
+            $labels   = $options['labels'] ?? [];
             if ($label) {
-                $groupLabel[] = $label;
+                $labels[] = $label;
             }
             $concatName = $options['concatName'] ?? '';
             if ($concatName) {
@@ -308,8 +323,8 @@ class PermissionCache
                 $concatName = $name;
             }
             if (count($children)) {
-                $this->loopPermissionGroups($children, [
-                    'groupLabel' => $groupLabel,
+                $this->loopGroup($children, [
+                    'labels'     => $labels,
                     'concatName' => $concatName,
                 ]);
                 return;
@@ -317,9 +332,9 @@ class PermissionCache
             if (count($actions)) {
                 foreach ($actions as $actionName => $actionInfo) {
                     $depends = array_slice($actionInfo, 2);
-                    if (!isset($this->groupBrands[$concatName])) {
-                        $this->groupBrands[$concatName] = [
-                            'groupLabel' => $groupLabel,
+                    if (!isset($this->group[$concatName])) {
+                        $this->group[$concatName] = [
+                            'labels'     => $labels,
                             'concatName' => $concatName,
                             'must'       => []
                         ];
@@ -327,9 +342,9 @@ class PermissionCache
                     $permissionName = $concatName . ' ' . $actionName;
                     $must           = $actionInfo[0];
                     if ($must === 1) {
-                        $this->groupBrands[$concatName]['must'][$actionName] = $actionInfo[1] ?? null;
+                        $this->group[$concatName]['must'][$actionName] = $actionInfo[1] ?? null;
                     }
-                    $this->permissionBrands[$permissionName] = [
+                    $this->items[$permissionName] = [
                         'name'       => $permissionName,
                         'concatName' => $concatName,
                         'label'      => $actionInfo[1] ?? null,

@@ -26,7 +26,7 @@ class AdminSeeder extends Seeder
         $position                 = AdminPosition::all()->random();
         $super                    = new AdminUser();
         $super->admin_position_id = $position->id;
-        $super->id                = 1;
+        $super->id                = '_super_manager';
         $super->gender            = _MAN;
         $super->status            = _USED;
         $super->username          = $username;
