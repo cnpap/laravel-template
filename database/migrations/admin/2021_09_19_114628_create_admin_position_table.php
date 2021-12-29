@@ -27,11 +27,12 @@ class CreateAdminPositionTable extends Migration
 
         AdminPosition::query()
             ->create([
-                'id'          => 'external',
-                'status'      => _USED,
-                'name'        => '外部岗位',
-                'code'        => 'external',
-                'description' => '外部'
+                'id'                  => 'external',
+                'status'              => _USED,
+                'name'                => '外部岗位',
+                'code'                => 'external',
+                'description'         => '外部',
+                'admin_department_id' => 'external'
             ]);
         DB::statement("alter table `admin_position` comment '管理员岗位表'");
     }
