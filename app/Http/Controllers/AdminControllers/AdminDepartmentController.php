@@ -19,6 +19,21 @@ class AdminDepartmentController extends Controller
         return ss($ones);
     }
 
+    function find($id)
+    {
+        /** @var AdminDepartment $one */
+        $one = AdminDepartment::query()
+            ->select([
+                'id',
+                'status',
+                'name',
+                'code',
+            ])
+            ->where('id', $id)
+            ->firstOrFail();
+        return result($one);
+    }
+
     function list(AdminDepartmentIndexRequest $request)
     {
         $result = AdminDepartment::indexFilter($request->validated())

@@ -10,6 +10,8 @@ use App\Models\Admin\AdminPosition;
 
 class AdminPositionController extends Controller
 {
+    protected $model = AdminPosition::class;
+
     function departments()
     {
         $departments = AdminDepartment::query()->select(['id', 'name'])->get();
@@ -29,7 +31,7 @@ class AdminPositionController extends Controller
                 'admin_department_id',
             ])
             ->where('id', $id)
-            ->firstOr();
+            ->firstOrFail();
         return result($one);
     }
 
