@@ -32,6 +32,4 @@ class Controller extends BaseController
         $this->model::del();
         return ss();
     }
-
-
 }

@@ -7,17 +7,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminRoleEditRequest;
 use App\Http\Requests\Admin\AdminRoleIndexRequest;
 use App\Http\Requests\Admin\AdminRolePermissionRequest;
-use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminRolePermissionName;
 
 class AdminRoleController extends Controller
 {
-    function permissionTable()
+    protected $model = AdminRole::class;
+
+    function findPermissionNames($id)
     {
-        $manager   = new PermissionCache();
-        $tableData = $manager->itemTable();
-        return result($tableData);
+        $rolePermissionNames = AdminRolePermissionName::query()
+            ->where('admin_role_id', $id)
+            ->get()
+            ->pluck('permission_name')
+            ->toArray();
+        $manager             = new PermissionCache();
+        $result              = $manager->itemTable($rolePermissionNames);
+        return result($result);
     }
 
     function syncPermissionNames(AdminRolePermissionRequest $request, $id)
@@ -82,7 +88,7 @@ class AdminRoleController extends Controller
     {
         $ok = (new AdminRole())->getConnection()->transaction(
             function () use ($request) {
-                $post            = $request->validated();
+                $post = $request->validated();
 
                 mergeCode($post);
 
@@ -95,11 +101,5 @@ class AdminRoleController extends Controller
             }
         );
         return tx($ok);
-    }
-
-    function position()
-    {
-        $positions = AdminPosition::query()->get();
-        return result($positions);
     }
 }

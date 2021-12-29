@@ -21,7 +21,7 @@ class AdminDepartmentController extends Controller
 
     function list(AdminDepartmentIndexRequest $request)
     {
-        $result = AdminDepartment::indexFilter($request->all())
+        $result = AdminDepartment::indexFilter($request->validated())
             ->paginate(...usePage());
         return page($result);
     }

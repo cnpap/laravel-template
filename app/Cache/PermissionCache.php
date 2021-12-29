@@ -112,11 +112,8 @@ class PermissionCache
             if (
                 (
                     strpos($key, 'shard item ') !== 0 &&
-                    strpos($key, "private item $code") !== 0 &&
-                    strpos($key, 'shard group ') !== 0 &&
-                    strpos($key, "private group $code") !== 0
-                ) ||
-                preg_match('@[^a-z0-9 ]@', $key)
+                    strpos($key, "private $code item") !== 0
+                )
             ) {
                 throw new BurstException(BurstException::DANGER, 'pc-sk');
             }
@@ -150,12 +147,12 @@ class PermissionCache
      *
      * @return array|false|mixed|string|void
      */
-    function itemTable($code = null)
+    function itemTable($checkedNames, $code = null)
     {
-        $client = $this->client;
-        $code   = "item table $code";
-
+        $client    = $this->client;
+        $code      = "item table $code";
         $tableData = $client->get($code) ?? [];
+        $traces    = [];
         if (!config('app.debug') && $tableData && count($tableData)) {
             return $tableData;
         }
@@ -169,7 +166,12 @@ class PermissionCache
             $must              = [];
             foreach ($item['must'] as $mustName => $mustLabel) {
                 if ($mustLabel) {
-                    $name        = $row['concatName'] . ' ' . $mustName;
+                    $name = $row['concatName'] . ' ' . $mustName;
+                    if ($row['code'] === null) {
+                        $name = "shard item $name";
+                    } else {
+                        $name = "private $code item $name";
+                    }
                     $must[$name] = [
                         $name,
                         $mustLabel
@@ -184,21 +186,34 @@ class PermissionCache
         foreach ($items as $item) {
             $depends = [];
             $row     = $tableData[$item['concatName']];
+            $code    = $row['code'];
             $must    = $row['must'];
-            if (!$item['label'] || isset($must[$item['name']])) {
+            if (isset($must[$item['name']])) {
                 continue;
             }
-            foreach ($item['depends'] as $depend) {
-                $depends[] = $item['concatName'] . ' ' . $depend;
+            if ($code === null) {
+                $prefix = "shard item ";
+            } else {
+                $prefix = "private $code item ";
             }
-            $tableData[$item['concatName']]['snapshot'][$item['name']] = [
-                'name'    => $item['name'],
-                'label'   => $item['label'],
+            foreach ($item['depends'] as $depend) {
+                $depends[] = $prefix . $item['concatName'] . ' ' . $depend;
+            }
+            $currName = $prefix . $item['name'];
+            if (in_array($currName, $checkedNames)) {
+                if (!isset($traces[$item['concatName']])) {
+                    $traces[$item['concatName']] = [];
+                }
+                $traces[$item['concatName']][] = $currName;
+            }
+            $tableData[$item['concatName']]['snapshot'][$prefix . $item['name']] = [
+                'name'    => $prefix . $item['name'],
+                'label'   => $item['label'] ?? null,
                 'depends' => $depends
             ];
         }
         $client->set($code, $tableData);
-        return $tableData;
+        return compact('tableData', 'traces');
     }
 
     function getGroupList($guessName, $code = null)
@@ -280,9 +295,8 @@ class PermissionCache
         $client = $this->client;
         foreach ($filenames as $filename) {
             $pathname = $resourcePath . '/' . $filename;
-            $this->loopGroup(require $pathname);
-            $shard = strpos($filename, '_') === 0;
-            $code  = null;
+            $shard    = strpos($filename, '_') === 0;
+            $code     = null;
             if (!$shard) {
                 $private = preg_match('@^[a-zA-Z0-9-]@', $filename, $matched);
                 if ($private) {
@@ -294,12 +308,11 @@ class PermissionCache
             } else {
                 $prefix = $client->setOption(2, 'shard ');
             }
+            $this->loopGroup(require $pathname, ['code' => $code]);
             foreach ($this->items as $ownName => $item) {
-                $item['code'] = $code;
                 $client->set('item ' . $ownName, $item);
             }
             foreach ($this->group as $groupName => $item) {
-                $item['code'] = $code;
                 $client->set('group ' . $groupName, $item);
             }
         }
@@ -307,6 +320,7 @@ class PermissionCache
 
     private function loopGroup($permissionGroups, $options = [])
     {
+        $code = $options['code'];
         foreach ($permissionGroups as $permissionGroup) {
             $name     = $permissionGroup['name'] ?? '';
             $label    = $permissionGroup['label'] ?? null;
@@ -324,6 +338,7 @@ class PermissionCache
             }
             if (count($children)) {
                 $this->loopGroup($children, [
+                    'code'       => $code,
                     'labels'     => $labels,
                     'concatName' => $concatName,
                 ]);
@@ -336,7 +351,8 @@ class PermissionCache
                         $this->group[$concatName] = [
                             'labels'     => $labels,
                             'concatName' => $concatName,
-                            'must'       => []
+                            'must'       => [],
+                            'code'       => $code,
                         ];
                     }
                     $permissionName = $concatName . ' ' . $actionName;

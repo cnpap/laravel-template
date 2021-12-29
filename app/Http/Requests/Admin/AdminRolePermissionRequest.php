@@ -9,8 +9,7 @@ class AdminRolePermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'names'   => 'array|max:300',
-            'names.*' => 'redis_key'
+            'names' => 'array|max:300|redis_key'
         ];
     }
 

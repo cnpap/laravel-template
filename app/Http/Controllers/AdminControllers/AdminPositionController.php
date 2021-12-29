@@ -65,10 +65,7 @@ class AdminPositionController extends Controller
             $one->save();
             return true;
         });
-        if ($ok === true) {
-            return ss();
-        }
-        return se();
+        return tx($ok);
     }
 
     function update(AdminPositionEditRequest $request, $id)
@@ -95,21 +92,6 @@ class AdminPositionController extends Controller
             AdminPosition::query()->where('id', $id)->update($post);
             return true;
         });
-        if ($ok === true) {
-            return ss();
-        }
-        return se();
-    }
-
-    function status()
-    {
-        AdminPosition::status();
-        return ss();
-    }
-
-    function delete()
-    {
-        AdminPosition::clear();
-        return ss();
+        return tx($ok);
     }
 }
