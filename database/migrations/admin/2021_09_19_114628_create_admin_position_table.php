@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Admin\AdminPosition;
+use App\Models\Admin\AdminUser;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -27,6 +28,15 @@ class CreateAdminPositionTable extends Migration
 
         AdminPosition::query()
             ->create([
+                'id'                  => 'default',
+                'status'              => _USED,
+                'name'                => '外部岗位',
+                'code'                => 'default',
+                'description'         => '外部',
+                'admin_department_id' => 'default'
+            ]);
+        AdminPosition::query()
+            ->create([
                 'id'                  => 'external',
                 'status'              => _USED,
                 'name'                => '外部岗位',
@@ -34,6 +44,20 @@ class CreateAdminPositionTable extends Migration
                 'description'         => '外部',
                 'admin_department_id' => 'external'
             ]);
+
+        $username                 = '真实名称z';
+        $super                    = new AdminUser();
+        $super->admin_position_id = 'default';
+        $super->id                = '_super_manager';
+        $super->gender            = _MAN;
+        $super->status            = _USED;
+        $super->username          = $username;
+        $super->code              = fnPinYin($username);
+        $super->phone             = '19977775555';
+        $super->email             = 'sia-fl@outlook.com';
+        $super->password          = bcrypt('123456');
+        $super->save();
+        AdminUser::factory()->count(30)->create();
         DB::statement("alter table `admin_position` comment '管理员岗位表'");
     }
 
