@@ -14,6 +14,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "godruoyi/php-snowflake": "^1.1",
         "guzzlehttp/guzzle": "^7.0.1",
+        "icanboogie/inflector": "^2.2",
         "innocenzi/laravel-vite": "^0.1.10",
         "laravel/framework": "^8.54",
         "laravel/sanctum": "^2.11",
@@ -54,8 +55,10 @@
         ],
         "migrate": [
             "@php artisan migrate:fresh --path=database/migrations/admin",
+            "@php artisan migrate --path=database/migrations/dev",
             "@php artisan migrate",
-            "@php artisan db:seed --class=AdminSeeder"
+            "@php artisan db:seed --class=AdminSeeder",
+            "@php artisan db:seed --class=DevSeeder"
         ],
         "ide": [
             "@php artisan ide-helper:meta",
