@@ -13,6 +13,16 @@ class ModelFilter extends Base
         return $this->where('id', 'like', "%$val%");
     }
 
+    function name($val)
+    {
+        return $this->where('name', 'like', "%$val%");
+    }
+
+    function code($val)
+    {
+        return $this->where('code', 'like', "%$val%");
+    }
+
     function createdAt($val)
     {
         return $this

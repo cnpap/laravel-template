@@ -14,11 +14,6 @@ class AdminUserFilter extends ModelFilter
         return $this->where('username', 'like', "%$val%");
     }
 
-    function code($val)
-    {
-        return $this->where('code', 'like', "%$val%");
-    }
-
     function phone($val)
     {
         return $this->where('phone', 'like', "%$val%");
