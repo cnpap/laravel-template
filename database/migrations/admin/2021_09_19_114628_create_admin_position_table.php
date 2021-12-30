@@ -4,6 +4,7 @@ use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminUser;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateAdminPositionTable extends Migration
@@ -28,26 +29,26 @@ class CreateAdminPositionTable extends Migration
 
         AdminPosition::query()
             ->create([
-                'id'                  => 'default',
+                'id'                  => '_default',
                 'status'              => _USED,
                 'name'                => '外部岗位',
-                'code'                => 'default',
+                'code'                => '_default',
                 'description'         => '外部',
-                'admin_department_id' => 'default'
+                'admin_department_id' => '_default'
             ]);
         AdminPosition::query()
             ->create([
-                'id'                  => 'external',
+                'id'                  => '_external',
                 'status'              => _USED,
                 'name'                => '外部岗位',
-                'code'                => 'external',
+                'code'                => '_external',
                 'description'         => '外部',
-                'admin_department_id' => 'external'
+                'admin_department_id' => '_external'
             ]);
 
         $username                 = '真实名称z';
         $super                    = new AdminUser();
-        $super->admin_position_id = 'default';
+        $super->admin_position_id = '_default';
         $super->id                = '_super_manager';
         $super->gender            = _MAN;
         $super->status            = _USED;
@@ -57,7 +58,7 @@ class CreateAdminPositionTable extends Migration
         $super->email             = 'sia-fl@outlook.com';
         $super->password          = bcrypt('123456');
         $super->save();
-        AdminUser::factory()->count(30)->create();
+
         DB::statement("alter table `admin_position` comment '管理员岗位表'");
     }
 

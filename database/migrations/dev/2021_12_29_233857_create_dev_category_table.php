@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateDevCategoryTable extends Migration
@@ -18,6 +19,8 @@ class CreateDevCategoryTable extends Migration
             $table->string('code', 40)->comment('分类编号');
             $table->string('description', 200)->nullable()->comment('分类描述/备注');
         });
+
+        DB::statement("alter table `admin_role_permission_name` comment '管理员角色权限关联表'");
     }
 
     public function down()

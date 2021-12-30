@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Admin\AdminDepartment;
 
@@ -23,22 +24,21 @@ class CreateAdminDepartmentTable extends Migration
             $table->string('code', 40)->comment('部门编号');
             $table->string('description', 200)->nullable()->comment('部门描述/备注');
         });
-
         AdminDepartment::clearCacheOptions();
 
         AdminDepartment::query()
             ->create([
-                'id'     => 'default',
+                'id'     => '_default',
                 'status' => _USED,
                 'name'   => '默认部门',
-                'code'   => 'default'
+                'code'   => '_default'
             ]);
         AdminDepartment::query()
             ->create([
-                'id'     => 'external',
+                'id'     => '_external',
                 'status' => _USED,
                 'name'   => '外部部门',
-                'code'   => 'external',
+                'code'   => '_external',
             ]);
 
         DB::statement("alter table `admin_department` comment '管理员部门表'");
