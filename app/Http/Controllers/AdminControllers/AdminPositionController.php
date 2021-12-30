@@ -12,7 +12,7 @@ class AdminPositionController extends Controller
 {
     protected $model = AdminPosition::class;
 
-    function departments()
+    function departmentOptions()
     {
         $departments = AdminDepartment::query()->select(['id', 'name'])->get();
         return result($departments);
