@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Comm;
 
+use App\ModelFilters\Comm\CategoryFilter;
+use App\Models\IdeHelperCategory;
+use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
