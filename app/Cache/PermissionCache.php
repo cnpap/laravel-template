@@ -9,10 +9,10 @@ class PermissionCache
 {
     const P_DASHBOARD        = 'dashboard';
     const P_SYSTEM           = 'system';
-    const P_ADMIN_USER       = 'admin_user';
-    const P_ADMIN_ROLE       = 'admin_role';
-    const P_ADMIN_POSITION   = 'admin_position';
-    const P_ADMIN_DEPARTMENT = 'admin_department';
+    const P_ADMIN_USER       = 'adminUser';
+    const P_ADMIN_ROLE       = 'adminRole';
+    const P_ADMIN_POSITION   = 'adminPosition';
+    const P_ADMIN_DEPARTMENT = 'adminDepartment';
 
     /**
      * pRedis 客户端
