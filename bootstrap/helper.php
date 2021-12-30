@@ -2,6 +2,7 @@
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Session;
 use Overtrue\LaravelPinyin\Facades\Pinyin;
 use Illuminate\Http\Request;
 use http\Exception\RuntimeException;
@@ -46,7 +47,7 @@ function mergeCode(&$post, $field = 'name', $codeField = 'code')
 {
     $code = $post[$codeField] ?? null;
     if (!$code) {
-        $post[$codeField] = $post[$field];
+        $post[$codeField] = fnPinYin($post[$field]);
     }
 }
 
@@ -58,6 +59,7 @@ function rsaDecrypt($data)
     return $text;
 }
 
+/** @noinspection PhpUndefinedMethodInspection */
 function fnPinYin($data)
 {
     return Pinyin::abbr($data, PINYIN_KEEP_NUMBER | PINYIN_KEEP_ENGLISH | PINYIN_KEEP_PUNCTUATION);
