@@ -1,12 +1,14 @@
 <?php
 
 use App\Exceptions\BaseException;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryEditRequest;
 use App\Http\Requests\CategoryIndexRequest;
 use App\Models\Comm\Category;
 use App\Models\Model;
 use ICanBoogie\Inflector;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 app()->bind(
     Inflector::class,
@@ -22,6 +24,7 @@ function routePrefix($prefix, $callback)
 
 function routePack($prefix, $control, $methods = null)
 {
+    /** @var Controller $control */
     $beforeCallback = function () use (
         $control,
         $methods
@@ -73,19 +76,41 @@ function routePack($prefix, $control, $methods = null)
 
 function routePackCategory($prefix, string $model)
 {
-    /** @var Model $model */
+    /** @var Category $model */
     Route::group(['prefix' => $prefix], function () use ($model) {
         Route::post(
             '/find/{id}',
             function ($id) use ($model) {
-                $one = $model::query()->where('id', $id)->firstOrFail();
+                $one = $model::query()
+                    ->select([
+                        'id',
+                        'pid',
+                        'status',
+                        'name',
+                        'code',
+                        'level',
+                        'description',
+                    ])
+                    ->where('id', $id)
+                    ->firstOrFail();
                 return result($one);
             }
         );
         Route::post(
             '/list',
             function (CategoryIndexRequest $request) use ($model) {
-                $many = $model::indexFilter($request->validated())->paginate(...usePage());
+                $many = $model::indexFilter($request->validated())
+                    ->select([
+                        'id',
+                        'pid',
+                        'status',
+                        'name',
+                        'code',
+                        'level',
+                        'created_at',
+                        'updated_at'
+                    ])
+                    ->paginate(...usePage());
                 return page($many);
             }
         );
@@ -94,28 +119,29 @@ function routePackCategory($prefix, string $model)
             function (CategoryEditRequest $request) use ($model) {
                 $post = $request->validated();
                 mergeCode($post);
-                $one = new $model($post);
-                (new Category())->getConnection()->transaction(function () use ($one, $model) {
-                    /** @var Category $one */
-                    $one->id = uni();
-                    $ok      = $one->save();
+                $sub = new $model($post);
+                $ok  = (new Category())->getConnection()->transaction(function () use ($sub, $model) {
+                    /** @var Category $sub */
+                    $sub->id = uni();
+                    if ($sub->pid) {
+                        /** @var Category $pSub */
+                        $pSub = $model::query()->where('id', $sub->pid)->firstOrFail();
+                        if ($sub->leafLevel <= $pSub->level) {
+                            throw new BaseException();
+                        }
+                        $sub->level = $pSub->level + 1;
+                        $model::query()->where('id', $sub->pid)->where('status', _NEW)->update(['status' => _USED]);
+                    } else {
+                        $sub->pid   = null;
+                        $sub->level = 1;
+                    }
+                    $ok = $sub->save();
                     if (!$ok) {
                         throw new RuntimeException();
                     }
-                    if ($one->pid) {
-                        $child = $one;
-                        $keys  = [];
-                        for ($i = 0; $i < 5; $i++) {
-                            $keys[] = $child->pid;
-                            $child  = $child->parent;
-                            if (!$child->pid || $child->status !== _NEW) {
-                                break;
-                            }
-                        }
-                        $model::query()->whereIn('id', $keys)->where('status', _NEW)->update(['status' => _USED]);
-                    }
+                    return true;
                 });
-                return ss();
+                return tx($ok);
             }
         );
         Route::put(
@@ -134,16 +160,33 @@ function routePackCategory($prefix, string $model)
         );
         Route::post(
             '/status',
-            function () use ($model) {
-                $model::status();
-                return ss();
+            function (Request $request) use ($model) {
+                $ids    = $request->input('ids');
+                $status = $request->input('status');
+                /** @var Category $re */
+                $re = new $model;
+                $ok = $re->getConnection()->transaction(function () use ($re, $ids, $status) {
+                    for ($i = 0; $i < $re->leafLevel; $i++) {
+                        if (count($ids) > 1) {
+                            $re::staticQuery($ids)->where('status', '!=', _NEW)->update(['status' => $status]);
+                            $ids = $re::query()->whereIn('pid', $ids)->select(['id'])->get()->pluck('id');
+                        } else {
+                            break;
+                        }
+                    }
+                    return true;
+                });
+                return tx($ok);
             }
         );
         Route::post(
             '/tree',
             function () use ($model) {
                 $item = $model
-                    ::query()->with('parent')->get();
+                    ::query()
+                    ->whereIn('status', [_USED, _NEW])
+                    ->with('parent')
+                    ->get();
                 return result(treeOptions($item));
             }
         );

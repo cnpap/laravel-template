@@ -9,6 +9,5 @@ class DevSeeder extends Seeder
 {
     public function run()
     {
-        DevCategory::factory()->count(30)->create();
     }
 }

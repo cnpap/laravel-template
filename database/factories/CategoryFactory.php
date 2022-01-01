@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 abstract class CategoryFactory extends Factory
 {
-    static $keys = [];
+    static    $keys      = [];
+    protected $leafLevel = 2;
 
     public function definition(): array
     {
