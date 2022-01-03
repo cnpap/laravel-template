@@ -20,5 +20,6 @@ class AdminSeeder extends Seeder
         AdminDepartment::factory()->count(5)->create();
         AdminPosition::factory()->count(40)->create();
         AdminRole::factory()->count(15)->create();
+        AdminUser::factory()->count(15)->create();
     }
 }

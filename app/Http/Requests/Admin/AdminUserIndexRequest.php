@@ -24,7 +24,6 @@ class AdminUserIndexRequest extends FormRequest
     public function rules()
     {
         return [
-            'detect'              => 'string|max:40',
             'username'            => 'string|max:40',
             'code'                => 'string|max:40',
             'phone'               => 'string|max:12',
@@ -34,6 +33,7 @@ class AdminUserIndexRequest extends FormRequest
             'status.*'            => 'string|in:' . STATUS_JOIN,
             'created_at'          => 'range_datetime',
             'updated_at'          => 'range_datetime',
+            'detect'              => 'string|max:40',
         ];
     }
 }

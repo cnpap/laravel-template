@@ -18,8 +18,6 @@ class AdminDepartment extends Model
 
     protected $hidden = [];
 
-
-
     function modelFilter()
     {
         return $this->provideFilter(AdminDepartmentFilter::class);

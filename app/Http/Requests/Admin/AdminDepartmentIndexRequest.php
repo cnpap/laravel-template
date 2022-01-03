@@ -25,8 +25,10 @@ class AdminDepartmentIndexRequest extends FormRequest
     {
         return [
             'name'     => 'string',
+            'code'     => 'string|between:1,40',
             'status'   => 'array|max:4',
-            'status.*' => 'string|in:' . STATUS_JOIN
+            'status.*' => 'string|in:' . STATUS_JOIN,
+            'detect'   => 'string',
         ];
     }
 }

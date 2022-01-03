@@ -29,26 +29,26 @@ class CreateAdminPositionTable extends Migration
 
         AdminPosition::query()
             ->create([
-                'id'                  => '_default',
+                'id'                  => '_position1',
                 'status'              => _USED,
-                'name'                => '外部岗位',
-                'code'                => '_default',
-                'description'         => '外部',
-                'admin_department_id' => '_default'
+                'name'                => '默认岗位',
+                'code'                => 'mrgw',
+                'description'         => '默认岗位',
+                'admin_department_id' => '_department1'
             ]);
         AdminPosition::query()
             ->create([
-                'id'                  => '_external',
+                'id'                  => '_position2',
                 'status'              => _USED,
                 'name'                => '外部岗位',
-                'code'                => '_external',
-                'description'         => '外部',
-                'admin_department_id' => '_external'
+                'code'                => 'wbgw',
+                'description'         => '外部岗位',
+                'admin_department_id' => '_department2'
             ]);
 
         $username                 = '真实名称z';
         $super                    = new AdminUser();
-        $super->admin_position_id = '_default';
+        $super->admin_position_id = '_position1';
         $super->id                = '_super_manager';
         $super->gender            = _MAN;
         $super->status            = _USED;

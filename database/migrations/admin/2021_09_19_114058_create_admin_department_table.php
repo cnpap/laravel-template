@@ -28,17 +28,17 @@ class CreateAdminDepartmentTable extends Migration
 
         AdminDepartment::query()
             ->create([
-                'id'     => '_default',
+                'id'     => '_department1',
                 'status' => _USED,
                 'name'   => '默认部门',
-                'code'   => '_default'
+                'code'   => 'mrbm'
             ]);
         AdminDepartment::query()
             ->create([
-                'id'     => '_external',
+                'id'     => '_department2',
                 'status' => _USED,
                 'name'   => '外部部门',
-                'code'   => '_external',
+                'code'   => 'wbbm',
             ]);
 
         DB::statement("alter table `admin_department` comment '管理员部门表'");

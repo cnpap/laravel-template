@@ -28,7 +28,8 @@ class AdminPositionIndexRequest extends FormRequest
             'code'                => 'string|between:1,40',
             'admin_department_id' => 'string|id',
             'status'              => 'array|max:4',
-            'status.*'            => 'string|in:' . STATUS_JOIN
+            'status.*'            => 'string|in:' . STATUS_JOIN,
+            'detect'              => 'string',
         ];
     }
 }
