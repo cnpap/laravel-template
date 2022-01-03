@@ -2,7 +2,7 @@
 
 use App\Cache\PermissionCache;
 
-return [
+$data = [
     [
         'label'   => '仪表盘',
         'name'    => PermissionCache::P_DASHBOARD,
@@ -74,3 +74,26 @@ return [
         ]
     ]
 ];
+
+if (config('app.debug')) {
+    $data[] = [
+        'label'    => '测试页面',
+        'children' => [
+            [
+                'label'   => '测试分类',
+                'name'    => PermissionCache::P_DEV_CATEGORY,
+                'actions' => [
+                    'create' => [2, '创建分类'],
+                    'update' => [2, '修改分类', 'find'],
+                    'delete' => [2, '删除分类'],
+                    'status' => [2, '修改分类状态'],
+                    'find'   => [2, '查看分类详情'],
+                    'list'   => [1, '查看分类列表'],
+                    'tree'   => [1]
+                ]
+            ]
+        ]
+    ];
+}
+
+return $data;

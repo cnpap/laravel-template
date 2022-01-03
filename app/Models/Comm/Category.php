@@ -12,12 +12,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $leafLevel
  *
  * @property int $level
- * @property string id
- * @property string status
- * @property string pid
- * @property string name
- * @property string code
- * @property string description
+ * @property string $id
+ * @property string $status
+ * @property string $pid
+ * @property string $p_name
+ * @property string $name
+ * @property string $code
+ * @property string $description
  * @property Category $parent
  * @mixin IdeHelperCategory
  */

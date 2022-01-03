@@ -9,11 +9,13 @@ function createCategoryTableData(&$data, $pid = null, $label = '0', $level = 1, 
         $currLabel = $label;
         $currLabel .= "-" . ($i + 1);
         $curr      = [
-            'id'    => $id,
-            'pid'   => $pid,
-            'level' => $level,
-            'name'  => $currLabel,
-            'code'  => $currLabel
+            'id'         => $id,
+            'pid'        => $pid,
+            'level'      => $level,
+            'name'       => $currLabel,
+            'code'       => $currLabel,
+            'created_at' => now()->format('Y-m-d H:i:s'),
+            'updated_at' => now()->format('Y-m-d H:i:s')
         ];
         if ($level < $leafLevel) {
             $curr['status'] = _USED;

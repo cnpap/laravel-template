@@ -2,12 +2,14 @@
 
 namespace App\ModelFilters\Comm;
 
-use EloquentFilter\ModelFilter;
+use App\ModelFilters\ModelFilter;
+use App\Models\Comm\Category;
 
+/** @mixin Category */
 class CategoryFilter extends ModelFilter
 {
-    function name($val)
+    function parents($val)
     {
-        return $this->where('name', 'like', "%$val%");
+        return $this->whereIn('pid', $val);
     }
 }

@@ -4,6 +4,7 @@ namespace App\ModelFilters;
 
 use App\Models\Model;
 use EloquentFilter\ModelFilter as Base;
+use Illuminate\Database\Eloquent\Builder;
 
 /** @mixin Model */
 class ModelFilter extends Base
@@ -40,8 +41,10 @@ class ModelFilter extends Base
     function detect($val)
     {
         return $this
-            ->where('id', $val)
-            ->orWhere('name', 'like', "%$val%")
-            ->orWhere('code', 'like', "%$val%");
+            ->where(function (Builder $q) use ($val) {
+                $q->where('id', $val)
+                    ->orWhere('name', 'like', "%$val%")
+                    ->orWhere('code', 'like', "%$val%");
+            });
     }
 }

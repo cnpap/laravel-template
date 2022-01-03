@@ -81,6 +81,7 @@ function routePackCategory($prefix, string $model)
         Route::post(
             '/find/{id}',
             function ($id) use ($model) {
+                /** @var Category $one */
                 $one = $model::query()
                     ->select([
                         'id',
@@ -91,8 +92,14 @@ function routePackCategory($prefix, string $model)
                         'level',
                         'description',
                     ])
+                    ->with('parent')
                     ->where('id', $id)
                     ->firstOrFail();
+                if ($one->parent) {
+                    $one->p_name = $one->parent->name;
+                } else {
+                    $one->p_name = '顶级分类';
+                }
                 return result($one);
             }
         );
@@ -184,6 +191,12 @@ function routePackCategory($prefix, string $model)
             function () use ($model) {
                 $item = $model
                     ::query()
+                    ->select([
+                        'id',
+                        'pid',
+                        'name',
+                        'code'
+                    ])
                     ->whereIn('status', [_USED, _NEW])
                     ->with('parent')
                     ->get();

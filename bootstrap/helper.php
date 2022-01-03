@@ -59,7 +59,6 @@ function rsaDecrypt($data)
     return $text;
 }
 
-/** @noinspection PhpUndefinedMethodInspection */
 function fnPinYin($data)
 {
     return Pinyin::abbr($data, PINYIN_KEEP_NUMBER | PINYIN_KEEP_ENGLISH | PINYIN_KEEP_PUNCTUATION);
@@ -207,12 +206,15 @@ function treeN2Options($item, $foreignKey, $localField = 'name', $foreignField =
     }
     $result = [];
     foreach ($item as $row) {
-        $result[] = [
-            'title'      => $row[$localField],
-            'value'      => $row['id'],
-            'selectable' => false,
-            'children'   => options($row[$foreignKey], $foreignField)
-        ];
+        if ($row[$foreignKey]) {
+            $result[] = [
+                'title'      => $row[$localField],
+                'value'      => $row['id'],
+                'selectable' => false,
+                'children'   => options($row[$foreignKey], $foreignField)
+            ];
+        }
+
     }
     return $result;
 }
@@ -244,14 +246,17 @@ function treeOptions($item)
             $current  = array_splice($item, $i--, 1)[0];
             $children = treeTn($item, $current['id']);
             $model    = [
-                'label'  => $current['name'],
-                'value'  => $current['id'],
-                'key'    => $current['id'],
-                'isLeaf' => true
+                'title'      => $current['name'],
+                'value'      => $current['id'],
+                'key'        => $current['id'],
+                'isLeaf'     => false,
+                'selectable' => true,
             ];
-            if (count($children)) {
-                $model['children'] = $children;
-                $model['isLeaf']   = false;
+            if (count($children) || $i = 0) {
+                $model['children']   = $children;
+                $model['checkable']  = true;
+            } else {
+                $model['checkable'] = false;
             }
             $result[] = array_merge($current, $model);
         }
@@ -267,14 +272,17 @@ function treeTn($item, $id = '')
             $current  = array_splice($item, $i--, 1)[0];
             $children = treeTn($item, $current['id']);
             $model    = [
-                'label'  => $current['name'],
+                'title'  => $current['name'],
                 'value'  => $current['id'],
                 'key'    => $current['id'],
                 'isLeaf' => true
             ];
             if (count($children)) {
-                $model['children'] = $children;
-                $model['isLeaf']   = false;
+                $model['children']   = $children;
+                $model['isLeaf']     = false;
+                $model['selectable'] = true;
+            } else {
+                $model['checkable'] = false;
             }
             $tn[] = array_merge($model, $current);
         }

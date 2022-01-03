@@ -13,6 +13,7 @@ class PermissionCache
     const P_ADMIN_ROLE       = 'adminRole';
     const P_ADMIN_POSITION   = 'adminPosition';
     const P_ADMIN_DEPARTMENT = 'adminDepartment';
+    const P_DEV_CATEGORY     = 'devCategory';
 
     /**
      * pRedis 客户端
@@ -97,7 +98,7 @@ class PermissionCache
         $keys  = $this->getItemKeys($code);
         $names = [];
         foreach ($keys as $key) {
-            preg_match('@(shard|private [a-z_]+) item ([a-z_]+) ([a-z_]+)@', $key, $matched);
+            preg_match('@(shard|private [a-z_]+) item ([a-zA-Z_]+) ([a-zA-Z_]+)@', $key, $matched);
             if (!isset($names[$matched[2]])) {
                 $names[$matched[2]] = [];
             }
@@ -342,7 +343,7 @@ class PermissionCache
                     'labels'     => $labels,
                     'concatName' => $concatName,
                 ]);
-                return;
+                continue;
             }
             if (count($actions)) {
                 foreach ($actions as $actionName => $actionInfo) {
@@ -359,13 +360,14 @@ class PermissionCache
                     $must           = $actionInfo[0];
                     if ($must === 1) {
                         $this->group[$concatName]['must'][$actionName] = $actionInfo[1] ?? null;
+                    } else {
+                        $this->items[$permissionName] = [
+                            'name'       => $permissionName,
+                            'concatName' => $concatName,
+                            'label'      => $actionInfo[1] ?? null,
+                            'depends'    => $depends
+                        ];
                     }
-                    $this->items[$permissionName] = [
-                        'name'       => $permissionName,
-                        'concatName' => $concatName,
-                        'label'      => $actionInfo[1] ?? null,
-                        'depends'    => $depends
-                    ];
                 }
             }
         }
