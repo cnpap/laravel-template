@@ -1,7 +1,5 @@
 <?php
 
-include_once __DIR__ . '/../helper.php';
-
 use App\Http\Controllers\CommonControllers\LogController;
 use App\Http\Controllers\RegionController;
 use Illuminate\Support\Facades\Route;

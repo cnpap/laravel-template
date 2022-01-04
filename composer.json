@@ -41,7 +41,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "bootstrap/helper.php"
+            "bootstrap/helper.php",
+            "routes/helper.php"
         ]
     },
     "autoload-dev": {
