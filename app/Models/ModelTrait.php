@@ -43,7 +43,13 @@ trait ModelTrait
         $status      = $request->input('status', false);
         $orderBy     = $request->input('sortBy', false);
         $orderByDesc = $request->input('sortDirection', 'desc');
-        $builder     = static::filter($filter);
+
+        $detect = $request->post('detect');
+        if ($detect) {
+            $filter['detect'] = $detect;
+        }
+
+        $builder = static::filter($filter);
         if ($status) {
             $builder->whereIn('status', $status);
         } else {

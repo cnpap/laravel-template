@@ -29,11 +29,8 @@ class AdminUserIndexRequest extends FormRequest
             'phone'               => 'string|max:12',
             'email'               => 'string',
             'admin_department_id' => 'string',
-            'status'              => 'array|max:4',
-            'status.*'            => 'string|in:' . STATUS_JOIN,
             'created_at'          => 'range_datetime',
             'updated_at'          => 'range_datetime',
-            'detect'              => 'string|max:40',
         ];
     }
 }
