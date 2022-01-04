@@ -42,7 +42,8 @@
         },
         "files": [
             "bootstrap/helper.php",
-            "routes/helper.php"
+            "routes/helper.php",
+            "routes/middleware.php"
         ]
     },
     "autoload-dev": {

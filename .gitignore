@@ -18,3 +18,4 @@ yarn-error.log
 /_ide_helper_models.php
 /.phpstorm.meta.php
 /public/enterprise
+/composer.lock

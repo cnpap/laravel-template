@@ -21,7 +21,7 @@ Route::post('/region', [RegionController::class, 'region']);
 Route::post('/child_regions', [RegionController::class, 'childRegions']);
 Route::post('/stop_log/{id}', [LogController::class, 'stopLog']);
 
-Route::middleware(require __DIR__ . '/../middleware.php')->group(function () {
+Route::middleware(debugMiddleware())->group(function () {
     routePack(
         null,
         AuthController::class,
