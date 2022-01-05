@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 function createCategoryTableData(&$data, $pid = null, $label = '0', $level = 1, $leafLevel = 2)
 {

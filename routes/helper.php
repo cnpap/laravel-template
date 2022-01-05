@@ -76,6 +76,9 @@ function routePack($prefix, $control, $methods = null)
 
 function routePackCategory($prefix, string $model)
 {
+    /** @var Inflector $inflector */
+    $inflector = app(Inflector::class);
+    $prefix    = $inflector->underscore($prefix);
     /** @var Category $model */
     Route::group(['prefix' => $prefix], function () use ($model) {
         Route::post(
