@@ -31,7 +31,6 @@ class AdminUserFactory extends Factory
         /** @var AdminPosition $position */
         $position = AdminPosition::all()->random();
         return [
-            'id'                => uni(),
             'admin_position_id' => $position->id,
             'status'            => _NEW,
             'gender'            => [_MAN, _WOMAN][rand(0, 1)],

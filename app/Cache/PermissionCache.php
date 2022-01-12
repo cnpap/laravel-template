@@ -7,13 +7,18 @@ use Predis\Client;
 
 class PermissionCache
 {
-    const P_DASHBOARD        = 'dashboard';
-    const P_SYSTEM           = 'system';
-    const P_ADMIN_USER       = 'adminUser';
-    const P_ADMIN_ROLE       = 'adminRole';
-    const P_ADMIN_POSITION   = 'adminPosition';
-    const P_ADMIN_DEPARTMENT = 'adminDepartment';
-    const P_DEV_CATEGORY     = 'devCategory';
+    const PDashboard  = 'dashboard';
+    const PSystem     = 'system';
+    const PEnterprise = 'enterprise';
+
+    const PAdmin           = 'admin';
+    const PAdminUser       = 'adminUser';
+    const PAdminRole       = 'adminRole';
+    const PAdminPosition   = 'adminPosition';
+    const PAdminDepartment = 'adminDepartment';
+
+    const PDev         = 'dev';
+    const PDevCategory = 'devCategory';
 
     /**
      * pRedis 客户端
@@ -26,15 +31,16 @@ class PermissionCache
      * 保存权限分组信息
      *
      * [
-     *     'admin position create' => [
+     *     'adminPosition create' => [
      *         'depends'    => [
      *             'find'
      *         ],
-     *         'name'       => 'admin_position create',
-     *         'concatName' => 'admin_position',
+     *         'name'       => 'adminPosition create',
+     *         'concatName' => 'adminPosition',
      *         'label'      => '创建岗位',
-     *         // 商户 code
-     *         'code'       => null
+     *         // 租户 code
+     *         'code'       => null,
+     *         'must'       => 2
      *     ]
      * ]
      *
@@ -48,14 +54,14 @@ class PermissionCache
      * 如果列表查询有过滤条件需要接口数据, 那么过滤条件对应的接口也是必选权限
      *
      * [
-     *     'admin position' => [
-     *         'concatName' => 'admin_position',
+     *     'adminPosition' => [
+     *         'concatName' => 'adminPosition',
      *         'labels'     => ['系统管理', '岗位管理'],
      *         'must'       => [
-     *             'list'                     => '查看岗位列表',
-     *             'admin_department_options' => null
-     *         ]
-     *         // 商户 code
+     *             'list'                   => '查看岗位列表',
+     *             'AdminDepartmentOptions' => null
+     *         ],
+     *         // 租户 code
      *         'code'       => null
      *     ]
      * ]
@@ -76,10 +82,25 @@ class PermissionCache
         $client = $this->client;
         $keys   = $client->keys('shard group *');
         if ($code) {
-            $privateKeys = $client->keys("private $code group");
+            $privateKeys = $client->keys("private $code GROUP");
             $keys        = array_merge($keys, $privateKeys);
         }
         return $keys;
+    }
+
+    function getGroupNames($code = null)
+    {
+        $keys   = $this->getGroupKeys($code);
+        $pages  = [];
+        $client = $this->client;
+        foreach ($keys as $key) {
+            $group              = $client->get($key);
+            $page               = [];
+            $page['labels']     = $group['labels'];
+            $page['concatName'] = $group['concatName'];
+            $pages[]            = $page;
+        }
+        return $pages;
     }
 
     function getItemKeys($code = null)
@@ -93,18 +114,70 @@ class PermissionCache
         return $keys;
     }
 
-    function getItemNames($code = null)
+    function getAuthInfo($code = null, $keys = null)
     {
-        $keys  = $this->getItemKeys($code);
-        $names = [];
-        foreach ($keys as $key) {
-            preg_match('@(shard|private [a-z_]+) item ([a-zA-Z_]+) ([a-zA-Z_]+)@', $key, $matched);
-            if (!isset($names[$matched[2]])) {
-                $names[$matched[2]] = [];
-            }
-            $names[$matched[2]][] = $matched[3];
+        if ($keys === null) {
+            $keys = $this->getItemKeys($code);
         }
-        return $names;
+        $menus  = [];
+        $names  = [];
+        $client = $this->client;
+        foreach ($keys as $key) {
+            preg_match('@(shard|private [a-z_]+) item (([a-zA-Z0-9_]+ )+)([a-zA-Z0-9_]+)@', $key, $matched);
+            $type       = $matched[1];
+            $pageName   = $matched[3];
+            $concatName = $matched[2];
+            $concatName = substr($concatName, 0, -1);
+            $method     = $matched[4];
+
+            /**
+             * 记录每个页面对应的权限
+             */
+            if (!isset($names[$pageName])) {
+                $names[$pageName] = [];
+            }
+            $names[$pageName][] = $method;
+
+            /**
+             * 生成后台当中的侧边菜单
+             * 拆分 page 为多个 module, module 用以生成树形结构菜单
+             * 每个 module 将第一个对应前端一个位于 src/PageDash 文件目录
+             */
+            $groupKey = sprintf("%s group %s", $type, $concatName);
+            $group    = $client->get($groupKey);
+            // 生成侧边栏数据
+            $modules     = $group['modules'];
+            $moduleProxy = null;
+            foreach ($modules as $name => $label) {
+                $module = strtoupper($name[0]) . substr($name, 1);
+                if ($moduleProxy === null) {
+                    if (!isset($menus[$module])) {
+                        $menus[$module] = [
+                            'label'    => $label,
+                            'module'   => $module,
+                            'children' => [],
+                        ];
+                    }
+                    $moduleProxy = &$menus[$module];
+                } else {
+                    if (!isset($moduleProxy['children'][$module])) {
+                        $moduleProxy['children'][$module] = [
+                            'label'    => $label,
+                            'module'   => $module,
+                            'children' => [],
+                        ];
+                    }
+                    $moduleProxy = &$moduleProxy['children'][$module];
+                }
+            }
+            unset($moduleProxy);
+        }
+        return compact('names', 'menus');
+    }
+
+    function getPages($names, $isShard)
+    {
+
     }
 
     static function safeKeys($keys, $code = null)
@@ -113,7 +186,7 @@ class PermissionCache
             if (
                 (
                     strpos($key, 'shard item ') !== 0 &&
-                    strpos($key, "private $code item") !== 0
+                    strpos($key, "private $code item ") !== 0
                 )
             ) {
                 throw new BurstException(BurstException::DANGER, 'pc-sk');
@@ -125,24 +198,24 @@ class PermissionCache
     /**
      *
      * [
-     *     'admin_position' => [
+     *     'adminPosition' => [
      *         [
      *             'code'       => null
-     *             'concatName' => 'admin_position',
+     *             'concatName' => 'adminPosition',
      *             'snapshot'   => [
-     *                 ['admin_position create', '创建岗位', ['admin_position find']],
-     *                 ['admin_position update', '修改岗位', ['admin_position find']],
-     *                 ['admin_position find',   '岗位详情'],
-     *                 ['admin_position delete', '删除岗位'],
+     *                 ['adminPosition create', '创建岗位', ['find']],
+     *                 ['adminPosition update', '修改岗位', ['find']],
+     *                 ['adminPosition find',   '岗位详情'],
+     *                 ['adminPosition delete', '删除岗位'],
      *             ],
      *             'labels'     => ['系统管理', '岗位管理'],
      *             'must'       => [
-     *                 "admin_position list" => [
-     *                     'admin_position list',
+     *                 "adminPosition list" => [
+     *                     'adminPosition list',
      *                     '查看岗位列表'
      *                 ]
      *             ]
-     *         }
+     *         ]
      *     ]
      * ]
      *
@@ -162,8 +235,8 @@ class PermissionCache
         foreach ($group as $item) {
             $row               = ['snapshot' => []];
             $row['concatName'] = $item['concatName'];
-            $row['labels']     = $item['labels'];
             $row['code']       = $item['code'];
+            $row['labels']     = array_values($item['modules']);
             $must              = [];
             foreach ($item['must'] as $mustName => $mustLabel) {
                 if ($mustLabel) {
@@ -185,6 +258,9 @@ class PermissionCache
         $keys  = $this->getItemKeys($code);
         $items = $client->mget($keys);
         foreach ($items as $item) {
+            if ($item['must'] === 1) {
+                continue;
+            }
             $depends = [];
             $row     = $tableData[$item['concatName']];
             $code    = $row['code'];
@@ -242,11 +318,11 @@ class PermissionCache
         for ($i = 0; $i < count($data); $i++) {
             $result[] = [
                 $data[$i]['concatName'],
-                json_encode($data[$i]['labels'], JSON_UNESCAPED_UNICODE),
+                json_encode($data[$i]['modules'], JSON_UNESCAPED_UNICODE),
                 json_encode($data[$i]['must'], JSON_UNESCAPED_UNICODE)
             ];
         }
-        return $result;
+        return collect($result)->sortBy(0)->all();
     }
 
     function getItemList($guessName, $code = null)
@@ -279,7 +355,7 @@ class PermissionCache
                 json_encode($data[$i]['depends'])
             ];
         }
-        return $result;
+        return collect($result)->sortBy(1)->all();
     }
 
     function flush()
@@ -323,13 +399,13 @@ class PermissionCache
     {
         $code = $options['code'];
         foreach ($permissionGroups as $permissionGroup) {
-            $name     = $permissionGroup['name'] ?? '';
             $label    = $permissionGroup['label'] ?? null;
             $actions  = $permissionGroup['actions'] ?? [];
             $children = $permissionGroup['children'] ?? [];
-            $labels   = $options['labels'] ?? [];
+            $name     = $permissionGroup['name'] ?? null;
+            $modules  = $options['modules'] ?? [];
             if ($label) {
-                $labels[] = $label;
+                $modules[$name] = $label;
             }
             $concatName = $options['concatName'] ?? '';
             if ($concatName) {
@@ -340,7 +416,7 @@ class PermissionCache
             if (count($children)) {
                 $this->loopGroup($children, [
                     'code'       => $code,
-                    'labels'     => $labels,
+                    'modules'    => $modules,
                     'concatName' => $concatName,
                 ]);
                 continue;
@@ -350,7 +426,7 @@ class PermissionCache
                     $depends = array_slice($actionInfo, 2);
                     if (!isset($this->group[$concatName])) {
                         $this->group[$concatName] = [
-                            'labels'     => $labels,
+                            'modules'    => $modules,
                             'concatName' => $concatName,
                             'must'       => [],
                             'code'       => $code,
@@ -360,14 +436,14 @@ class PermissionCache
                     $must           = $actionInfo[0];
                     if ($must === 1) {
                         $this->group[$concatName]['must'][$actionName] = $actionInfo[1] ?? null;
-                    } else {
-                        $this->items[$permissionName] = [
-                            'name'       => $permissionName,
-                            'concatName' => $concatName,
-                            'label'      => $actionInfo[1] ?? null,
-                            'depends'    => $depends
-                        ];
                     }
+                    $this->items[$permissionName] = [
+                        'name'       => $permissionName,
+                        'concatName' => $concatName,
+                        'label'      => $actionInfo[1] ?? null,
+                        'depends'    => $depends,
+                        'must'       => $must
+                    ];
                 }
             }
         }

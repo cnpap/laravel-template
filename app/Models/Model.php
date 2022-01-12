@@ -16,10 +16,4 @@ class Model extends Base
     use ModelTrait, HasFactory;
 
     protected $guarded = [];
-
-    protected $keyType = 'string';
-
-    protected $casts = [
-        'id' => 'string'
-    ];
 }

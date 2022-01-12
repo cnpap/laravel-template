@@ -12,6 +12,7 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/.run
 /.idea
 /.vscode
 /_ide_helper.php

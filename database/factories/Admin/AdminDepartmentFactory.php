@@ -26,7 +26,6 @@ class AdminDepartmentFactory extends Factory
         $code        = fnPinYin($name);
         $description = '部门描述/备注' . $num;
         return [
-            'id'          => uni(),
             'status'      => _USED,
             'name'        => $name,
             'code'        => $code,

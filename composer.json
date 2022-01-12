@@ -58,12 +58,16 @@
         "server": [
             "@php artisan serve --port=8888 --host=0.0.0.0"
         ],
+        "cacheFresh": [
+            "@php artisan cache:permission fresh"
+        ],
         "migrate": [
             "@php artisan migrate:fresh --path=database/migrations/admin",
             "@php artisan migrate --path=database/migrations/dev",
             "@php artisan migrate",
             "@php artisan db:seed --class=AdminSeeder",
-            "@php artisan db:seed --class=DevSeeder"
+            "@php artisan db:seed --class=DevSeeder",
+            "@composer cacheFresh"
         ],
         "ide": [
             "@php artisan ide-helper:meta",

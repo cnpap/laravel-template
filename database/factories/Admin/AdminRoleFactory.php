@@ -19,7 +19,6 @@ class AdminRoleFactory extends Factory
         $code        = fnPinYin($name);
         $description = '描述/备注信息' . $num;
         return [
-            'id'          => $id,
             'created_at'  => Carbon::now(),
             'updated_at'  => Carbon::now(),
             'status'      => _USED,

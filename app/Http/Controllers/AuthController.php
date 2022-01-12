@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Cache\PermissionCache;
 use App\Http\Requests\Admin\LoginRequest;
 use App\Http\Resources\UserinfoResource;
+use App\Models\Admin\AdminRolePermissionName;
 use App\Models\Admin\AdminUser;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,16 +39,23 @@ class AuthController extends Controller
         $user = AdminUser::filter($request->validated())->first();
         $user->tokens()->delete();
         $token           = $user->createToken('admin');
-        $permissionKeys  = [];
         $permissionCache = new PermissionCache();
         if ($user->id === '_super_manager') {
-            $permissionKeys = $permissionCache->getItemNames();
+            $authInfo = $permissionCache->getAuthInfo();
+        } else {
+            $ids      = $user->admin_role_ids()->toArray();
+            $names    = AdminRolePermissionName::query()
+                ->select(['permission_name'])
+                ->whereIn('admin_role_id', $ids)
+                ->pluck('permission_name')
+                ->toArray();
+            $authInfo = $permissionCache->getAuthInfo(sess('e_id'), $names);
         }
         return result([
-            'token'          => substr($token->plainTextToken, 3),
-            'data'           => new UserinfoResource($user),
-            'message'        => '登录成功',
-            'permissionKeys' => $permissionKeys
+            'token'    => substr($token->plainTextToken, 3),
+            'data'     => new UserinfoResource($user),
+            'message'  => '登录成功',
+            'authInfo' => $authInfo
         ]);
     }
 

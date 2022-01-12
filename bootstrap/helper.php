@@ -1,25 +1,25 @@
 <?php
 
+use App\Exceptions\BurstException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Session;
 use Overtrue\LaravelPinyin\Facades\Pinyin;
 use Illuminate\Http\Request;
-use http\Exception\RuntimeException;
 
 // OK 也代表数据是新增数据
-const _NEW = '新数据';
-const _ERR = '异常中';
-const _OFF = '已停用';
+const _NEW = 1;
+const _ERR = 3;
+const _OFF = 4;
 
 // USED 有过关联的数据, 一般是不可以被删除的
-const _USED = '已占用';
-const _STOP = '已下架';
+const _USED = 2;
+const _STOP = 11;
 
 define("STATUS_JOIN", implode(',', [_NEW, _OFF, _USED, _ERR]));
 
-const _MAN   = '男';
-const _WOMAN = '女';
+const _MAN   = 1;
+const _WOMAN = 2;
 
 define("GENDER_JOIN", implode(',', [_MAN, _WOMAN]));
 
@@ -68,34 +68,9 @@ function sess($name)
 {
     $eid = Session::get($name);
     if (!$eid) {
-        throw new RuntimeException();
+        throw new BurstException();
     }
     return $eid;
-}
-
-/**
- * @method static array convert(string $data)
- */
-class PYin extends Pinyin
-{
-    static function simple(string $character)
-    {
-        $runeItem = self::convert($character);
-        $value    = '';
-        foreach ($runeItem as $runes) {
-            $value .= $runes[0];
-        }
-        return $value;
-    }
-
-    static function array(array $arr)
-    {
-        $item = [];
-        foreach ($arr as $character) {
-            $item[] = self::simple($character);
-        }
-        return implode(', ', $item);
-    }
 }
 
 function uni()
@@ -253,8 +228,8 @@ function treeOptions($item)
                 'selectable' => true,
             ];
             if (count($children) || $i = 0) {
-                $model['children']   = $children;
-                $model['checkable']  = true;
+                $model['children']  = $children;
+                $model['checkable'] = true;
             } else {
                 $model['checkable'] = false;
             }

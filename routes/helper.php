@@ -5,17 +5,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryEditRequest;
 use App\Http\Requests\CategoryIndexRequest;
 use App\Models\Comm\Category;
-use App\Models\Model;
-use ICanBoogie\Inflector;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
-app()->bind(
-    Inflector::class,
-    function () {
-        return Inflector::get();
-    }
-);
 
 function routePrefix($prefix, $callback)
 {
@@ -30,15 +22,13 @@ function routePack($prefix, $control, $methods = null)
         $methods
     ) {
         if ($methods !== null) {
-            /** @var Inflector $inflector */
-            $inflector = app(Inflector::class);
             foreach ($methods as $index => $method) {
                 $template = null;
                 if (!is_int($index)) {
                     $template = $method;
                     $method   = $index;
                 }
-                $path = $inflector->underscore($method);
+                $path = $method;
                 if ($template !== null) {
                     $path = str_replace('$', $path, $template);
                 }
@@ -48,23 +38,23 @@ function routePack($prefix, $control, $methods = null)
                 Route::post($path, [$control, $method]);
             }
         }
-        if (method_exists($control, 'find')) {
-            Route::post('/find/{id}', [$control, 'find']);
+        if (method_exists($control, 'Find')) {
+            Route::post('/Find/{id}', [$control, 'Find']);
         }
-        if (method_exists($control, 'list')) {
-            Route::post('/list', [$control, 'list']);
+        if (method_exists($control, 'List')) {
+            Route::post('/List', [$control, 'List']);
         }
-        if (method_exists($control, 'create')) {
-            Route::post('/create', [$control, 'create']);
+        if (method_exists($control, 'Create')) {
+            Route::post('/Create', [$control, 'Create']);
         }
-        if (method_exists($control, 'update')) {
-            Route::put('/{id}', [$control, 'update']);
+        if (method_exists($control, 'Update')) {
+            Route::put('/{id}', [$control, 'Update']);
         }
-        if (method_exists($control, 'delete')) {
-            Route::delete('/delete', [$control, 'delete']);
+        if (method_exists($control, 'Delete')) {
+            Route::delete('/Delete', [$control, 'Delete']);
         }
-        if (method_exists($control, 'status')) {
-            Route::post('/status', [$control, 'status']);
+        if (method_exists($control, 'Status')) {
+            Route::post('/Status', [$control, 'Status']);
         }
     };
     if ($prefix) {
@@ -76,9 +66,6 @@ function routePack($prefix, $control, $methods = null)
 
 function routePackCategory($prefix, string $model)
 {
-    /** @var Inflector $inflector */
-    $inflector = app(Inflector::class);
-    $prefix    = $inflector->underscore($prefix);
     /** @var Category $model */
     Route::group(['prefix' => $prefix], function () use ($model) {
         Route::post(

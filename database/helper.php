@@ -6,34 +6,41 @@ use Illuminate\Support\Facades\Schema;
 
 function createCategoryTableData(&$data, $pid = null, $label = '0', $level = 1, $leafLevel = 2)
 {
-    for ($i = 0; $i < 5; $i++) {
-        $id        = uni();
-        $currLabel = $label;
-        $currLabel .= "-" . ($i + 1);
-        $curr      = [
-            'id'         => $id,
+    if ($pid === null) {
+        $id = 1;
+    } else {
+        $id = $pid;
+    }
+    $count = 5;
+    for ($i = 0; $i < $count; $i++) {
+        $concatLabel = $label;
+        $concatLabel .= "-" . ($i + 1);
+        $curr        = [
             'pid'        => $pid,
             'level'      => $level,
-            'name'       => $currLabel,
-            'code'       => $currLabel,
+            'name'       => $concatLabel,
+            'code'       => $concatLabel,
             'created_at' => now()->format('Y-m-d H:i:s'),
             'updated_at' => now()->format('Y-m-d H:i:s')
         ];
+        $data[]      = &$curr;
         if ($level < $leafLevel) {
             $curr['status'] = _USED;
-            createCategoryTableData($data, $id, $currLabel, $level + 1, $leafLevel);
+            $serial         = createCategoryTableData($data, $id + $i, $concatLabel, $level + 1, $leafLevel);
+            $id             = $serial - $i;
         } else {
             $curr['status'] = _NEW;
         }
-        $data[] = $curr;
+        unset($curr);
     }
+    return $id + $count;
 }
 
 function createCategoryTable($name, $comment)
 {
     Schema::create($name, function (Blueprint $table) {
-        $table->string('id', 16)->unique()->comment('分类ID');
-        $table->string('pid', 16)->nullable()->comment('上级分类');
+        $table->bigIncrements('id')->unique()->comment('分类ID');
+        $table->bigInteger('pid')->nullable()->comment('上级分类');
         $table->timestamps();
 
         $table->string('status', 3)->default(_NEW)->comment('分类数据状态: 新数据, 已占用, 已停用, 异常中');

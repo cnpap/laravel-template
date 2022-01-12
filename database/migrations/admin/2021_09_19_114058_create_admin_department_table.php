@@ -16,29 +16,30 @@ class CreateAdminDepartmentTable extends Migration
     public function up()
     {
         Schema::create('admin_department', function (Blueprint $table) {
-            $table->string('id')->unique()->comment('管理员部门ID');
+            $table->bigIncrements('id')->unique()->comment('管理员部门ID');
             $table->timestamps();
-
-            $table->string('status', 3)->default(_NEW)->comment('管理员部门数据状态: 新数据, 已占用, 已停用, 异常中');
+            $table->smallInteger('status')->default(_NEW)->comment('管理员部门数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
             $table->string('name', 40)->comment('部门名称');
             $table->string('code', 40)->comment('部门编号');
             $table->string('description', 200)->nullable()->comment('部门描述/备注');
         });
         AdminDepartment::clearCacheOptions();
 
+        $defaultName = '默认部门';
+        $defaultCode = fnPinYin($defaultName);
         AdminDepartment::query()
             ->create([
-                'id'     => '_department1',
                 'status' => _USED,
-                'name'   => '默认部门',
-                'code'   => 'mrbm'
+                'name'   => $defaultName,
+                'code'   => $defaultCode
             ]);
+        $externName = '外部部门';
+        $externCode = fnPinYin($externName);
         AdminDepartment::query()
             ->create([
-                'id'     => '_department2',
                 'status' => _USED,
-                'name'   => '外部部门',
-                'code'   => 'wbbm',
+                'name'   => $externName,
+                'code'   => $externCode,
             ]);
 
         DB::statement("alter table `admin_department` comment '管理员部门表'");

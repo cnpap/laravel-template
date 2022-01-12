@@ -15,12 +15,12 @@ class CreateAdminUserTable extends Migration
     public function up()
     {
         Schema::create('admin_user', function (Blueprint $table) {
-            $table->string('id')->unique()->comment('管理员用户ID');
+            $table->bigIncrements('id')->unique()->comment('管理员用户ID');
             $table->timestamps();
 
-            $table->string('admin_position_id')->comment('关联管理员岗位ID');
-            $table->string('status', 3)->default(_NEW)->comment('管理员用户数据状态: 新数据, 已占用, 已停用, 异常中');
-            $table->string('gender', 1)->comment('性别');
+            $table->bigInteger('admin_position_id')->comment('关联管理员岗位ID');
+            $table->smallInteger('status')->default(_NEW)->comment('管理员用户数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
+            $table->smallInteger('gender')->comment('性别');
             $table->string('avatar', 100)->default('/avatar/admin-id-default.png')->comment('头像');
             $table->string('username', 40)->comment('用户名');
             $table->string('code', 40)->comment('用户编号');

@@ -1,5 +1,6 @@
 <?php
 
+use App\Cache\PermissionCache;
 use App\Http\Controllers\CommonControllers\LogController;
 use App\Http\Controllers\RegionController;
 use Illuminate\Support\Facades\Route;
@@ -28,41 +29,39 @@ Route::middleware(debugMiddleware())->group(function () {
         ['logout', 'userinfo']
     );
     routePack(
-        '/enterprise',
+        PermissionCache::PEnterprise,
         EnterpriseAuthController::class,
         ['uploadZj', 'uploadId', 'uploadMm', 'uploadHj']
     );
-    Route::prefix('/admin')->group(function () {
-        routePack(
-            '/user',
-            AdminUserController::class,
-            [
-                'departmentOptions',
-                'positionOptions',
-                'roleOptions',
-                'forgotPassword' => '$/{id}'
-            ]
-        );
-        routePack(
-            '/department',
-            AdminDepartmentController::class
-        );
-        routePack(
-            '/position',
-            AdminPositionController::class,
-            [
-                'departmentOptions',
-            ]
-        );
-        routePack(
-            '/role',
-            AdminRoleController::class,
-            [
-                'syncPermissionNames' => '$/{id}',
-                'findPermissionNames' => '$/{id}'
-            ]
-        );
-    });
+    routePack(
+        PermissionCache::PAdminUser,
+        AdminUserController::class,
+        [
+            'departmentOptions',
+            'positionOptions',
+            'roleOptions',
+            'forgotPassword' => '$/{id}'
+        ]
+    );
+    routePack(
+        PermissionCache::PAdminDepartment,
+        AdminDepartmentController::class
+    );
+    routePack(
+        PermissionCache::PAdminPosition,
+        AdminPositionController::class,
+        [
+            'departmentOptions',
+        ]
+    );
+    routePack(
+        PermissionCache::PAdminRole,
+        AdminRoleController::class,
+        [
+            'syncPermissionNames' => '$/{id}',
+            'findPermissionNames' => '$/{id}'
+        ]
+    );
 });
 
 // 放在最下面, 在不变动 laravel 原有认证模块下, 假装自己是 spa,

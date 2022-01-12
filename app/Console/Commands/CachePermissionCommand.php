@@ -8,9 +8,18 @@ use Illuminate\Console\Command;
 
 class CachePermissionCommand extends Command
 {
-    protected $signature = 'cache:permissions';
+    protected $signature = 'cache:permissions {code?}';
 
     protected $description = '操作权限缓存信息';
+
+    /** @var PermissionCache */
+    protected $permissionCacheControl;
+
+    function freshToCache()
+    {
+        $this->permissionCacheControl->migrate();
+        $this->info('已刷新文件结构到缓存');
+    }
 
     /**
      * resources/permissions 文件夹下所有文件
@@ -19,6 +28,13 @@ class CachePermissionCommand extends Command
      */
     public function handle()
     {
+        $code = $this->argument('code');
+        $this->permissionCacheControl = new PermissionCache();
+        if ($code === 'fresh') {
+            $this->freshToCache();
+            return;
+        }
+
         while (true) {
             $action = $this->choice(
                 '选择菜单, <ctl + c 退出>',
@@ -30,15 +46,13 @@ class CachePermissionCommand extends Command
                     '验证用户权限',
                 ]
             );
-            $cache  = new PermissionCache();
             if ($action === '刷新文件结构到缓存') {
-                $cache->migrate();
-                $this->info('已刷新文件结构到缓存');
-                $this->handle();
+                $this->freshToCache();
+                return;
             }
             if ($action === '查看权限组列表') {
-                $likeGroupName     = $this->ask('请输入搜索 权限 name [例: admin], [默认搜索全部]');
-                $getGroupList = $cache->getGroupList($likeGroupName);
+                $likeGroupName = $this->ask('请输入搜索 权限 name [例: admin], [默认搜索全部]');
+                $getGroupList  = $this->permissionCacheControl->getGroupList($likeGroupName);
                 $this->table(
                     ['权限组 name', '上级组', '必要依赖权限'],
                     $getGroupList
@@ -46,8 +60,8 @@ class CachePermissionCommand extends Command
                 $this->handle();
             }
             if ($action === '查看权限列表') {
-                $likeName         = $this->ask('请输入搜索 权限 name [例: admin], [默认搜索全部]');
-                $getItemList = $cache->getItemList($likeName);
+                $likeName    = $this->ask('请输入搜索 权限 name [例: admin], [默认搜索全部]');
+                $getItemList = $this->permissionCacheControl->getItemList($likeName);
                 $this->table(
                     ['权限 name', '所在权限组', '权限名称', '依赖权限'],
                     $getItemList
