@@ -39,9 +39,6 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('phone', function ($attribute, $value) {
             return preg_match('@^1[3-9]\d{9}$@', $value);
         });
-        Validator::extend('id', function ($attribute, $value) {
-            return preg_match('@^[\da-z_]{6,16}$@', $value);
-        });
         Validator::extend('redis_key', function ($attribute, $value) {
             return PermissionCache::safeKeys($value);
         });

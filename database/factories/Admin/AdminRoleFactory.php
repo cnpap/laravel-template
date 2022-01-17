@@ -13,7 +13,6 @@ class AdminRoleFactory extends Factory
 
     public function definition(): array
     {
-        $id          = uni();
         $num         = rand(1000, 9999);
         $name        = '角色' . $num;
         $code        = fnPinYin($name);

@@ -24,11 +24,8 @@ class AdminDepartmentIndexRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'     => 'string',
-            'code'     => 'string|between:1,40',
-            'status'   => 'array|max:4',
-            'status.*' => 'string|in:' . STATUS_JOIN,
-            'detect'   => 'string',
+            'name' => 'string',
+            'code' => 'string|between:1,40',
         ];
     }
 }

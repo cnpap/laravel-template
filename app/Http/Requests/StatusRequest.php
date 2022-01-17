@@ -10,7 +10,7 @@ class StatusRequest extends FormRequest
     {
         return [
             'ids'   => 'required|array|between:1,30',
-            'ids.*' => 'string|id'
+            'ids.*' => 'int'
         ];
     }
 

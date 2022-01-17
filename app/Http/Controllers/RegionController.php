@@ -81,7 +81,7 @@ class RegionController extends Controller
             $request,
             [
                 'code'  => 'string',
-                'level' => 'integer'
+                'level' => 'int'
             ]
         );
         $code  = $request->input('code', false);
@@ -133,7 +133,7 @@ class RegionController extends Controller
             $request,
             [
                 'code'  => 'required|string',
-                'level' => 'integer'
+                'level' => 'int'
             ]
         );
         $level   = $request->input('level');

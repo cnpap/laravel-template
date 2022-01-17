@@ -59,7 +59,7 @@ class AdminRoleController extends Controller
 
     function list(AdminRoleIndexRequest $request)
     {
-        $paginator = AdminRole::filter($request->validated())
+        $paginator = AdminRole::indexFilter($request->validated())
             ->paginate(...usePage());
 
         return page($paginator);
@@ -93,8 +93,6 @@ class AdminRoleController extends Controller
                 mergeCode($post);
 
                 $role     = new AdminRole($post);
-                $role->id = uni();
-
                 $role->save();
 
                 return true;

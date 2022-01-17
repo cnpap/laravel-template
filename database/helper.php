@@ -43,7 +43,7 @@ function createCategoryTable($name, $comment)
         $table->bigInteger('pid')->nullable()->comment('上级分类');
         $table->timestamps();
 
-        $table->string('status', 3)->default(_NEW)->comment('分类数据状态: 新数据, 已占用, 已停用, 异常中');
+        $table->smallInteger('status')->default(_NEW)->comment('管理员角色数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
         $table->smallInteger('level')->comment('等级')->nullable();
         $table->string('name', 40)->comment('分类名称');
         $table->string('code', 40)->comment('分类编号');

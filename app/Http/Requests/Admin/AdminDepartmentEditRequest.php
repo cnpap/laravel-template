@@ -25,9 +25,9 @@ class AdminDepartmentEditRequest extends FormRequest
     {
         return [
             'name'        => 'required|string|between:1,40',
-            'code'        => 'string|between:1,40',
-            'status'      => 'string|in:' . STATUS_JOIN,
-            'description' => 'string|max:100'
+            'code'        => 'nullable|string|between:1,40',
+            'status'      => 'nullable|int|in:' . STATUS_JOIN,
+            'description' => 'nullable|string|max:100'
         ];
     }
 }

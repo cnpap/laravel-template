@@ -9,10 +9,10 @@ class AdminRoleEditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status'             => 'string|in:' . STATUS_JOIN,
-            'name'               => 'required|string|between:1,40',
-            'code'               => 'string|between:1,40',
-            'description'        => 'string|between:1,200',
+            'status'      => 'nullable|int|in:' . STATUS_JOIN,
+            'name'        => 'required|string|between:1,40',
+            'code'        => 'nullable|string|between:1,40',
+            'description' => 'nullable|string|between:1,200',
         ];
     }
 

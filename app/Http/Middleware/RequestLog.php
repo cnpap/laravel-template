@@ -13,7 +13,7 @@ class RequestLog
     {
         $label  = $request->method() . '_' . $request->path();
         $userId = Auth::id();
-        Log::channel('request ' . $type)->info($label, [
+        Log::channel('request_' . $type)->info($label, [
             'user id' => $userId,
             'ip'      => $request->ip(),
             'heads'   => $request->header(),

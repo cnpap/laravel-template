@@ -51,9 +51,9 @@ trait ModelTrait
 
         $builder = static::filter($filter);
         if ($status) {
-            $builder->whereIn('status', $status);
+            $builder = $builder->whereIn('status', $status);
         } else {
-            $builder->where('status', '!=', _OFF);
+            $builder = $builder->where('status', '!=', _OFF);
         }
         if ($orderByDesc === 'descend') {
             $orderByDesc = 'desc';
@@ -61,7 +61,7 @@ trait ModelTrait
             $orderByDesc = 'asc';
         }
         if ($orderBy) {
-            $builder->orderBy($orderBy, $orderByDesc);
+            $builder = $builder->orderBy($orderBy, $orderByDesc);
         }
         return $builder;
     }

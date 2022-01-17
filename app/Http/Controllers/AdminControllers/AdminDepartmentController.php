@@ -46,7 +46,6 @@ class AdminDepartmentController extends Controller
         $post = $request->validated();
         mergeCode($post);
         $one     = new AdminDepartment($post);
-        $one->id = uni();
         $one->save();
         AdminDepartment::clearCacheOptions();
         return ss();

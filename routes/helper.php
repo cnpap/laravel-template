@@ -38,23 +38,23 @@ function routePack($prefix, $control, $methods = null)
                 Route::post($path, [$control, $method]);
             }
         }
-        if (method_exists($control, 'Find')) {
-            Route::post('/Find/{id}', [$control, 'Find']);
+        if (method_exists($control, 'find')) {
+            Route::post('/find/{id}', [$control, 'find']);
         }
-        if (method_exists($control, 'List')) {
-            Route::post('/List', [$control, 'List']);
+        if (method_exists($control, 'list')) {
+            Route::post('/list', [$control, 'list']);
         }
-        if (method_exists($control, 'Create')) {
-            Route::post('/Create', [$control, 'Create']);
+        if (method_exists($control, 'create')) {
+            Route::post('/create', [$control, 'create']);
         }
-        if (method_exists($control, 'Update')) {
-            Route::put('/{id}', [$control, 'Update']);
+        if (method_exists($control, 'update')) {
+            Route::put('/{id}', [$control, 'update']);
         }
-        if (method_exists($control, 'Delete')) {
-            Route::delete('/Delete', [$control, 'Delete']);
+        if (method_exists($control, 'delete')) {
+            Route::delete('/delete', [$control, 'delete']);
         }
-        if (method_exists($control, 'Status')) {
-            Route::post('/Status', [$control, 'Status']);
+        if (method_exists($control, 'status')) {
+            Route::post('/status', [$control, 'status']);
         }
     };
     if ($prefix) {
@@ -119,7 +119,6 @@ function routePackCategory($prefix, string $model)
                 $sub = new $model($post);
                 $ok  = (new Category())->getConnection()->transaction(function () use ($sub, $model) {
                     /** @var Category $sub */
-                    $sub->id = uni();
                     if ($sub->pid) {
                         /** @var Category $pSub */
                         $pSub = $model::query()->where('id', $sub->pid)->firstOrFail();

@@ -9,6 +9,11 @@ use App\Models\Admin\AdminUser;
 /** @mixin AdminUser */
 class AdminUserFilter extends ModelFilter
 {
+    function gender($val)
+    {
+        return $this->whereIn('gender', $val);
+    }
+
     function username($val)
     {
         return $this->where('username', 'like', "%$val%");

@@ -53,7 +53,6 @@ class AdminPositionController extends Controller
 
         // 事务开始
         $one     = new AdminPosition($post);
-        $one->id = uni();
         $ok      = $one->getConnection()->transaction(function () use (
             $one, $post,
             // 关联字段

@@ -10,7 +10,7 @@ class BulkRequest extends FormRequest
     {
         return [
             'ids'    => 'required|array|min:1|max:30',
-            'ids.*'  => 'string|id',
+            'ids.*'  => 'string',
         ];
     }
 

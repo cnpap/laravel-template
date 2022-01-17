@@ -3,12 +3,12 @@
 namespace App\TraitService;
 
 use App\Exceptions\BaiDuServiceException;
+use App\Exceptions\BaseException;
 use App\Exceptions\ImageSizeInvalidException;
 use App\Models\Admin\AdminUser;
 use App\Models\Enterprise\EnterpriseAuth;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use http\Exception\RuntimeException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -52,13 +52,13 @@ trait BaiDuTraitService
         $statusCode = $response->getStatusCode();
         $result     = json_decode($response->getBody()->getContents(), true);
         if ($statusCode !== 200) {
-            Log::channel('burst exception')->error('baidu token', $result);
+            Log::channel('burst_exception')->error('baidu token', $result);
             throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::TOKEN);
         }
         $ok = Cache::put('baidu token ' . md5(json_encode($option)), $result['access_token'], 3600 * 5);
         if (!$ok) {
-            Log::channel('burst exception')->error('redis set fail');
-            throw new RuntimeException('服务器产生严重错误');
+            Log::channel('burst_exception')->error('redis set fail');
+            throw new BaseException('服务器产生严重错误');
         }
         return $result['access_token'];
     }
@@ -111,7 +111,7 @@ trait BaiDuTraitService
                 'username' => $user->username,
                 'data'     => $data
             ]);
-            throw new \RuntimeException('检测到图片具有违规信息');
+            throw new BaseException('检测到图片具有违规信息');
         }
     }
 
@@ -144,10 +144,10 @@ trait BaiDuTraitService
                 'username' => $user->username,
                 'path'     => $path
             ]);
-            throw new \RuntimeException('检测到图片具有违规信息');
+            throw new BaseException('检测到图片具有违规信息');
         }
         if ($statusCode !== 200) {
-            Log::channel('burst exception')->error('baidu id ocr', $result);
+            Log::channel('burst_exception')->error('baidu id ocr', $result);
             throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::OCR);
         }
         return [
@@ -180,7 +180,7 @@ trait BaiDuTraitService
         $result     = json_decode($response->getBody()->getContents(), true);
         $statusCode = $response->getStatusCode();
         if ($statusCode !== 200) {
-            Log::channel('burst exception')->error('baidu id ocr', $result);
+            Log::channel('burst_exception')->error('baidu id ocr', $result);
             throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::OCR);
         }
         $result = $result['words_result'];
@@ -229,7 +229,7 @@ trait BaiDuTraitService
         $result     = json_decode($response->getBody()->getContents(), true);
         $statusCode = $response->getStatusCode();
         if ($statusCode !== 200 || !isset($result['words_result'])) {
-            Log::channel('burst exception')->error('baidu zj ocr', $result);
+            Log::channel('burst_exception')->error('baidu zj ocr', $result);
             throw new BaiDuServiceException('调取服务出错', BaiDuServiceException::OCR);
         }
         $result = $result['words_result'];

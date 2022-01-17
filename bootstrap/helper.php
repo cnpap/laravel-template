@@ -59,6 +59,41 @@ function rsaDecrypt($data)
     return $text;
 }
 
+function rsaEncrypt($data)
+{
+    $pubKey = file_get_contents(storage_path('app/pub'));
+    openssl_public_encrypt($data, $cipherText, $pubKey);
+    return base64_encode($cipherText);
+}
+
+function passwordSecurity($password)
+{
+    $strLen = strlen($password);
+    if ($strLen > 16) {
+        return '请输入一个 8 - 16 位长度易于记忆的密码';
+    }
+    if ($strLen < 8) {
+        return '密码长度不可低于 8 位';
+    }
+    $rate = 0;
+    if (preg_match('@[0-9]+@', $password)) {
+        $rate++;
+    }
+    if (preg_match('@[a-z]+@', $password)) {
+        $rate++;
+    }
+    if (preg_match('@[A-Z]+@', $password)) {
+        $rate++;
+    }
+    if (preg_match('@[^0-9a-zA-Z]+@', $password)) {
+        $rate++;
+    }
+    if ($rate < 3) {
+        return '至少需要包括 大写字母、小写字母、数字、特殊字符 中的三项';
+    }
+    return true;
+}
+
 function fnPinYin($data)
 {
     return Pinyin::abbr($data, PINYIN_KEEP_NUMBER | PINYIN_KEEP_ENGLISH | PINYIN_KEEP_PUNCTUATION);
@@ -184,7 +219,7 @@ function treeN2Options($item, $foreignKey, $localField = 'name', $foreignField =
         if ($row[$foreignKey]) {
             $result[] = [
                 'title'      => $row[$localField],
-                'value'      => $row['id'],
+                'value'      => '_' . $row['id'],
                 'selectable' => false,
                 'children'   => options($row[$foreignKey], $foreignField)
             ];

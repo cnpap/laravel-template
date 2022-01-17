@@ -27,8 +27,10 @@ class AdminUserIndexRequest extends FormRequest
             'username'            => 'string|max:40',
             'code'                => 'string|max:40',
             'phone'               => 'string|max:12',
+            'gender'              => 'array',
+            'gender.*'            => 'int',
             'email'               => 'string',
-            'admin_department_id' => 'string',
+            'admin_department_id' => 'int',
             'created_at'          => 'range_datetime',
             'updated_at'          => 'range_datetime',
         ];

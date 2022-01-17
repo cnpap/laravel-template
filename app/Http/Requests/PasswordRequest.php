@@ -9,7 +9,7 @@ class PasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password' => 'required|string|between:8,16'
+            'password' => 'required|string|between:250,450',
         ];
     }
 

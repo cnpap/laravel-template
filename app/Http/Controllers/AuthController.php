@@ -8,6 +8,7 @@ use App\Http\Resources\UserinfoResource;
 use App\Models\Admin\AdminRolePermissionName;
 use App\Models\Admin\AdminUser;
 use Illuminate\Support\Facades\Auth;
+use Log;
 
 class AuthController extends Controller
 {
@@ -16,6 +17,18 @@ class AuthController extends Controller
         /** @var AdminUser $user */
         $user = Auth::user();
         return result(new UserinfoResource($user));
+    }
+
+    function toReact($menus)
+    {
+        $newMenus = [];
+        foreach ($menus as $menu) {
+            if (count($menu['children']) > 0) {
+                $menu['children'] = $this->toReact($menu['children']);
+            }
+            $newMenus[] = $menu;
+        }
+        return $newMenus;
     }
 
     function login(LoginRequest $request)
@@ -40,7 +53,7 @@ class AuthController extends Controller
         $user->tokens()->delete();
         $token           = $user->createToken('admin');
         $permissionCache = new PermissionCache();
-        if ($user->id === '_super_manager') {
+        if ($user->id === 1) {
             $authInfo = $permissionCache->getAuthInfo();
         } else {
             $ids      = $user->admin_role_ids()->toArray();
@@ -51,6 +64,7 @@ class AuthController extends Controller
                 ->toArray();
             $authInfo = $permissionCache->getAuthInfo(sess('e_id'), $names);
         }
+        $authInfo['menus'] = $this->toReact($authInfo['menus']);
         return result([
             'token'    => substr($token->plainTextToken, 3),
             'data'     => new UserinfoResource($user),

@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 
 class AdminUserEditRequest extends FormRequest
 {
@@ -26,16 +25,16 @@ class AdminUserEditRequest extends FormRequest
     {
         return [
             'username'          => 'required|string|between:1,40',
-            'code'              => 'string|between:1,40',
-            'password'          => 'string|between:250,450',
-            'admin_position_id' => 'required|string|id',
+            'code'              => 'nullable|string|between:1,40',
+            'password'          => 'nullable|string|between:250,450',
+            'admin_position_id' => 'required|int',
             'admin_role_ids'    => 'required|array|min:1',
-            'admin_role_ids.*'  => 'required|string|id',
+            'admin_role_ids.*'  => 'required|int',
             'phone'             => 'required|string|phone',
-            'email'             => 'string|email',
-            'gender'            => 'required|string|in:' . GENDER_JOIN,
-            'status'            => 'string|in:' . STATUS_JOIN,
-            'description'       => 'string|max:200',
+            'email'             => 'nullable|string|email',
+            'gender'            => 'required|int|in:' . GENDER_JOIN,
+            'status'            => 'nullable|int|in:' . STATUS_JOIN,
+            'description'       => 'nullable|string|max:200',
         ];
     }
 }

@@ -23,6 +23,11 @@ class AdminUserController extends Controller
     function forgotPassword(PasswordRequest $request, $id)
     {
         $password = $request->input('password');
+        $password = rsaDecrypt($password);
+        $secure   = passwordSecurity($password);
+        if ($secure !== true) {
+            return se(['message' => $secure]);
+        }
         $password = Hash::make($password);
         AdminUser::query()
             ->where('id', $id)
@@ -114,7 +119,6 @@ class AdminUserController extends Controller
 
         // 开始事务
         $user           = new AdminUser($post);
-        $user->id       = uni();
         $user->password = bcrypt($user->password);
         $ok             = $user->getConnection()->transaction(function () use (
             $user,

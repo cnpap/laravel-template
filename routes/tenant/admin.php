@@ -28,40 +28,42 @@ Route::middleware(debugMiddleware())->group(function () {
         AuthController::class,
         ['logout', 'userinfo']
     );
-    routePack(
-        PermissionCache::PEnterprise,
-        EnterpriseAuthController::class,
-        ['uploadZj', 'uploadId', 'uploadMm', 'uploadHj']
-    );
-    routePack(
-        PermissionCache::PAdminUser,
-        AdminUserController::class,
-        [
-            'departmentOptions',
-            'positionOptions',
-            'roleOptions',
-            'forgotPassword' => '$/{id}'
-        ]
-    );
-    routePack(
-        PermissionCache::PAdminDepartment,
-        AdminDepartmentController::class
-    );
-    routePack(
-        PermissionCache::PAdminPosition,
-        AdminPositionController::class,
-        [
-            'departmentOptions',
-        ]
-    );
-    routePack(
-        PermissionCache::PAdminRole,
-        AdminRoleController::class,
-        [
-            'syncPermissionNames' => '$/{id}',
-            'findPermissionNames' => '$/{id}'
-        ]
-    );
+    Route::prefix('admin')->group(function () {
+        routePack(
+            PermissionCache::PEnterprise,
+            EnterpriseAuthController::class,
+            ['uploadZj', 'uploadId', 'uploadMm', 'uploadHj']
+        );
+        routePack(
+            PermissionCache::PAdminUser,
+            AdminUserController::class,
+            [
+                'departmentOptions',
+                'positionOptions',
+                'roleOptions',
+                'forgotPassword' => '$/{id}'
+            ]
+        );
+        routePack(
+            PermissionCache::PAdminDepartment,
+            AdminDepartmentController::class
+        );
+        routePack(
+            PermissionCache::PAdminPosition,
+            AdminPositionController::class,
+            [
+                'departmentOptions',
+            ]
+        );
+        routePack(
+            PermissionCache::PAdminRole,
+            AdminRoleController::class,
+            [
+                'syncPermissionNames' => '$/{id}',
+                'findPermissionNames' => '$/{id}'
+            ]
+        );
+    });
 });
 
 // 放在最下面, 在不变动 laravel 原有认证模块下, 假装自己是 spa,

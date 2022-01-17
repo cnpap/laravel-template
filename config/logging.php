@@ -94,14 +94,16 @@ return [
             'level'  => env('LOG_LEVEL', 'debug'),
         ],
 
-        'base exception' => [
-            'driver' => 'errorlog',
+        'base_exception' => [
+            'driver' => 'daily',
             'level'  => env('LOG_LEVEL', 'debug'),
+            'path'   => storage_path('logs/exception/base.log'),
         ],
 
-        'burst exception' => [
-            'driver' => 'errorlog',
+        'burst_exception' => [
+            'driver' => 'daily',
             'level'  => env('LOG_LEVEL', 'debug'),
+            'path'   => storage_path('logs/exception/burst.log'),
         ],
 
         'null' => [

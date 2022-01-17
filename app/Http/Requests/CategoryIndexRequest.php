@@ -12,10 +12,10 @@ class CategoryIndexRequest extends FormRequest
             'name'      => 'string|between:1,40',
             'code'      => 'string|between:1,40',
             'status'    => 'array|max:4',
-            'status.*'  => 'string|in:' . STATUS_JOIN,
+            'status.*'  => 'int|in:' . STATUS_JOIN,
             'detect'    => 'string',
             'parents'   => 'array',
-            'parents.*' => 'string|id'
+            'parents.*' => 'int'
         ];
     }
 

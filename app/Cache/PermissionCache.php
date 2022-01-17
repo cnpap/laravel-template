@@ -125,7 +125,7 @@ class PermissionCache
         foreach ($keys as $key) {
             preg_match('@(shard|private [a-z_]+) item (([a-zA-Z0-9_]+ )+)([a-zA-Z0-9_]+)@', $key, $matched);
             $type       = $matched[1];
-            $pageName   = $matched[3];
+            $pageName   = substr($matched[3], 0, -1);
             $concatName = $matched[2];
             $concatName = substr($concatName, 0, -1);
             $method     = $matched[4];
@@ -154,7 +154,8 @@ class PermissionCache
                     if (!isset($menus[$module])) {
                         $menus[$module] = [
                             'label'    => $label,
-                            'module'   => $module,
+                            'path'     => '/' . $name,
+                            'module'   => '/' . $module,
                             'children' => [],
                         ];
                     }
@@ -163,7 +164,8 @@ class PermissionCache
                     if (!isset($moduleProxy['children'][$module])) {
                         $moduleProxy['children'][$module] = [
                             'label'    => $label,
-                            'module'   => $module,
+                            'path'     => $moduleProxy['path'] . '/' . $name,
+                            'module'   => $moduleProxy['module'] . '/' . $module,
                             'children' => [],
                         ];
                     }
