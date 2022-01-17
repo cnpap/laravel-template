@@ -39,21 +39,22 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::pattern('id', '[0-9a-z_]+');
-            Route::prefix('api')
-                ->middleware('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
+//            Route::prefix('api')
+//                ->middleware('api')
+//                ->namespace($this->namespace)
+//                ->group(base_path('routes/api.php'));
+//
+//            Route::middleware('web')
+//                ->namespace($this->namespace)
+//                ->group(base_path('routes/web.php'));
 
-            Route::middleware('web')
+            Route::middleware('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/tenant/admin.php'));
 
             if (config('app.debug')) {
-                Route::middleware('web')
+                Route::middleware('api')
                     ->namespace($this->namespace)
                     ->group(base_path('routes/tenant/dev.php'));
             }

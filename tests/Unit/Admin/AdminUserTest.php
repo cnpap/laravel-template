@@ -8,7 +8,7 @@ use Tests\TestCase;
 class AdminUserTest extends TestCase
 {
     protected $data = [
-        'username'          => '测试用户名',
+        'username'          => '测试用户',
         'admin_position_id' => 999,
         'gender'            => _MAN,
         'status'            => _NEW,
@@ -38,9 +38,10 @@ class AdminUserTest extends TestCase
      */
     function testCreate()
     {
-        $url           = 'create';
-        $data          = $this->data;
-        $data['phone'] = '1' . rand(3000000000, 9999999999);
+        $url              = 'create';
+        $data             = $this->data;
+        $data['phone']    = '1' . rand(3000000000, 9999999999);
+        $data['username'] .= '新增' . rand(1000, 9999);
         $this->post($url, $data);
     }
 
@@ -55,7 +56,7 @@ class AdminUserTest extends TestCase
     {
         $url              = AdminUser::query()->max('id');
         $data             = $this->data;
-        $data['username'] = $data['username'] . '修改';
+        $data['username'] .= '修改' . rand(1000, 9999);
         $this->put($url, $data);
     }
 

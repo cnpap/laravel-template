@@ -35,8 +35,9 @@ class AdminPositionTest extends TestCase
      */
     function testCreate()
     {
-        $url  = 'create';
-        $data = $this->data;
+        $url          = 'create';
+        $data         = $this->data;
+        $data['name'] .= '新增' . rand(1000, 9999);
         $this->post($url, $data);
     }
 
@@ -51,7 +52,7 @@ class AdminPositionTest extends TestCase
     {
         $url          = AdminPosition::query()->max('id');
         $data         = $this->data;
-        $data['name'] = $data['name'] . '修改';
+        $data['name'] .= '修改' . rand(1000, 9999);
         $this->put($url, $data);
     }
 }
