@@ -15,6 +15,11 @@ class AdminPosition extends Model
 
     protected $table = 'admin_position';
 
+    const Fulltext = [
+        'name',
+        'code'
+    ];
+
     function modelFilter()
     {
         return $this->provideFilter(AdminPositionFilter::class);

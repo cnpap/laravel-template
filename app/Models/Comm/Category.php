@@ -3,7 +3,6 @@
 namespace App\Models\Comm;
 
 use App\ModelFilters\Comm\CategoryFilter;
-use App\Models\IdeHelperCategory;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -20,6 +19,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $code
  * @property string $description
  * @property Category $parent
+ *
  * @mixin IdeHelperCategory
  */
 class Category extends Model
@@ -27,6 +27,11 @@ class Category extends Model
     use HasFactory;
 
     public $leafLevel = 2;
+
+    const Fulltext = [
+        'name',
+        'code'
+    ];
 
     function parent()
     {

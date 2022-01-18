@@ -18,11 +18,15 @@ class CreateAdminDepartmentTable extends Migration
         Schema::create('admin_department', function (Blueprint $table) {
             $table->bigIncrements('id')->unique()->comment('管理员部门ID');
             $table->timestamps();
-            $table->smallInteger('status')->default(_NEW)->comment('管理员部门数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
+
+            $table->smallInteger('status')->index()->default(_NEW)->comment('管理员部门数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
             $table->string('name', 40)->comment('部门名称');
             $table->string('code', 40)->comment('部门编号');
             $table->string('description', 200)->nullable()->comment('部门描述/备注');
         });
+
+        alterTable(AdminDepartment::class, '管理员部门表');
+
         AdminDepartment::clearCacheOptions();
 
         $defaultName = '默认部门';
@@ -41,8 +45,6 @@ class CreateAdminDepartmentTable extends Migration
                 'name'   => $externName,
                 'code'   => $externCode,
             ]);
-
-        DB::statement("alter table `admin_department` comment '管理员部门表'");
     }
 
     /**

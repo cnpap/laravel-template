@@ -1,8 +1,60 @@
 <?php
 
+use App\Models\Comm\Category;
+use App\Models\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+
+/**
+ * @param Model|string $model
+ * @return void
+ */
+function alterFulltextIndex(string $model)
+{
+    $fulltext     = $model::Fulltext;
+    $indexName    = sprintf(
+        "fulltext_%s_%s_index",
+        $model::table(),
+        implode('_', $fulltext),
+    );
+    $indexColumns = implode(', ', $fulltext);
+    $sql          = sprintf(
+        "alter table %s add fulltext index %s (%s) with parser ngram",
+        $model::table(),
+        $indexName,
+        $indexColumns
+    );
+    DB::statement($sql);
+}
+
+/**
+ * @param Model|string $model
+ * @return void
+ */
+function alterTableComment(string $model, string $comment)
+{
+    $sql = sprintf(
+        "alter table %s comment '%s'",
+        $model::table(),
+        $comment
+    );
+    DB::statement($sql);
+}
+
+/**
+ * @param Model|string $model
+ * @return void
+ */
+function alterTable(string $model, string $comment = null)
+{
+    if ($comment !== null) {
+        alterTableComment($model, $comment);
+    }
+    if (count($model::Fulltext) > 0) {
+        alterFulltextIndex($model);
+    }
+}
 
 function createCategoryTableData(&$data, $pid = null, $label = '0', $level = 1, $leafLevel = 2)
 {
@@ -36,11 +88,17 @@ function createCategoryTableData(&$data, $pid = null, $label = '0', $level = 1, 
     return $id + $count;
 }
 
-function createCategoryTable($name, $comment)
+/**
+ * @param Category|string $model
+ * @param $comment
+ * @return void
+ */
+function createCategoryTable(string $model, $comment)
 {
-    Schema::create($name, function (Blueprint $table) {
+    $tableName = $model::table();
+    Schema::create($tableName, function (Blueprint $table) use ($model) {
         $table->bigIncrements('id')->unique()->comment('分类ID');
-        $table->bigInteger('pid')->nullable()->comment('上级分类');
+        $table->bigInteger('pid')->index()->nullable()->comment('上级分类');
         $table->timestamps();
 
         $table->smallInteger('status')->default(_NEW)->comment('管理员角色数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
@@ -56,8 +114,8 @@ function createCategoryTable($name, $comment)
     if (config('app.debug')) {
         $data = [];
         createCategoryTableData($data);
-        DB::table($name)->insert($data);
+        DB::table($tableName)->insert($data);
     }
 
-    DB::statement("alter table $name comment '$comment'");
+    alterTable($model, $comment);
 }

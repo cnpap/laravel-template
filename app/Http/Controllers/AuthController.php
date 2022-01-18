@@ -8,7 +8,6 @@ use App\Http\Resources\UserinfoResource;
 use App\Models\Admin\AdminRolePermissionName;
 use App\Models\Admin\AdminUser;
 use Illuminate\Support\Facades\Auth;
-use Log;
 
 class AuthController extends Controller
 {

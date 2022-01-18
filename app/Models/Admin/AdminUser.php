@@ -20,6 +20,14 @@ class AdminUser extends User
 
     protected $guarded = [];
 
+    const Fulltext = [
+        'username',
+        'code',
+        'id_code',
+        'phone',
+        'email'
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *

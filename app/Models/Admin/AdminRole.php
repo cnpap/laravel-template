@@ -12,6 +12,11 @@ class AdminRole extends Model
 {
     protected $table = 'admin_role';
 
+    const Fulltext = [
+        'name',
+        'code'
+    ];
+
     function modelFilter()
     {
         return $this->provideFilter(AdminRoleFilter::class);

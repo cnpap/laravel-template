@@ -2,7 +2,6 @@
 
 namespace App\Models\Admin;
 
-use App\Cache\Cache;
 use App\ModelFilters\Admin\AdminDepartmentFilter;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +15,10 @@ class AdminDepartment extends Model
 
     protected $table = 'admin_department';
 
-    protected $hidden = [];
+    const Fulltext = [
+        'name',
+        'code'
+    ];
 
     function modelFilter()
     {

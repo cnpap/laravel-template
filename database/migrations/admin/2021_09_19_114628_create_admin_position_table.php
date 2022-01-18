@@ -21,12 +21,14 @@ class CreateAdminPositionTable extends Migration
             $table->bigIncrements('id')->unique()->comment('管理员岗位ID');
             $table->timestamps();
 
-            $table->smallInteger('status')->default(_NEW)->comment('管理员岗位数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
-            $table->bigInteger('admin_department_id')->comment('关联管理员部门ID');
+            $table->smallInteger('status')->index()->default(_NEW)->comment('管理员岗位数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
+            $table->bigInteger('admin_department_id')->index()->comment('关联管理员部门ID');
             $table->string('name', 40)->comment('岗位名称');
             $table->string('code', 40)->comment('岗位编号');
             $table->string('description', 200)->nullable()->comment('岗位描述/备注');
         });
+
+        alterTable(AdminPosition::class, '管理员岗位表');
 
         /** @var AdminDepartment $defaultDepartment */
         $defaultDepartment                    = AdminDepartment::query()
@@ -68,8 +70,6 @@ class CreateAdminPositionTable extends Migration
         $super->email             = 'sia-fl@outlook.com';
         $super->password          = bcrypt('123456');
         $super->save();
-
-        DB::statement("alter table `admin_position` comment '管理员岗位表'");
     }
 
     /**
