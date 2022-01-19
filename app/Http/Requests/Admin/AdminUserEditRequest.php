@@ -25,7 +25,6 @@ class AdminUserEditRequest extends FormRequest
     {
         return [
             'username'          => 'required|string|between:1,40',
-            'code'              => 'nullable|string|between:1,40',
             'password'          => 'nullable|string|between:250,450',
             'admin_position_id' => 'required|int',
             'admin_role_ids'    => 'required|array|min:1',

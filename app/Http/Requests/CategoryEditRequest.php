@@ -12,7 +12,6 @@ class CategoryEditRequest extends FormRequest
             'pid'         => 'nullable|int',
             'status'      => 'nullable|int|in:' . STATUS_JOIN,
             'name'        => 'required|string|between:1,40',
-            'code'        => 'nullable|string|between:1,40',
             'description' => 'nullable|string|nullable'
         ];
     }

@@ -26,7 +26,7 @@ class AdminPositionIndexRequest extends FormRequest
         return [
             'name'                => 'string|between:1,40',
             'code'                => 'string|between:1,40',
-            'admin_department_id' => 'string',
+            'admin_department_id' => 'int',
         ];
     }
 }

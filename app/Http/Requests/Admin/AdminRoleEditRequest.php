@@ -11,7 +11,6 @@ class AdminRoleEditRequest extends FormRequest
         return [
             'status'      => 'nullable|int|in:' . STATUS_JOIN,
             'name'        => 'required|string|between:1,40',
-            'code'        => 'nullable|string|between:1,40',
             'description' => 'nullable|string|between:1,200',
         ];
     }

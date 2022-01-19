@@ -41,8 +41,8 @@ trait ModelTrait
         /** @var Request $request */
         $request     = app('request');
         $status      = $request->input('status', false);
-        $orderBy     = $request->input('sortBy', false);
-        $orderByDesc = $request->input('sortDirection', 'desc');
+        $orderBy     = $request->input('sortBy', 'id');
+        $orderByDesc = $request->input('sortDirection', 'asc');
 
         $detect = $request->post('detect');
         if ($detect) {
@@ -60,10 +60,7 @@ trait ModelTrait
         } else if ($orderByDesc === 'ascend') {
             $orderByDesc = 'asc';
         }
-        if ($orderBy) {
-            $builder = $builder->orderBy($orderBy, $orderByDesc);
-        }
-        return $builder;
+        return $builder->orderBy($orderBy, $orderByDesc);
     }
 
     static function table()

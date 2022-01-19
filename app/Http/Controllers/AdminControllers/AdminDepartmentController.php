@@ -27,7 +27,6 @@ class AdminDepartmentController extends Controller
                 'id',
                 'status',
                 'name',
-                'code',
             ])
             ->where('id', $id)
             ->firstOrFail();

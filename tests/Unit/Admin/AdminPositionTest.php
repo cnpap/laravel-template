@@ -8,7 +8,7 @@ use Tests\TestCase;
 class AdminPositionTest extends TestCase
 {
     protected $data = [
-        'name'                 => '测试岗位',
+        'name'                 => '测试',
         'admin_department_id'  => '999',
         'admin_permission_ids' => ['1', '2', '3']
     ];

@@ -4,7 +4,6 @@ namespace App\ModelFilters;
 
 use App\Models\Model;
 use EloquentFilter\ModelFilter as Base;
-use Illuminate\Database\Eloquent\Builder;
 
 /** @mixin Model */
 class ModelFilter extends Base
@@ -40,11 +39,13 @@ class ModelFilter extends Base
 
     function detect($val)
     {
-        return $this
-            ->where(function (Builder $q) use ($val) {
-                $q->where('id', $val)
-                    ->orWhere('name', 'like', "%$val%")
-                    ->orWhere('code', 'like', "%$val%");
-            });
+        /** @var Model $model */
+        $model        = $this->query->getModel();
+        $modelColumns = implode(', ', $model::Fulltext);
+        preg_match_all('@[^ ,]+@', $val, $matched);
+        $val = $matched[0];
+        $val = implode(' +', $val);
+        $val = '+' . $val;
+        return $this->whereRaw("match($modelColumns) against('$val' in boolean mode)");
     }
 }

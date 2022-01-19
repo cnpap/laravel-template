@@ -14,8 +14,8 @@ class AdminPositionController extends Controller
 
     function departmentOptions()
     {
-        $departments = AdminDepartment::query()->select(['id', 'name'])->get();
-        return result($departments);
+        $options = options(AdminDepartment::cacheOptions());
+        return result($options);
     }
 
     function find($id)
@@ -26,7 +26,6 @@ class AdminPositionController extends Controller
                 'id',
                 'status',
                 'name',
-                'code',
                 'description',
                 'admin_department_id',
             ])

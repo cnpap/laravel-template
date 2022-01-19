@@ -8,7 +8,7 @@ use Tests\TestCase;
 class AdminRoleTest extends TestCase
 {
     protected $data = [
-        'name' => '测试角色',
+        'name' => '测试',
     ];
 
     protected $baseUrl = '/admin/adminRole';

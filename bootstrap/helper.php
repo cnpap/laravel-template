@@ -45,10 +45,7 @@ function padKeys($leftKey, $leftName, $rightKeys, $rightName)
 
 function mergeCode(&$post, $field = 'name', $codeField = 'code')
 {
-    $code = $post[$codeField] ?? null;
-    if (!$code) {
-        $post[$codeField] = fnPinYin($post[$field]);
-    }
+    $post[$codeField] = fnPinYin($post[$field]);
 }
 
 function rsaDecrypt($data)

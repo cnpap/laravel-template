@@ -71,7 +71,6 @@ class AdminUserController extends Controller
         $user                   = AdminUser::query()
             ->select([
                 'id',
-                'code',
                 'status',
                 'phone',
                 'email',

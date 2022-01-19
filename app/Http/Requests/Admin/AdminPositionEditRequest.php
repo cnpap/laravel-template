@@ -25,9 +25,8 @@ class AdminPositionEditRequest extends FormRequest
     {
         return [
             'name'                => 'required|string|between:1,40',
-            'code'                => 'nullable|string|between:1,40',
-            'admin_department_id' => 'required|string',
-            'status'              => 'nullable|string|in:' . STATUS_JOIN,
+            'admin_department_id' => 'required|int',
+            'status'              => 'nullable|int|in:' . STATUS_JOIN,
         ];
     }
 }

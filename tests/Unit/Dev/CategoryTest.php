@@ -9,7 +9,7 @@ class CategoryTest extends TestCase
 {
     protected $data = [
         'pid'  => 1,
-        'name' => '测试岗位',
+        'name' => '测试',
     ];
 
     protected $baseUrl = '/dev/category';
