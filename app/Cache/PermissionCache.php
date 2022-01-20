@@ -257,26 +257,22 @@ class PermissionCache
             $row['must']                   = $must;
             $tableData[$row['concatName']] = $row;
         }
-        $keys  = $this->getItemKeys($code);
-        $items = $client->mget($keys);
+        $keys   = $this->getItemKeys($code);
+        $items  = $client->mget($keys);
+        $dyMust = [];
         foreach ($items as $item) {
-            if ($item['must'] === 1) {
-                continue;
-            }
-            $depends = [];
-            $row     = $tableData[$item['concatName']];
-            $code    = $row['code'];
-            $must    = $row['must'];
-            if (isset($must[$item['name']])) {
-                continue;
-            }
             if ($code === null) {
                 $prefix = "shard item ";
             } else {
                 $prefix = "private $code item ";
             }
-            foreach ($item['depends'] as $depend) {
-                $depends[] = $prefix . $item['concatName'] . ' ' . $depend;
+            $itemName = $prefix . $item['name'];
+            $depends  = [];
+            $row      = $tableData[$item['concatName']];
+            $code     = $row['code'];
+            $must     = $row['must'];
+            if (isset($must[$item['name']])) {
+                continue;
             }
             $currName = $prefix . $item['name'];
             if (in_array($currName, $checkedNames)) {
@@ -285,14 +281,24 @@ class PermissionCache
                 }
                 $traces[$item['concatName']][] = $currName;
             }
+            if ($item['must'] === 1) {
+                continue;
+            }
+            foreach ($item['depends'] as $depend) {
+                $depends[] = $prefix . $item['concatName'] . ' ' . $depend;
+            }
             $tableData[$item['concatName']]['snapshot'][$prefix . $item['name']] = [
-                'name'    => $prefix . $item['name'],
+                'name'    => $itemName,
                 'label'   => $item['label'] ?? null,
                 'depends' => $depends
             ];
         }
         $client->set($code, $tableData);
-        return compact('tableData', 'traces');
+        return [
+            'tableData' => $tableData,
+            'traces'    => $traces,
+            'must'      => $dyMust
+        ];
     }
 
     function getGroupList($guessName, $code = null)
