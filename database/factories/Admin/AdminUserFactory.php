@@ -15,7 +15,6 @@ class AdminUserFactory extends Factory
      * @var string
      */
     protected $model = AdminUser::class;
-    const RAND_username = ['张三', '李四', '王五'];
 
     /**
      * Define the model's default state.

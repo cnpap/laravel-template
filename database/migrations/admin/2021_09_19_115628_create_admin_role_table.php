@@ -1,11 +1,11 @@
 <?php
 
+use App\Cache\PermissionCache;
 use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminRolePermissionName;
 use App\Models\Admin\AdminUserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateAdminRoleTable extends Migration
@@ -41,6 +41,21 @@ class CreateAdminRoleTable extends Migration
         alterTable(AdminRolePermissionName::class, '管理员角色权限关联表');
 
         AdminRole::clearCacheOptions();
+
+        /**
+         * 创建一个测试角色, 并将角色设置一个基本权限, 用于测试创建用户后动态菜单展示
+         */
+        $roleName   = '人员管理';
+        $roleCode   = fnPinYin($roleName);
+        $role       = new AdminRole();
+        $role->name = $roleName;
+        $role->code = $roleCode;
+        $role->save();
+
+        $rolePermissionName                  = new AdminRolePermissionName();
+        $rolePermissionName->permission_name = PermissionCache::PAdminUser;
+        $rolePermissionName->admin_role_id   = $role->id;
+        $rolePermissionName->save();
     }
 
     public function down()

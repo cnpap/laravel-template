@@ -53,6 +53,10 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/tenant/admin.php'));
 
+            Route::middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/tenant/feature.php'));
+
             if (config('app.debug')) {
                 Route::middleware('api')
                     ->namespace($this->namespace)

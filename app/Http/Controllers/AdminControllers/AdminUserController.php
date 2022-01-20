@@ -116,10 +116,15 @@ class AdminUserController extends Controller
         unset($post['admin_role_ids']);
         mergeCode($post, 'username');
 
+        $password = $post['password'] ?? null;
+        if ($password) {
+            $password = rsaDecrypt($password);
+            $password = bcrypt($password);
+            $post['password'] = $password;
+        }
+        $user = new AdminUser($post);
         // 开始事务
-        $user           = new AdminUser($post);
-        $user->password = bcrypt($user->password);
-        $ok             = $user->getConnection()->transaction(function () use (
+        $ok = $user->getConnection()->transaction(function () use (
             $user,
             // 关联字段
             $positionId,
@@ -152,6 +157,12 @@ class AdminUserController extends Controller
         unset($post['admin_role_ids']);
         mergeCode($post, 'username');
 
+        $password = $post['password'] ?? null;
+        if ($password) {
+            $password = rsaDecrypt($password);
+            $password = bcrypt($password);
+            $post['password'] = $password;
+        }
         // 开始事务
         $user = new AdminUser();
         $ok   = $user->getConnection()->transaction(function () use (
@@ -169,9 +180,6 @@ class AdminUserController extends Controller
             AdminUserRole::query()->insert($userRoles);
 
             // 自身
-            if (isset($post['password'])) {
-                $post['password'] = bcrypt($post['password']);
-            }
             AdminUser::query()->where('id', $id)->update($post);
             return true;
         });

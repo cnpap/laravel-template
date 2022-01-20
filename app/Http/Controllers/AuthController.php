@@ -61,7 +61,7 @@ class AuthController extends Controller
                 ->whereIn('admin_role_id', $ids)
                 ->pluck('permission_name')
                 ->toArray();
-            $authInfo = $permissionCache->getAuthInfo(sess('e_id'), $names);
+            $authInfo = $permissionCache->getAuthInfo(tenantCode(), $names);
         }
         $authInfo['menus'] = $this->toReact($authInfo['menus']);
         return result([

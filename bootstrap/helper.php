@@ -96,6 +96,22 @@ function fnPinYin($data)
     return Pinyin::abbr($data, PINYIN_KEEP_NUMBER | PINYIN_KEEP_ENGLISH | PINYIN_KEEP_PUNCTUATION);
 }
 
+function tenantId()
+{
+    if (config('app.tenant')) {
+        return sess('tenantId');
+    }
+    return null;
+}
+
+function tenantCode()
+{
+    if (config('app.tenant')) {
+        return sess('tenantCode');
+    }
+    return null;
+}
+
 function sess($name)
 {
     $eid = Session::get($name);

@@ -13,13 +13,16 @@ class DebugMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (config('app.debug') === true) {
-            /** @var AdminUser $user */
-            $user = AdminUser::query()->find(1);
-            Auth::login($user);
+            $user = Auth::user();
+            if ($user === null) {
+                /** @var AdminUser $user */
+                $user = AdminUser::query()->find(1);
+                Auth::login($user);
 
-            $eid = Session::get('eid');
-            if (!$eid) {
-                Session::put('eid', 'admin');
+                $tenantCode = tenantCode();
+                if (!$tenantCode) {
+                    Session::put('tenantCode', 'admin');
+                }
             }
         }
         return $next($request);

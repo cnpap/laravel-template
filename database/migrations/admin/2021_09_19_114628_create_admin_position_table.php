@@ -23,7 +23,7 @@ class CreateAdminPositionTable extends Migration
 
             $table->smallInteger('status')->index()->default(_NEW)->comment('管理员岗位数据状态: 1 新数据, 2 已占用, 3 异常中, 4 已停用');
             $table->bigInteger('admin_department_id')->index()->comment('关联管理员部门ID');
-            $table->string('name', 40)->comment('岗位名称');
+            $table->string('name', 40)->unique()->comment('岗位名称');
             $table->string('code', 40)->comment('岗位编号');
             $table->string('description', 200)->nullable()->comment('岗位描述/备注');
         });
