@@ -63,6 +63,9 @@ class AdminPositionController extends Controller
 
             // 变更自身
             $one->save();
+
+            AdminPosition::clearCacheOptions();
+
             return true;
         });
         return tx($ok);
@@ -90,6 +93,9 @@ class AdminPositionController extends Controller
 
             // 变更自身
             AdminPosition::query()->where('id', $id)->update($post);
+
+            AdminPosition::clearCacheOptions();
+
             return true;
         });
         return tx($ok);

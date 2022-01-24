@@ -77,6 +77,7 @@ class AdminRoleController extends Controller
                 AdminRole::query()->where('id', $id)->update($post);
                 $role     = new AdminRole($post);
                 $role->id = $id;
+                AdminRole::clearCacheOptions();
 
                 return true;
             }
@@ -94,6 +95,7 @@ class AdminRoleController extends Controller
 
                 $role     = new AdminRole($post);
                 $role->save();
+                AdminRole::clearCacheOptions();
 
                 return true;
             }

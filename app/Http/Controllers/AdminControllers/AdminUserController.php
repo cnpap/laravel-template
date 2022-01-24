@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\AdminUserIndexRequest;
 use App\Http\Requests\BulkRequest;
 use App\Http\Requests\PasswordRequest;
 use App\Models\Admin\AdminDepartment;
+use App\Models\Admin\AdminOrganization;
 use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminUser;
@@ -45,10 +46,13 @@ class AdminUserController extends Controller
         $ok = (new AdminUserOrganization())->getConnection()->transaction(
             function () use (
                 $userOrganizations,
-                $id
+                $id,
+                $ids
             ) {
                 AdminUserOrganization::query()->where('admin_user_id', $id)->delete();
                 AdminUserOrganization::query()->insert($userOrganizations);
+                AdminUser::used($id);
+                AdminOrganization::used($ids);
                 return true;
             }
         );

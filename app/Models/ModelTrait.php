@@ -93,7 +93,7 @@ trait ModelTrait
         $request = app('request');
         $ids     = $request->input('ids');
         $status  = $request->input('status');
-        return (self::staticQuery($ids)->update(['status' => $status]));
+        return (self::staticQuery($ids)->where('status', _NEW)->update(['status' => $status]));
     }
 
     static function used($id)
