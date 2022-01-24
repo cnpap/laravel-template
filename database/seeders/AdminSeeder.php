@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin\AdminDepartment;
+use App\Models\Admin\AdminOrganization;
 use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminUser;
@@ -17,6 +18,7 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
+        AdminOrganization::factory()->count(5)->create();
         AdminDepartment::factory()->count(5)->create();
         AdminPosition::factory()->count(40)->create();
         AdminRole::factory()->count(15)->create();

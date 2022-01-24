@@ -30,7 +30,7 @@ class CreateAdminRoleTable extends Migration
             $table->unique(['admin_user_id', 'admin_role_id'], 'admin_user_role_unique_index');
         });
 
-        alterTable(AdminUserRole::class, '管理员角色权限关联表');
+        alterTable(AdminUserRole::class, '管理员用户角色关联表');
 
         Schema::create('admin_role_permission_name', function (Blueprint $table) {
             $table->bigInteger('admin_role_id')->index()->comment('关联管理员角色ID');

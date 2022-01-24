@@ -11,14 +11,16 @@ class PermissionCache
     const PSystem     = 'system';
     const PEnterprise = 'enterprise';
 
-    const PAdmin           = 'admin';
-    const PAdminUser       = 'adminUser';
-    const PAdminRole       = 'adminRole';
-    const PAdminPosition   = 'adminPosition';
-    const PAdminDepartment = 'adminDepartment';
+    const PAdmin             = 'admin';
+    const PAdminUser         = 'adminUser';
+    const PAdminRole         = 'adminRole';
+    const PAdminPosition     = 'adminPosition';
+    const PAdminDepartment   = 'adminDepartment';
+    const PAdminOrganization = 'adminOrganization';
 
     const PDev         = 'dev';
     const PDevCategory = 'devCategory';
+
 
     /**
      * pRedis 客户端
@@ -147,12 +149,14 @@ class PermissionCache
             $group    = $client->get($groupKey);
             // 生成侧边栏数据
             $modules     = $group['modules'];
+            $sorts       = $group['sorts'];
             $moduleProxy = null;
             foreach ($modules as $name => $label) {
                 $module = strtoupper($name[0]) . substr($name, 1);
                 if ($moduleProxy === null) {
                     if (!isset($menus[$module])) {
                         $menus[$module] = [
+                            'sort'     => $sorts[$name],
                             'label'    => $label,
                             'path'     => '/' . $name,
                             'module'   => '/' . $module,
@@ -163,6 +167,7 @@ class PermissionCache
                 } else {
                     if (!isset($moduleProxy['children'][$module])) {
                         $moduleProxy['children'][$module] = [
+                            'sort'     => $sorts[$name],
                             'label'    => $label,
                             'path'     => $moduleProxy['path'] . '/' . $name,
                             'module'   => $moduleProxy['module'] . '/' . $module,
@@ -406,14 +411,17 @@ class PermissionCache
     private function loopGroup($permissionGroups, $options = [])
     {
         $code = $options['code'];
-        foreach ($permissionGroups as $permissionGroup) {
+        foreach ($permissionGroups as $index => $permissionGroup) {
             $label    = $permissionGroup['label'] ?? null;
             $actions  = $permissionGroup['actions'] ?? [];
             $children = $permissionGroup['children'] ?? [];
             $name     = $permissionGroup['name'] ?? null;
             $modules  = $options['modules'] ?? [];
+            $sorts    = $options['sorts'] ?? [];
+            $sort     = $permissionGroup['sort'] ?? 0;
             if ($label) {
                 $modules[$name] = $label;
+                $sorts[$name]   = $sort;
             }
             $concatName = $options['concatName'] ?? '';
             if ($concatName) {
@@ -424,10 +432,13 @@ class PermissionCache
             if (count($children)) {
                 $this->loopGroup($children, [
                     'code'       => $code,
+                    'sorts'      => $sorts,
                     'modules'    => $modules,
                     'concatName' => $concatName,
                 ]);
-                continue;
+                if (!count($actions)) {
+                    continue;
+                }
             }
             if (count($actions)) {
                 foreach ($actions as $actionName => $actionInfo) {
@@ -435,9 +446,11 @@ class PermissionCache
                     if (!isset($this->group[$concatName])) {
                         $this->group[$concatName] = [
                             'modules'    => $modules,
+                            'sorts'      => $sorts,
                             'concatName' => $concatName,
                             'must'       => [],
                             'code'       => $code,
+                            'sort'       => $sort
                         ];
                     }
                     $permissionName = $concatName . ' ' . $actionName;
@@ -450,7 +463,8 @@ class PermissionCache
                         'concatName' => $concatName,
                         'label'      => $actionInfo[1] ?? null,
                         'depends'    => $depends,
-                        'must'       => $must
+                        'must'       => $must,
+                        'sort'       => $sort
                     ];
                 }
             }

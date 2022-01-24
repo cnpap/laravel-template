@@ -5,11 +5,13 @@ namespace App\Http\Controllers\AdminControllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminUserEditRequest;
 use App\Http\Requests\Admin\AdminUserIndexRequest;
+use App\Http\Requests\BulkRequest;
 use App\Http\Requests\PasswordRequest;
 use App\Models\Admin\AdminDepartment;
 use App\Models\Admin\AdminPosition;
 use App\Models\Admin\AdminRole;
 use App\Models\Admin\AdminUser;
+use App\Models\Admin\AdminUserOrganization;
 use App\Models\Admin\AdminUserRole;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,6 +21,39 @@ use Illuminate\Support\Facades\Hash;
 class AdminUserController extends Controller
 {
     protected $model = AdminUser::class;
+
+    function findOrganizations($id)
+    {
+        $result = AdminUserOrganization::query()
+            ->where('admin_user_id', $id)
+            ->get()
+            ->pluck('admin_organization_id')
+            ->toArray();
+        return result($result);
+    }
+
+    function syncOrganizations(BulkRequest $request, $id)
+    {
+        $userOrganizations = [];
+        $ids               = $request->input('ids');
+        foreach ($ids as $organizationId) {
+            $userOrganizations[] = [
+                'admin_user_id'         => $id,
+                'admin_organization_id' => $organizationId,
+            ];
+        }
+        $ok = (new AdminUserOrganization())->getConnection()->transaction(
+            function () use (
+                $userOrganizations,
+                $id
+            ) {
+                AdminUserOrganization::query()->where('admin_user_id', $id)->delete();
+                AdminUserOrganization::query()->insert($userOrganizations);
+                return true;
+            }
+        );
+        return tx($ok);
+    }
 
     function forgotPassword(PasswordRequest $request, $id)
     {
@@ -118,8 +153,8 @@ class AdminUserController extends Controller
 
         $password = $post['password'] ?? null;
         if ($password) {
-            $password = rsaDecrypt($password);
-            $password = bcrypt($password);
+            $password         = rsaDecrypt($password);
+            $password         = bcrypt($password);
             $post['password'] = $password;
         }
         $user = new AdminUser($post);
@@ -159,8 +194,8 @@ class AdminUserController extends Controller
 
         $password = $post['password'] ?? null;
         if ($password) {
-            $password = rsaDecrypt($password);
-            $password = bcrypt($password);
+            $password         = rsaDecrypt($password);
+            $password         = bcrypt($password);
             $post['password'] = $password;
         }
         // 开始事务

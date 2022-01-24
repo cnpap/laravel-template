@@ -1,6 +1,7 @@
 <?php
 
 use App\Cache\PermissionCache;
+use App\Http\Controllers\AdminControllers\AdminOrganizationController;
 use App\Http\Controllers\CommonControllers\LogController;
 use App\Http\Controllers\RegionController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,10 @@ Route::middleware(debugMiddleware())->group(function () {
     );
     Route::prefix('admin')->group(function () {
         routePack(
+            PermissionCache::PAdminOrganization,
+            AdminOrganizationController::class,
+        );
+        routePack(
             PermissionCache::PEnterprise,
             EnterpriseAuthController::class,
             ['uploadZj', 'uploadId', 'uploadMm', 'uploadHj']
@@ -41,7 +46,9 @@ Route::middleware(debugMiddleware())->group(function () {
                 'departmentOptions',
                 'positionOptions',
                 'roleOptions',
-                'forgotPassword' => '$/{id}'
+                'forgotPassword'    => '$/{id}',
+                'syncOrganizations' => '$/{id}',
+                'findOrganizations' => '$/{id}'
             ]
         );
         routePack(

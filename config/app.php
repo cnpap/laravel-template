@@ -58,6 +58,8 @@ return [
 
     'tenant' => env('TENANT', null),
 
+    'organization' => env('ORGANIZATION', null),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

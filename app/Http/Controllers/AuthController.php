@@ -21,12 +21,27 @@ class AuthController extends Controller
     function toReact($menus)
     {
         $newMenus = [];
+        $menus    = array_values($menus);
         foreach ($menus as $menu) {
             if (count($menu['children']) > 0) {
                 $menu['children'] = $this->toReact($menu['children']);
             }
-            $newMenus[] = $menu;
+            $endMenu = end($newMenus);
+            if (
+                (count($newMenus) === 0) ||
+                ($endMenu['sort'] <= $menu['sort'])
+            ) {
+                $newMenus[] = $menu;
+            } else {
+                foreach ($newMenus as $index => $currMenu) {
+                    if ($menu['sort'] <= $currMenu['sort']) {
+                        array_splice($newMenus, $index, 0, [$menu]);
+                        break;
+                    }
+                }
+            }
         }
+
         return $newMenus;
     }
 
