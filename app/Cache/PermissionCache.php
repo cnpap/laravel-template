@@ -126,6 +126,9 @@ class PermissionCache
         $client = $this->client;
         foreach ($keys as $key) {
             preg_match('@(shard|private [a-z_]+) item (([a-zA-Z0-9_]+ )+)([a-zA-Z0-9_]+)@', $key, $matched);
+            if (count($matched) === 0) {
+                continue;
+            }
             $type       = $matched[1];
             $pageName   = substr($matched[3], 0, -1);
             $concatName = $matched[2];

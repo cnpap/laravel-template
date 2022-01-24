@@ -51,8 +51,21 @@ $admin = [
         ]
     ],
     [
-        'label'   => '岗位管理',
+        'label'   => '部门管理',
         'sort'    => 3,
+        'name'    => PermissionCache::PAdminDepartment,
+        'actions' => [
+            'create' => [2, '创建部门'],
+            'update' => [2, '修改部门', 'find'],
+            'delete' => [2, '删除部门'],
+            'status' => [2, '修改部门状态'],
+            'find'   => [2, '查看部门详情'],
+            'list'   => [1, '查看部门列表'],
+        ]
+    ],
+    [
+        'label'   => '岗位管理',
+        'sort'    => 4,
         'name'    => PermissionCache::PAdminPosition,
         'actions' => [
             'create'            => [2, '创建岗位'],
@@ -62,19 +75,6 @@ $admin = [
             'find'              => [2, '查看岗位详情'],
             'list'              => [1, '查看岗位列表'],
             'departmentOptions' => [1],
-        ]
-    ],
-    [
-        'label'   => '部门管理',
-        'sort'    => 4,
-        'name'    => PermissionCache::PAdminDepartment,
-        'actions' => [
-            'create' => [2, '创建部门'],
-            'update' => [2, '修改部门', 'find'],
-            'delete' => [2, '删除部门'],
-            'status' => [2, '修改部门状态'],
-            'find'   => [2, '查看部门详情'],
-            'list'   => [1, '查看部门列表'],
         ]
     ],
 ];
