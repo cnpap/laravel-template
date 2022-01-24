@@ -12,6 +12,11 @@ class AdminOrganization extends Model
 {
     protected $table = 'admin_organization';
 
+    const Fulltext = [
+        'name',
+        'code'
+    ];
+
     function modelFilter()
     {
         return $this->provideFilter(AdminOrganizationFilter::class);
