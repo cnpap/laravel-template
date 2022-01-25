@@ -234,7 +234,6 @@ class PermissionCache
     function itemTable($checkedNames, $code = null)
     {
         $client    = $this->client;
-        $code      = "item table $code";
         $tableData = $client->get($code) ?? [];
         $traces    = [];
         if (!config('app.debug') && $tableData && count($tableData)) {
@@ -277,7 +276,6 @@ class PermissionCache
             $itemName = $prefix . $item['name'];
             $depends  = [];
             $row      = $tableData[$item['concatName']];
-            $code     = $row['code'];
             $must     = $row['must'];
             if (isset($must[$item['name']])) {
                 continue;
@@ -301,7 +299,6 @@ class PermissionCache
                 'depends' => $depends
             ];
         }
-        $client->set($code, $tableData);
         return [
             'tableData' => $tableData,
             'traces'    => $traces,
@@ -414,7 +411,7 @@ class PermissionCache
     private function loopGroup($permissionGroups, $options = [])
     {
         $code = $options['code'];
-        foreach ($permissionGroups as $index => $permissionGroup) {
+        foreach ($permissionGroups as $permissionGroup) {
             $label    = $permissionGroup['label'] ?? null;
             $actions  = $permissionGroup['actions'] ?? [];
             $children = $permissionGroup['children'] ?? [];
