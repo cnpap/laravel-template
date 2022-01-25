@@ -25,12 +25,21 @@ class AdminUserController extends Controller
 
     function findOrganizations($id)
     {
-        $result = AdminUserOrganization::query()
+        $adminOrganizationIds = AdminUserOrganization::query()
             ->where('admin_user_id', $id)
             ->get()
             ->pluck('admin_organization_id')
             ->toArray();
-        return result($result);
+        $options              = AdminOrganization::enabled()
+            ->select([
+                'id',
+                'name'
+            ])
+            ->get();
+        return result([
+            'ids'     => $adminOrganizationIds,
+            'options' => $options
+        ]);
     }
 
     function syncOrganizations(BulkRequest $request, $id)

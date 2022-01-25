@@ -80,7 +80,7 @@ $admin = [
 ];
 
 if (config('app.organization')) {
-    $admin[] = [
+    $data[] = [
         'label'   => '组织列表',
         'sort'    => 0,
         'name'    => PermissionCache::PAdminOrganization,

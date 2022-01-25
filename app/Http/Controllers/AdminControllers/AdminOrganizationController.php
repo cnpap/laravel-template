@@ -6,10 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminOrganizationEditRequest;
 use App\Http\Requests\Admin\AdminOrganizationIndexRequest;
 use App\Models\Admin\AdminOrganization;
+use Illuminate\Support\Facades\Session;
 
 class AdminOrganizationController extends Controller
 {
     protected $model = AdminOrganization::class;
+
+    function lock($id)
+    {
+        AdminOrganization::enabled()
+            ->where('id', $id)
+            ->firstOrFail();
+        Session::put('organizationId', $id);
+        return ss();
+    }
 
     function positions()
     {

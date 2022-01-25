@@ -18,6 +18,11 @@ trait ModelTrait
 {
     use Filterable;
 
+    static function enabled()
+    {
+        return static::query()->whereNotIn('status', [_OFF, _ERR]);
+    }
+
     static function cacheOptions()
     {
         $client = Cache::dataCache();

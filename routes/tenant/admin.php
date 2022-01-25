@@ -29,11 +29,14 @@ Route::middleware(debugMiddleware())->group(function () {
         AuthController::class,
         ['logout', 'userinfo']
     );
+    routePack(
+        PermissionCache::PAdminOrganization,
+        AdminOrganizationController::class,
+        [
+            'lock' => '$/{id}'
+        ]
+    );
     Route::prefix('admin')->group(function () {
-        routePack(
-            PermissionCache::PAdminOrganization,
-            AdminOrganizationController::class,
-        );
         routePack(
             PermissionCache::PEnterprise,
             EnterpriseAuthController::class,
