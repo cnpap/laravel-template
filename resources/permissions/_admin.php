@@ -86,11 +86,11 @@ if (config('app.organization')) {
         'name'    => PermissionCache::PAdminOrganization,
         'actions' => [
             'create' => [2, '创建组织'],
-            'update' => [2, '创建组织', 'find'],
-            'delete' => [2, '创建组织'],
-            'status' => [2, '创建组织状态'],
-            'find'   => [2, '创建组织详情'],
-            'list'   => [1, '创建组织列表'],
+            'update' => [2, '修改组织', 'find'],
+            'delete' => [2, '删除组织'],
+            'status' => [2, '修改组织状态'],
+            'find'   => [2, '查看组织详情'],
+            'list'   => [1, '查看组织列表'],
         ]
     ];
 }
@@ -126,6 +126,7 @@ if (config('app.debug')) {
     $data[] = [
         'label'    => '多级目录',
         'name'     => 'sideMenuT1',
+        'sort'     => -1,
         'children' => [
             [
                 'label'    => '多级目录2',
