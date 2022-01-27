@@ -103,7 +103,7 @@ $data[] = [
 ];
 
 
-if (config('app.debug')) {
+if (config('app.debug') && config('app.migrate_dev')) {
     $data[] = [
         'label'    => '测试页面',
         'name'     => PermissionCache::PDev,

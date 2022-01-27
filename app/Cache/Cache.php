@@ -20,21 +20,21 @@ class Cache
 
     static function permissionGroup()
     {
-        return self::select(1);
+        return self::select(15);
     }
 
     static function userCan()
     {
-        return self::select(2);
+        return self::select(14);
     }
 
     static function pageConfig()
     {
-        return self::select(3);
+        return self::select(13);
     }
 
     static function dataCache()
     {
-        return self::select(4);
+        return self::select(12);
     }
 }

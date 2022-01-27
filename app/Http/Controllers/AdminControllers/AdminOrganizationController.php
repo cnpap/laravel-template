@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminOrganizationEditRequest;
 use App\Http\Requests\Admin\AdminOrganizationIndexRequest;
 use App\Models\Admin\AdminOrganization;
-use Illuminate\Support\Facades\Session;
 
 class AdminOrganizationController extends Controller
 {
@@ -17,7 +16,7 @@ class AdminOrganizationController extends Controller
         AdminOrganization::enabled()
             ->where('id', $id)
             ->firstOrFail();
-        Session::put('organizationId', $id);
+        session(['organizationId' => $id]);
         return ss();
     }
 

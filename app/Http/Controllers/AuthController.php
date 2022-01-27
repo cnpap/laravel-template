@@ -80,7 +80,7 @@ class AuthController extends Controller
         }
         $authInfo['menus'] = $this->toReact($authInfo['menus']);
         return result([
-            'token'    => substr($token->plainTextToken, 3),
+            'token'    => $token->plainTextToken,
             'data'     => new UserinfoResource($user),
             'message'  => '登录成功',
             'authInfo' => $authInfo

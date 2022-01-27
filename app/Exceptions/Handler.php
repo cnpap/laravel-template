@@ -58,6 +58,7 @@ class Handler extends ExceptionHandler
             $result['message']     = '表单验证有误, 请检查表单';
             $result['messageType'] = 'error';
             $result['code']        = 500;
+            $result['formErrors']  = $e->errors();
             if (config('app.debug')) {
                 $result['errors'] = $e->errors();
                 $result['trace']  = $e->getTrace();
