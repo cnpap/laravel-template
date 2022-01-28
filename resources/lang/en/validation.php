@@ -155,7 +155,8 @@ return [
 
     'attributes' => [
         'name'     => '名称',
-        'username' => '用户名称'
+        'username' => '用户名称',
+        'ids'      => '选项'
     ],
 
 ];
