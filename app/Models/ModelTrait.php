@@ -57,7 +57,7 @@ trait ModelTrait
 
         $builder = static::filter($filter);
         /** @var Model $model */
-        $model   = $builder->getModel();
+        $model = $builder->getModel();
         if ($model->status !== false) {
             $status = $request->input('status', false);
             if ($status) {
@@ -104,7 +104,7 @@ trait ModelTrait
         $request = app('request');
         $ids     = $request->input('ids');
         $status  = $request->input('status');
-        return (self::staticQuery($ids)->where('status', _NEW)->update(['status' => $status]));
+        return (self::staticQuery($ids)->where('status', '!=', _NEW)->update(['status' => $status]));
     }
 
     static function used($id)

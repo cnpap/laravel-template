@@ -2,8 +2,8 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -43,6 +43,9 @@ class Handler extends ExceptionHandler
 
     function render($request, Throwable $e)
     {
+        if ($e instanceof ModelNotFoundException) {
+            return se(['message' => '查找或处理数据失败']);
+        }
         if ($e instanceof BaseException) {
             $result                = [];
             $result['message']     = $e->getMessage() . ' ' . $e->customCode;

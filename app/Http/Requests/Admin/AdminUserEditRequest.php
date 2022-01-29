@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\EditRequest;
 
-class AdminUserEditRequest extends FormRequest
+class AdminUserEditRequest extends EditRequest
 {
+    protected $table = 'admin_user';
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,12 +26,22 @@ class AdminUserEditRequest extends FormRequest
     public function rules()
     {
         return [
-            'username'          => 'required|string|between:1,40',
+            'username'              => [
+                'required',
+                'string',
+                $this->unique('username'),
+                'between:1,40'
+            ],
             'password'          => 'nullable|string|between:250,450',
             'admin_position_id' => 'required|int',
             'admin_role_ids'    => 'required|array|min:1',
             'admin_role_ids.*'  => 'required|int',
-            'phone'             => 'required|string|phone',
+            'phone'             => [
+                'required',
+                'string',
+                'phone',
+                $this->unique('phone'),
+            ],
             'email'             => 'nullable|string|email',
             'gender'            => 'required|int|in:' . GENDER_JOIN,
             'status'            => 'nullable|int|in:' . STATUS_JOIN,

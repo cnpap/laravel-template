@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\EditRequest;
 
-class AdminOrganizationEditRequest extends FormRequest
+class AdminOrganizationEditRequest extends EditRequest
 {
+    public $table = 'admin_organization';
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,7 +26,12 @@ class AdminOrganizationEditRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'        => 'required|string|between:1,40',
+            'name'        => [
+                'required',
+                'string',
+                $this->unique(),
+                'between:1,40'
+            ],
             'status'      => 'nullable|int|in:' . STATUS_JOIN,
             'description' => 'nullable|string|max:100'
         ];

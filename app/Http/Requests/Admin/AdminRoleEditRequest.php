@@ -2,15 +2,22 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\EditRequest;
 
-class AdminRoleEditRequest extends FormRequest
+class AdminRoleEditRequest extends EditRequest
 {
+    public $table = 'admin_role';
+
     public function rules(): array
     {
         return [
             'status'      => 'nullable|int|in:' . STATUS_JOIN,
-            'name'        => 'required|string|between:1,40',
+            'name'        => [
+                'required',
+                'string',
+                $this->unique(),
+                'between:1,40'
+            ],
             'description' => 'nullable|string|between:1,200',
         ];
     }

@@ -21,7 +21,6 @@ class PermissionCache
     const PDev         = 'dev';
     const PDevCategory = 'devCategory';
 
-
     /**
      * pRedis 客户端
      *
