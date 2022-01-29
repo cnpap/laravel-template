@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model as Base;
  * @property int id
  * @property string created_at
  * @property string updated_at
- *
+ * @property boolean status
  * @mixin IdeHelperModel
  */
 class Model extends Base

@@ -16,7 +16,7 @@ class AdminOrganizationController extends Controller
         AdminOrganization::enabled()
             ->where('id', $id)
             ->firstOrFail();
-        session(['organizationId' => $id]);
+        session(['adminOrganizationId' => $id]);
         return ss();
     }
 

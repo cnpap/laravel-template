@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * 从第几级开始可选
- * @property int $leafLevel
  *
+ * @property int $leafLevel
  * @property int $level
  * @property string $id
  * @property string $status
@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $code
  * @property string $description
  * @property Category $parent
- *
  * @mixin IdeHelperCategory
  */
 class Category extends Model

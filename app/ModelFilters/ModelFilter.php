@@ -37,15 +37,20 @@ class ModelFilter extends Base
             ->where('updated_at', '<', $val[1]);
     }
 
+    function getDetectValues($val)
+    {
+        preg_match_all('@[^ ,]+@', $val, $matched);
+        $val = $matched[0];
+        $val = implode(' +', $val);
+        return '+' . $val;
+    }
+
     function detect($val)
     {
         /** @var Model $model */
         $model        = $this->query->getModel();
         $modelColumns = implode(', ', $model::Fulltext);
-        preg_match_all('@[^ ,]+@', $val, $matched);
-        $val = $matched[0];
-        $val = implode(' +', $val);
-        $val = '+' . $val;
+        $val          = $this->getDetectValues($val);
         return $this->whereRaw("match($modelColumns) against('$val' in boolean mode)");
     }
 }

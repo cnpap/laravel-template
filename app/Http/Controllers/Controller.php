@@ -15,6 +15,16 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    function adminOrganizationId()
+    {
+        return sess(
+            'adminOrganizationId',
+            '组织 id 已过期',
+            0,
+            401
+        );
+    }
+
     function status()
     {
         $this->model::status();

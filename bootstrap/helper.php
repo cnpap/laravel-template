@@ -112,11 +112,11 @@ function tenantCode()
     return null;
 }
 
-function sess($name)
+function sess($name, ...$exceptionInfo)
 {
     $eid = Session::get($name);
     if (!$eid) {
-        throw new BurstException();
+        throw new BurstException(...$exceptionInfo);
     }
     return $eid;
 }
@@ -258,7 +258,7 @@ function options($item, $field = 'name')
     return $result;
 }
 
-function treeOptions($item)
+function treeOptions($item, $selectable = true)
 {
     if ($item instanceof Collection) {
         $item = $item->toArray();
@@ -273,7 +273,7 @@ function treeOptions($item)
                 'value'      => $current['id'],
                 'key'        => $current['id'],
                 'isLeaf'     => false,
-                'selectable' => true,
+                'selectable' => $selectable,
             ];
             if (count($children) || $i = 0) {
                 $model['children']  = $children;
@@ -287,7 +287,7 @@ function treeOptions($item)
     return $result;
 }
 
-function treeTn($item, $id = '')
+function treeTn($item, $id = '', $selectable = true)
 {
     $tn = [];
     for ($i = 0; $i < count($item); $i++) {
@@ -303,7 +303,7 @@ function treeTn($item, $id = '')
             if (count($children)) {
                 $model['children']   = $children;
                 $model['isLeaf']     = false;
-                $model['selectable'] = true;
+                $model['selectable'] = $selectable;
             } else {
                 $model['checkable'] = false;
             }

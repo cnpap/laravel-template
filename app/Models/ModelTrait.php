@@ -18,6 +18,8 @@ trait ModelTrait
 {
     use Filterable;
 
+    public $status = true;
+
     static function enabled()
     {
         return static::query()->whereNotIn('status', [_OFF, _ERR]);
@@ -45,7 +47,6 @@ trait ModelTrait
     {
         /** @var Request $request */
         $request     = app('request');
-        $status      = $request->input('status', false);
         $orderBy     = $request->input('sortBy', 'id');
         $orderByDesc = $request->input('sortDirection', 'asc');
 
@@ -55,10 +56,15 @@ trait ModelTrait
         }
 
         $builder = static::filter($filter);
-        if ($status) {
-            $builder = $builder->whereIn('status', $status);
-        } else {
-            $builder = $builder->where('status', '!=', _OFF);
+        /** @var Model $model */
+        $model   = $builder->getModel();
+        if ($model->status !== false) {
+            $status = $request->input('status', false);
+            if ($status) {
+                $builder = $builder->whereIn('status', $status);
+            } else {
+                $builder = $builder->where('status', '!=', _OFF);
+            }
         }
         if ($orderByDesc === 'descend') {
             $orderByDesc = 'desc';
