@@ -43,7 +43,7 @@ trait ModelTrait
         $client->del(static::class . 'Options');
     }
 
-    static function indexFilter(array $filter)
+    static function indexFilter(array $filter = [])
     {
         /** @var Request $request */
         $request     = app('request');

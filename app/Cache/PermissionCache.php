@@ -149,6 +149,9 @@ class PermissionCache
              */
             $groupKey = sprintf("%s group %s", $type, $concatName);
             $group    = $client->get($groupKey);
+            if ($group === null) {
+                continue;
+            }
             // 生成侧边栏数据
             $modules     = $group['modules'];
             $sorts       = $group['sorts'];
